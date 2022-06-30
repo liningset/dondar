@@ -1,0 +1,215 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap");
+@import "./vigenere";
+@import "./rot";
+@import "./morse";
+@import "./home";
+
+[data-theme="dark"] {
+  --Inputs-background: rgb(50, 53, 65);
+  --main-background: rgb(24, 28, 39);
+  --nav-background: rgb(19, 22, 31);
+  --color: rgb(243, 243, 243);
+  --shadow: none;
+  --shadow-on-trigger: none;
+  --shadow2: none;
+  --shadow2-on-trigger: none;
+
+  .theme-toggle-btn {
+    i {
+      color: #fff;
+    }
+
+    &:hover i {
+      text-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+[data-theme="light"] {
+  --Inputs-background: rgb(255, 255, 255);
+  --main-background: #f2f4f6;
+  --nav-background: rgb(255, 255, 255);
+  --color: rgb(65, 65, 65);
+  --shadow: 0 0 1.5rem rgba(160, 160, 160, 0.5);
+  --shadow-on-trigger: 0 0 1.5rem rgba(122, 122, 122, 0.6);
+  --shadow2: 0 0 0.75rem rgba(160, 160, 160, 0.5);
+  --shadow2-on-trigger: 0 0 0.75rem rgba(160, 160, 160, 0.75);
+
+  .theme-toggle-btn i {
+    color: rgb(25, 25, 25);
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--color);
+  transition: all 0.3s ease;
+}
+
+*:not(h1) {
+  font-size: 1rem;
+}
+
+h1 {
+  text-align: center;
+}
+
+body {
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+  background: var(--main-background);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: min(90vw, 900px);
+}
+
+select {
+  font-family: inherit;
+  background: var(--Inputs-background);
+  box-shadow: var(--shadow2);
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    box-shadow: var(--shadow2-on-trigger);
+  }
+}
+
+textarea {
+  resize: vertical;
+  width: 100%;
+  padding: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  transition-property: box-shadow, background-color, color;
+  border-radius: 5px;
+  box-shadow: var(--shadow);
+  border: 1px solid transparent;
+  background: var(--Inputs-background);
+
+  &:focus {
+    box-shadow: var(--shadow-on-trigger);
+    outline: none;
+  }
+}
+
+input {
+  width: min(100%, 250px);
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+  background: var(--Inputs-background);
+  transition: all 0.3s ease;
+  color: var(--color);
+  box-shadow: var(--shadow2);
+  border: none;
+}
+
+input:focus {
+  outline: none;
+  box-shadow: var(--shadow2-on-trigger);
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.theme-toggle-btn {
+  padding: 0.25rem;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+
+  i {
+    position: relative;
+    display: block;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+  }
+}
+
+.nav-container {
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--nav-background);
+  border-bottom: 1px solid var(--Inputs-background);
+  padding-block: 1rem;
+  box-shadow: var(--shadow);
+
+  .navbar {
+    width: 90vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .navlist-left,
+    .navlist-right {
+      display: flex;
+      list-style: none;
+    }
+
+    .navlist-right {
+      gap: 2rem;
+
+      a {
+        text-decoration: none;
+      }
+
+      > li {
+        position: relative;
+
+        &::before {
+          content: "";
+          height: 1px;
+          width: 0;
+          position: absolute;
+          bottom: -1px;
+          right: 0;
+          transition: all 0.3s ease;
+          background: var(--color);
+        }
+
+        &:hover::before {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    margin-block: 2rem;
+  }
+}
+
+@media (min-height: 100vh) {
+  .container {
+    margin-block: 4rem;
+  }
+}

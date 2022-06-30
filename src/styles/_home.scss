@@ -1,0 +1,38 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-block: 2rem;
+  width: 90%;
+  max-width: 900px;
+}
+
+.home-wrapper {
+  gap: 4rem;
+  margin-block: 4rem;
+}
+
+.buttons-grid {
+  display: grid;
+  width: 100%;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  perspective: 400px;
+
+  .button {
+    aspect-ratio: 1 / 1;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    background: var(--Inputs-background);
+
+    &:hover {
+      box-shadow: var(--shadow-on-trigger);
+      transform: scale(1.05);
+    }
+  }
+}
