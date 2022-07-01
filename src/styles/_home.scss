@@ -22,13 +22,12 @@
 
   .button {
     aspect-ratio: 1 / 1;
-    background: #fff;
     border: none;
     cursor: pointer;
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
     border-radius: 5px;
-    background: var(--Inputs-background);
+    background: var(--inputs-bg);
 
     &:hover {
       box-shadow: var(--shadow-on-trigger);
