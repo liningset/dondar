@@ -1,0 +1,81 @@
+.xor-wrapper {
+  width: 90vw;
+  .format-select {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .input-container {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+
+    > * {
+      width: 100%;
+    }
+    textarea {
+      width: 100%;
+    }
+
+    .input-area-container {
+      position: relative;
+
+      select {
+        position: absolute;
+      }
+    }
+
+    .key-area-container {
+      position: relative;
+
+      #randtextlength-btn {
+        position: absolute;
+        right: 0;
+        top: -2.25rem;
+      }
+    }
+  }
+  .rand {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover i {
+      color: rgb(134, 125, 255);
+    }
+
+    i {
+      font-size: 1.25rem;
+      pointer-events: none;
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .xor-wrapper {
+    .format-select {
+      width: 100%;
+      flex-direction: column;
+      align-self: center;
+
+      select {
+        width: 100%;
+      }
+    }
+    .input-container {
+      flex-direction: column;
+      gap: 2.75rem;
+
+      .key-area-container #randtextlength-btn {
+        //right: 1rem;
+        top: -2.25rem;
+      }
+    }
+    .rand i {
+      font-size: 1.5rem;
+    }
+  }
+}

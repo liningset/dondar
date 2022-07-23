@@ -1,7 +1,9 @@
 import { useRef } from "react";
 import morseTable from "./morse-table";
+import Header from "../Header";
+import Footer from "../Footer";
 
-export default function Morse() {
+export default function Morse({ setService }) {
   let inputFieldRef = useRef(null);
   let outputFieldRef = useRef(null);
   let selectRef = useRef(null);
@@ -53,33 +55,53 @@ export default function Morse() {
   }
 
   return (
-    <main className="wrapper morse-wrapper">
-      <h1>Morse code</h1>
-      <textarea
-        id="input-area"
-        cols="30"
-        rows="10"
-        spellCheck="false"
-        placeholder="Your text goes here..."
-        ref={inputFieldRef}
-        onInput={() => triggerFn()}
-      ></textarea>
-      <select ref={selectRef} onInput={() => triggerFn()}>
-        <option value="encode" id="encode">
-          encode
-        </option>
-        <option value="decode" id="decode">
-          decode
-        </option>
-      </select>
-      <textarea
-        id="output-area"
-        cols="30"
-        rows="10"
-        spellCheck="false"
-        placeholder="The output"
-        ref={outputFieldRef}
-      ></textarea>
-    </main>
+    <>
+      <Header setService={setService} />
+      <main className="wrapper morse-wrapper">
+        <h1>Morse code</h1>
+        <textarea
+          id="input-area"
+          cols="30"
+          rows="10"
+          spellCheck="false"
+          placeholder="Your text goes here..."
+          ref={inputFieldRef}
+          onInput={() => triggerFn()}
+        ></textarea>
+        <select ref={selectRef} onInput={() => triggerFn()}>
+          <option value="encode" id="encode">
+            encode
+          </option>
+          <option value="decode" id="decode">
+            decode
+          </option>
+        </select>
+        <textarea
+          id="output-area"
+          cols="30"
+          rows="10"
+          spellCheck="false"
+          placeholder="The output"
+          ref={outputFieldRef}
+        ></textarea>
+      </main>
+      <section>
+        <section className="info">
+          <h1>What is Morse Code?</h1>
+          <p>
+            Morse code is a method used in telecommunication to encode text
+            characters as standardized sequences of two different signal
+            durations, called dots and dashes, or dits and dahs. Morse code is
+            named after Samuel Morse, one of the inventors of the telegraph.
+          </p>
+          <a href="https://en.wikipedia.org/wiki/Morse_code">read more</a>
+        </section>
+        <section className="notes">
+          <h1>Notes:</h1>
+          <p>none</p>
+        </section>
+      </section>
+      <Footer />
+    </>
   );
 }

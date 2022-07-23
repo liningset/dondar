@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
+import Header from "../Header";
+import Footer from "../Footer";
 
-export default function Reverse() {
+export default function Reverse({ setService }) {
   const inputFieldRef = useRef(null);
   const outputFieldRef = useRef(null);
 
@@ -16,25 +18,29 @@ export default function Reverse() {
     outputFieldRef.current.value = arr.join("");
   }
   return (
-    <main className="wrapper">
-      <h1>reverse text</h1>
-      <textarea
-        onInput={() => reverser()}
-        id="input-area"
-        cols="30"
-        rows="10"
-        spellCheck="false"
-        placeholder="Your text goes here..."
-        ref={inputFieldRef}
-      ></textarea>
-      <textarea
-        id="output-area"
-        cols="30"
-        rows="10"
-        spellCheck="false"
-        placeholder="The output"
-        ref={outputFieldRef}
-      ></textarea>
-    </main>
+    <>
+      <Header setService={setService} />
+      <main className="wrapper">
+        <h1>reverse text</h1>
+        <textarea
+          onInput={() => reverser()}
+          id="input-area"
+          cols="30"
+          rows="10"
+          spellCheck="false"
+          placeholder="Your text goes here..."
+          ref={inputFieldRef}
+        ></textarea>
+        <textarea
+          id="output-area"
+          cols="30"
+          rows="10"
+          spellCheck="false"
+          placeholder="The output"
+          ref={outputFieldRef}
+        ></textarea>
+      </main>
+      <Footer />
+    </>
   );
 }

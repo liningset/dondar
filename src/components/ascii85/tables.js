@@ -1,4 +1,4 @@
-const asciiModule = {
+const tablesModule = {
   _heading: [["HEX", "BIN", "Symbol", "Description"]],
   ASCII: [
     ["00", "00000000", "NUL", "Null char"],
@@ -258,6 +258,43 @@ const asciiModule = {
     ["FE", "11111110", "þ", "Latin small letter thorn"],
     ["FF", "11111111", "ÿ", "Latin small letter y with diaeresis"],
   ],
+  base85: [
+    ["A", "00000"],
+    ["B", "00001"],
+    ["C", "00010"],
+    ["D", "00011"],
+    ["E", "00100"],
+    ["F", "00101"],
+    ["G", "00110"],
+    ["H", "00111"],
+    ["I", "01000"],
+    ["J", "01001"],
+    ["K", "01010"],
+    ["L", "01011"],
+    ["M", "01100"],
+    ["N", "01101"],
+    ["O", "01110"],
+    ["P", "01111"],
+    ["Q", "10000"],
+    ["R", "10001"],
+    ["S", "10010"],
+    ["T", "10011"],
+    ["U", "10100"],
+    ["V", "10101"],
+    ["W", "10110"],
+    ["X", "10111"],
+    ["Y", "11000"],
+    ["Z", "11001"],
+    ["2", "11010"],
+    ["3", "11011"],
+    ["4", "11100"],
+    ["5", "11101"],
+    ["6", "11110"],
+    ["7", "11111"],
+  ],
 };
 
-export default asciiModule;
+export default tablesModule;
+
+//0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#   cryptii.com
+//!#$()*,-.0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~    base85.com

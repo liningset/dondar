@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#2b2b2b" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Source+Code+Pro&display=swap"
       rel="stylesheet"
     />
     <link
@@ -22,90 +22,10 @@
   </head>
   <body data-theme="light">
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <header class="nav-container">
-      <nav class="navbar">
-        <ul class="navlist-left">
-          <li title="switch theme">
-            <button class="theme-toggle-btn" data-theme="light">
-              <i class="fas fa-sun"></i>
-            </button>
-          </li>
-        </ul>
-        <ul class="navlist-right">
-          <li>
-            <a href="">Info</a>
-          </li>
-          <li>
-            <a href="">Help</a>
-          </li>
-        </ul>
-      </nav>
-    </header>
     <div id="root"></div>
-    <footer>
-      <div class="footer-inner">
-        <ul>
-          <li>
-            <a
-              href="https://twitter.com/LiningSet"
-              class="fab fa-twitter twitter"
-            ></a>
-          </li>
-          <li>
-            <a
-              href="https://instagram.com/liningset"
-              class="fab fa-instagram instagram"
-            ></a>
-          </li>
-        </ul>
-        <span>Project developed by liningset</span>
-      </div>
-    </footer>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
 
     <script>
-      let btn = document.querySelector(".theme-toggle-btn");
-      let navContainer = document.querySelector(".nav-container");
-      document.body.dataset.theme = sessionStorage.getItem("theme")
-        ? sessionStorage.getItem("theme")
-        : "light";
-
-      btn.querySelector("i").className =
-        document.body.dataset.theme === "dark" ? "fas fa-moon" : "fas fa-sun";
-
-      btn.addEventListener("click", toggleTheme);
-      function toggleTheme() {
-        if (document.body.dataset.theme === "light") {
-          sessionStorage.setItem("theme", "dark");
-          btn.querySelector("i").className = "fas fa-moon";
-        } else {
-          sessionStorage.setItem("theme", "light");
-          btn.querySelector("i").className = "fas fa-sun";
-        }
-        document.body.dataset.theme = sessionStorage.getItem("theme");
-      }
-      /*const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              navContainer.style.position = "fixed";
-            } else {
-              navContainer.style.position = "relative";
-            }
-          });
-        },
-        { threshold: 1 }
-      );
-      observer.observe(navContainer);*/
+      document.body.dataset.theme = sessionStorage.getItem("theme") || "light";
     </script>
   </body>
 </html>

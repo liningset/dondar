@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap");
 @import "./vigenere";
 @import "./rot";
+@import "./base32";
+@import "./xor";
 @import "./morse";
 @import "./home";
 
@@ -22,10 +24,14 @@
   --nav-n-footer-bg: #2b2b2b;
   --nav-n-footer-clr: #f3f3f3;
   --clr: #414141;
-  --shadow: 0 0 1.5rem #a0a0a080;
+  --shadow: 0 0 0.75rem #a0a0a080;
   --shadow-on-trigger: 0 0 1.5rem #7a7a7a99;
   --shadow2: 0 0 0.75rem #a0a0a080;
   --shadow2-on-trigger: 0 0 0.75rem #a0a0a0bf;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 * {
@@ -63,7 +69,33 @@ main {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  width: min(90vw, 900px);
+  opacity: 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-block: 2rem;
+  width: 90%;
+}
+
+.selects-flex {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  width: min(100%, 500px);
+  > * {
+    width: 100%;
+  }
+  div {
+    display: none;
+    gap: 0.5rem;
+    input {
+      flex: 1;
+    }
+  }
 }
 
 select {
@@ -83,10 +115,10 @@ select {
 
 textarea {
   resize: vertical;
-  width: 90vw;
+  width: 100%;
   padding: 1rem;
-  font-family: inherit;
-  transition: all 0.3s ease;
+  font-family: "Source Code Pro", monospace;
+  transition: 0.3s ease;
   transition-property: box-shadow, background-color, color;
   border-radius: 5px;
   box-shadow: var(--shadow);
@@ -105,6 +137,7 @@ input {
   padding: 0.5rem 0.75rem;
   background: var(--inputs-bg);
   transition: all 0.3s ease;
+  font-family: "Source Code Pro", monospace;
   color: var(--clr);
   box-shadow: var(--shadow2);
   border: none;
@@ -120,24 +153,41 @@ input {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  //gap: 2rem;
   min-height: 100vh;
   width: 100%;
+  max-width: 1500px;
+
+  > section {
+    display: flex;
+    width: 90%;
+    gap: 2rem;
+    margin-block: 4rem;
+    opacity: 0;
+  }
 }
 
-.info {
+.info,
+.notes {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 2rem;
-  width: 90%;
-  margin-block: 4rem;
+  width: 100%;
 
   p {
     line-height: 1.5;
   }
+  ul {
+    margin-left: 1rem;
+    list-style: none;
+  }
+  a {
+    color: #1da1f2;
+  }
 }
 
-.theme-toggle-btn {
+.theme-toggle-btn,
+.home-btn {
   padding: 0.25rem;
   cursor: pointer;
   background: transparent;
@@ -150,8 +200,18 @@ input {
     font-size: 1.5rem;
     color: var(--nav-n-footer-clr);
   }
-  &:hover i {
-    text-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
+  &.theme-toggle-btn:hover {
+    i.fa-sun {
+      text-shadow: 0 0 1rem rgba(252, 255, 80, 0.5);
+      color: #fcff50;
+    }
+    i.fa-moon {
+      text-shadow: 0 0 1rem rgba(225, 233, 235, 0.5);
+      color: #c8cecf;
+    }
+  }
+  &.home-btn:hover i {
+    color: #8cff7d;
   }
 }
 
@@ -166,7 +226,7 @@ header {
   background: var(--nav-n-footer-bg);
   border-bottom: 1px solid var(--inputs-bg);
   padding-block: 1rem;
-  box-shadow: var(--shadow);
+  opacity: 0;
   color: var(--nav-n-footer-clr);
   * {
     color: inherit;
@@ -210,6 +270,13 @@ header {
         }
       }
     }
+    .navlist-left {
+      gap: 1rem;
+      align-items: center;
+      li i {
+        font-size: 1.25rem;
+      }
+    }
   }
 }
 
@@ -217,15 +284,20 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   width: 100%;
   padding-block: 0.5rem;
   background: var(--nav-n-footer-bg);
-  box-shadow: var(--shadow);
+  //box-shadow: var(--shadow);
   border-top: 1px solid var(--inputs-bg);
   color: var(--nav-n-footer-clr);
+  opacity: 0;
 
   * {
     color: inherit;
+  }
+  p {
+    width: 90vw;
   }
 
   .footer-inner {
@@ -252,14 +324,23 @@ footer {
         &.instagram:hover {
           color: #e1306c;
         }
+
+        &.github:hover {
+          color: #666666;
+        }
       }
     }
   }
 }
 
 @media (max-width: 500px) {
-  * {
-    text-align: center;
+  #root > section {
+    flex-direction: column;
+    gap: 4rem;
+  }
+  .info,
+  .notes {
+    gap: 1rem;
   }
   .container {
     margin-block: 2rem;
@@ -271,5 +352,13 @@ footer {
       align-items: center;
       gap: 1rem;
     }
+  }
+  .wrapper {
+    gap: 2rem;
+  }
+  .selects-flex {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 1rem;
   }
 }

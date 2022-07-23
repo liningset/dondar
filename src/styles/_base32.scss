@@ -1,0 +1,8 @@
+.base32-wrapper {
+  [data-error="true"] {
+    color: #ff5555;
+  }
+  [data-error="false"] {
+    color: var(--clr);
+  }
+}
