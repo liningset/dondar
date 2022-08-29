@@ -1,4 +1,4 @@
-const tablesModule = {
+const ASCIItable = {
   _heading: [["HEX", "BIN", "Symbol", "Description"]],
   ASCII: [
     ["00", "00000000", "NUL", "Null char"],
@@ -260,4 +260,4 @@ const tablesModule = {
   ],
 };
 
-export default tablesModule;
+export default ASCIItable;

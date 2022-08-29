@@ -13,7 +13,7 @@ export default function A1Z26({ setService }) {
     let indexes = [];
     for (let char of text) {
       if (alphabete.includes(char.toLowerCase())) {
-        indexes.push(alphabete.indexOf(char) + 1);
+        indexes.push(alphabete.indexOf(char.toLowerCase()) + 1);
       }
     }
     return indexes.join(seperatorInputRef.current.value);
@@ -91,10 +91,10 @@ export default function A1Z26({ setService }) {
         <section className="info">
           <h1>What is A1Z26?</h1>
           <p>
-            A1Z26 as it's name suggests, is a simple cipher that works with
-            positions of plaintext characters in alphabete
-            array(a:1,b:2,...,z:26). a plaintext like <code>"hello"</code> with
-            a seperator of <code>"/"</code> would result to{" "}
+            A1Z26 as it's name suggests, is a simple cipher that converts each
+            alphabetic character of plaintext to the number that represents it
+            in alphabete(from 1 to 26). a plaintext like <code>"hello"</code>{" "}
+            with a seperator of <code>"/"</code> would result to{" "}
             <code>"8/5/12/12/15"</code>.
           </p>
         </section>

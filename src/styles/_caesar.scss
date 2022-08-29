@@ -1,0 +1,51 @@
+.caesar-wrapper {
+  .selects-flex {
+    .shift-input-container {
+      display: flex;
+      box-shadow: var(--shadow2);
+      .div {
+        position: relative;
+        flex: 4;
+        input {
+          text-align: center;
+          border-radius: 0;
+          box-shadow: none;
+          width: 100%;
+        }
+        span {
+          position: absolute;
+          display: flex;
+          right: -7rem;
+          top: 50%;
+          transform: translateY(-50%);
+          &:focus {
+            display: none;
+          }
+        }
+      }
+      button {
+        cursor: pointer;
+        //aspect-ratio: 1 / 1;
+        background: var(--nav-n-footer-bg);
+        color: var(--nav-n-footer-clr);
+        border: none;
+        width: 15%;
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+}
+@media (max-width: 700px) {
+  .caesar-wrapper .selects-flex .shift-input-container .div {
+    span {
+      right: 0.5rem;
+      pointer-events: none;
+    }
+    input {
+      text-align: left;
+    }
+  }
+}

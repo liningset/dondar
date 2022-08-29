@@ -258,7 +258,7 @@ const tablesModule = {
     ["FE", "11111110", "þ", "Latin small letter thorn"],
     ["FF", "11111111", "ÿ", "Latin small letter y with diaeresis"],
   ],
-  base64: [
+  /*base64: [
     ["100000", "g"],
     ["100001", "h"],
     ["100010", "i"],
@@ -323,7 +323,7 @@ const tablesModule = {
     ["000100", "E"],
     ["010001", "R"],
     ["010000", "Q"],
-  ],
+  ],*/
 };
 
 export default tablesModule;

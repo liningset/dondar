@@ -5,36 +5,61 @@ export default function Header({ setService }) {
   let themeBtn = useRef(null);
   let homeBtn = useRef(null);
   let navContainer = useRef(null);
-  let themeIcon = useRef(null);
+  let sunIcon = useRef(null);
+  let moonIcon = useRef(null);
   let activeTheme = sessionStorage.getItem("theme");
 
-  function applyThemeAnimation(from, to, icon) {
+  function applyThemeAnimation(sunFrom, sunTo, moonFrom, moonTo) {
     try {
-      gsap.fromTo(
-        themeIcon.current,
-        { rotate: from },
-        {
-          duration: 0.25,
-          rotate: to,
-          onComplete: function () {
-            themeIcon.current.className = `fas fa-${icon}`;
-          },
-        }
-      );
+      gsap
+        .timeline({ defaults: { duration: 0.125 } })
+        .fromTo(
+          sunIcon.current,
+          { opacity: sunFrom.op, rotate: sunFrom.rot },
+          { opacity: sunTo.op, rotate: sunTo.rot }
+        )
+        .fromTo(
+          moonIcon.current,
+          { opacity: moonFrom.op, rotate: moonFrom.rot },
+          { opacity: moonTo.op, rotate: moonTo.rot },
+          "-=0.125"
+        );
     } catch {
-      themeIcon.current.className = `fas fa-${icon}`;
+      if (sunTo.op === 0) {
+        sunIcon.current.style.opacity = "0";
+        moonIcon.current.style.opacity = "1";
+      } else {
+        sunIcon.current.style.opacity = "1";
+        moonIcon.current.style.opacity = "0";
+      }
     }
   }
 
   function toggleTheme() {
-    if (activeTheme === "dark" || !activeTheme) {
-      sessionStorage.setItem("theme", "light");
-      activeTheme = sessionStorage.getItem("theme");
-      applyThemeAnimation(0, "180deg", "sun");
-    } else {
-      sessionStorage.setItem("theme", "dark");
-      activeTheme = sessionStorage.getItem("theme");
-      applyThemeAnimation("180deg", 0, "moon");
+    switch (activeTheme) {
+      case "dark": {
+        sessionStorage.setItem("theme", "light");
+        activeTheme = sessionStorage.getItem("theme");
+        applyThemeAnimation(
+          { op: 0, rot: "90deg" },
+          { op: 1, rot: 0 },
+          { op: 1, rot: 0 },
+          { op: 0, rot: "-90deg" }
+        );
+        break;
+      }
+      case "light":
+      default: {
+        sessionStorage.setItem("theme", "dark");
+        activeTheme = sessionStorage.getItem("theme");
+        applyThemeAnimation(
+          { op: 1, rot: 0 },
+          { op: 0, rot: "90deg" },
+          { op: 0, rot: "-90deg" },
+          { op: 1, rot: 0 }
+        );
+        break;
+      }
     }
     document.body.dataset.theme = sessionStorage.getItem("theme");
   }
@@ -79,12 +104,12 @@ export default function Header({ setService }) {
   return (
     <header className="nav-container" ref={navContainer}>
       <nav className="navbar">
-        <ul className="navlist-left">
-          <li title="go home">
-            <button className="home-btn" ref={homeBtn} onClick={() => goHome()}>
-              <i className="fas fa-home"></i>
-            </button>
-          </li>
+        <div className="logo">
+          <span style={{ color: "rgb(255, 87, 87)" }}>D</span>
+          <span>E</span>
+          <span style={{ color: "rgb(113, 255, 113)" }}>N</span>CODE
+        </div>
+        <ul className="navlist">
           <li title="switch theme">
             <button
               className="theme-toggle-btn"
@@ -92,22 +117,23 @@ export default function Header({ setService }) {
               onClick={() => toggleTheme()}
             >
               <i
-                className={
-                  document.body.dataset.theme === "dark"
-                    ? "fas fa-moon"
-                    : "fas fa-sun"
-                }
-                ref={themeIcon}
+                className="fas fa-sun"
+                style={{
+                  opacity: activeTheme === "light" || !activeTheme ? 1 : 0,
+                }}
+                ref={sunIcon}
+              ></i>
+              <i
+                className="fas fa-moon"
+                style={{ opacity: activeTheme === "dark" ? 1 : 0 }}
+                ref={moonIcon}
               ></i>
             </button>
           </li>
-        </ul>
-        <ul className="navlist-right">
-          <li>
-            <a href="#">Info</a>
-          </li>
-          <li>
-            <a href="#">Help</a>
+          <li title="go home">
+            <button className="home-btn" ref={homeBtn} onClick={() => goHome()}>
+              <i className="fas fa-home"></i>
+            </button>
           </li>
         </ul>
       </nav>

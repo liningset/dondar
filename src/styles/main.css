@@ -13,6 +13,50 @@
   width: 100%;
 }
 
+.caesar-wrapper .selects-flex .shift-input-container {
+  display: flex;
+  box-shadow: var(--shadow2);
+}
+.caesar-wrapper .selects-flex .shift-input-container .div {
+  position: relative;
+  flex: 4;
+}
+.caesar-wrapper .selects-flex .shift-input-container .div input {
+  text-align: center;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100%;
+}
+.caesar-wrapper .selects-flex .shift-input-container .div span {
+  position: absolute;
+  display: flex;
+  right: -7rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.caesar-wrapper .selects-flex .shift-input-container .div span:focus {
+  display: none;
+}
+.caesar-wrapper .selects-flex .shift-input-container button {
+  cursor: pointer;
+  background: var(--nav-n-footer-bg);
+  color: var(--nav-n-footer-clr);
+  border: none;
+  width: 15%;
+}
+.caesar-wrapper .selects-flex .shift-input-container button:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 700px) {
+  .caesar-wrapper .selects-flex .shift-input-container .div span {
+    right: 0.5rem;
+    pointer-events: none;
+  }
+  .caesar-wrapper .selects-flex .shift-input-container .div input {
+    text-align: left;
+  }
+}
 .base32-wrapper [data-error=true] {
   color: #ff5555;
 }
@@ -68,6 +112,13 @@
   font-size: 1.25rem;
   pointer-events: none;
 }
+.xor-wrapper .selects-flex div {
+  display: none;
+  gap: 0.5rem;
+}
+.xor-wrapper .selects-flex div input {
+  flex: 1;
+}
 
 @media (max-width: 500px) {
   .xor-wrapper .format-select {
@@ -87,6 +138,24 @@
   }
   .xor-wrapper .rand i {
     font-size: 1.5rem;
+  }
+}
+.numeral-wrapper .selects-flex > div {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.numeral-wrapper .selects-flex > div select {
+  flex: 1;
+}
+
+@media (max-width: 500px) {
+  .selects-flex > div {
+    justify-content: space-between;
+  }
+  .selects-flex > div select {
+    flex: 0;
   }
 }
 .morse-wrapper .notes p > code {
@@ -123,6 +192,7 @@
   box-shadow: var(--shadow);
   transition: all 0.3s ease;
   border-radius: 5px;
+  padding: 5px;
   background: var(--inputs-bg);
 }
 .buttons-grid .button:hover {
@@ -197,6 +267,7 @@ main {
   justify-content: center;
   gap: 1rem;
   opacity: 0;
+  min-height: 100vh;
 }
 
 .wrapper {
@@ -216,13 +287,6 @@ main {
 }
 .selects-flex > * {
   width: 100%;
-}
-.selects-flex div {
-  display: none;
-  gap: 0.5rem;
-}
-.selects-flex div input {
-  flex: 1;
 }
 
 select {
@@ -296,6 +360,9 @@ input:focus {
   align-items: flex-start;
   gap: 2rem;
   width: 100%;
+  padding: 1rem;
+  border-radius: 5px;
+  background: var(--inputs-bg);
 }
 .info p,
 .notes p {
@@ -326,6 +393,14 @@ input:focus {
   font-size: 1.5rem;
   color: var(--nav-n-footer-clr);
 }
+.theme-toggle-btn.theme-toggle-btn i.fa-sun,
+.home-btn.theme-toggle-btn i.fa-sun {
+  position: absolute;
+}
+.theme-toggle-btn.theme-toggle-btn i.fa-moon,
+.home-btn.theme-toggle-btn i.fa-moon {
+  opacity: 0;
+}
 .theme-toggle-btn.theme-toggle-btn:hover i.fa-sun,
 .home-btn.theme-toggle-btn:hover i.fa-sun {
   text-shadow: 0 0 1rem rgba(252, 255, 80, 0.5);
@@ -342,6 +417,8 @@ input:focus {
 }
 
 header {
+  position: -webkit-sticky;
+  position: sticky;
   width: 100vw;
   top: 0;
   left: 0;
@@ -364,39 +441,18 @@ header .navbar {
   justify-content: space-between;
   align-items: center;
 }
-header .navbar .navlist-left,
-header .navbar .navlist-right {
+header .navbar .navlist {
   display: flex;
   list-style: none;
-}
-header .navbar .navlist-right {
-  gap: 2rem;
-}
-header .navbar .navlist-right a {
-  text-decoration: none;
-}
-header .navbar .navlist-right > li {
-  position: relative;
-}
-header .navbar .navlist-right > li::before {
-  content: "";
-  height: 1px;
-  width: 0;
-  position: absolute;
-  bottom: -1px;
-  right: 0;
-  transition: all 0.3s ease;
-  background: var(--nav-n-footer-clr);
-}
-header .navbar .navlist-right > li:hover::before {
-  width: 100%;
-}
-header .navbar .navlist-left {
   gap: 1rem;
   align-items: center;
 }
-header .navbar .navlist-left li i {
+header .navbar .navlist li i {
   font-size: 1.25rem;
+}
+header .navbar .logo {
+  font-weight: 600;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 footer {

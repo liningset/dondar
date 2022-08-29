@@ -2,28 +2,18 @@ import React, { useRef } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function Reverse({ setService }) {
+export default function BitwiseOperation({ setService }) {
   const inputFieldRef = useRef(null);
   const outputFieldRef = useRef(null);
 
-  function reverser() {
-    let userText = inputFieldRef.current.value;
-    let arr = [];
-    if (userText) {
-      for (let i = userText.length; i >= 0; i--) {
-        arr.push(userText[i]);
-      }
-    } else arr = [];
-
-    outputFieldRef.current.value = arr.join("");
-  }
+  function triggerFn() {}
   return (
     <>
       <Header setService={setService} />
       <main className="wrapper">
-        <h1>Reverse</h1>
+        <h1>Bitwise operation</h1>
         <textarea
-          onInput={() => reverser()}
+          onInput={() => triggerFn()}
           id="input-area"
           cols="30"
           rows="10"

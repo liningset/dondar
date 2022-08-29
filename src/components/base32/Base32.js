@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import tablesModule from "./tables"; //ascii (extended) character table
+import ASCIItable from "./table"; //ascii (extended) character table
 import binConvert from "./binary-converter"; //converts to and from binary
 import Header from "../Header";
 import Footer from "../Footer";
@@ -9,11 +9,11 @@ export default function Base32({ setService }) {
   let outputFieldRef = useRef(null);
   let selectOpRef = useRef(null);
   let selectVariantRef = useRef(null);
-  let asciiT = tablesModule.ASCII;
+  let asciiT = ASCIItable.ASCII;
 
   //four character sets for different variants of base32
   const charSets = {
-    original: "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",
+    base32: "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",
     crockford: "0123456789ABCDEFGHJKMNPQRSTVWXYZ",
     base32hex: "0123456789ABCDEFGHIJKLMNOPQRSTUV",
     zbase32: "ybndrfg8ejkmcpqxot1uwisza345h769",
@@ -37,9 +37,7 @@ export default function Base32({ setService }) {
       }
       case "base32T": {
         for (let char of text) {
-          binaryValue.push(
-            binConvert(charset.indexOf(char.toUpperCase()), 5, "toBin")
-          );
+          binaryValue.push(binConvert(charset.indexOf(char), 5, "toBin"));
         }
         break;
       }
@@ -69,7 +67,6 @@ export default function Base32({ setService }) {
             }
             regroupedBits.splice(index, 1, gp.join(""));
           }
-          //if (!/[^0]/g.test(group)) regroupedBits.splice(index, 1);
         });
         return regroupedBits;
 
@@ -176,10 +173,11 @@ export default function Base32({ setService }) {
   3.pass that array to convert()
   4.display the decoded text*/
   function decode(charset) {
-    let text =
+    /*let text =
       selectVariantRef.current.value === "zbase32"
         ? inputFieldRef.current.value.toLowerCase("")
-        : inputFieldRef.current.value.toUpperCase("");
+        : inputFieldRef.current.value.toUpperCase("");*/
+    let text = inputFieldRef.current.value;
     let textArr = text.split("");
     let filteredTextArr = textArr.filter((c) => c !== "=");
     let errorStats = { isactive: false, index: null };
@@ -242,7 +240,7 @@ export default function Base32({ setService }) {
             </option>
           </select>
           <select ref={selectVariantRef} onInput={() => triggerFn()}>
-            <option value="original">Original (RFC 4648)</option>
+            <option value="base32">Base32 (RFC 4648)</option>
             <option value="crockford">Crockford's base32</option>
             <option value="base32hex">Base32Hex (RFC 4648)</option>
             <option value="zbase32">Z-base32</option>
@@ -259,25 +257,36 @@ export default function Base32({ setService }) {
           ref={outputFieldRef}
         ></textarea>
       </main>
-      <section className="info">
-        <h1>What is Base32?</h1>
-        <p>
-          In computer programming, Base32 is a group of binary-to-text encoding
-          schemes that represent binary data (more specifically, a sequence of
-          8-bit bytes) in sequences of 40 bits that can be represented by eight
-          5-bit Base32 digits.
-        </p>
-        <p>
-          Base32 uses a set of 32 digits, each of which can be represented by 5
-          bits. One way to represent Base32 numbers in a human-readable way is
-          by using a standard 32-character set, such as the twenty-two
-          upper-case letters A-V and the digits 0-9. However, many other
-          variations are used in different contexts.
-        </p>
+      <section>
+        <section className="info">
+          <h1>What is Base32?</h1>
+          <p>
+            In computer programming, Base32 is a group of binary-to-text
+            encoding schemes that represent binary data (more specifically, a
+            sequence of 8-bit bytes) in sequences of 40 bits that can be
+            represented by eight 5-bit Base32 digits.
+          </p>
+          <p>
+            Base32 uses a set of 32 digits, each of which can be represented by
+            5 bits. One way to represent Base32 numbers in a human-readable way
+            is by using a standard 32-character set, such as the twenty-two
+            upper-case letters A-V and the digits 0-9. However, many other
+            variations are used in different contexts.
+          </p>
 
-        <a href="https://en.wikipedia.org/wiki/Base32" target="_blank">
-          read more
-        </a>
+          <a href="https://en.wikipedia.org/wiki/Base32" target="_blank">
+            read more
+          </a>
+        </section>
+        <section className="notes">
+          <h1>Notes:</h1>
+          <p>
+            1. Base32 is case-sensitive. in 3 first variants(original,
+            crockford, base32hex) the characters of encoded data are all
+            uppercase unlike z-base-32 which requires all text be in lowercase.
+            So bear that in mind.
+          </p>
+        </section>
       </section>
       <Footer />
     </>

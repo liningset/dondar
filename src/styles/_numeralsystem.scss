@@ -1,0 +1,26 @@
+.numeral-wrapper {
+  .selects-flex {
+    > div {
+      flex: 1;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      select {
+        flex: 1;
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .selects-flex {
+    > div {
+      justify-content: space-between;
+
+      select {
+        flex: 0;
+      }
+    }
+  }
+}

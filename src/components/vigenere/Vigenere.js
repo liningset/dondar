@@ -285,7 +285,10 @@ it also returns all the positions and required info of mentioned characters in a
             Friedrich Kasiski was the first to publish a general method of
             deciphering Vigenère ciphers.
           </p>
-          <a href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher">
+          <a
+            href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher"
+            target="_blank"
+          >
             read more
           </a>
         </section>

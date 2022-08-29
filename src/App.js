@@ -5,10 +5,16 @@ import Base32 from "./components/base32/Base32";
 import Vigenere from "./components/vigenere/Vigenere";
 import Reverse from "./components/reverse/Reverse";
 import A1Z26 from "./components/a1z26/A1Z26";
-import Rot from "./components/rot/Rot";
+import Caesar from "./components/caesar/Caesar";
+import Rot13 from "./components/rot/Rot13";
 import Morse from "./components/morse/Morse";
 import Braille from "./components/braille/Braille";
 import Xor from "./components/xor/Xor";
+import Replace from "./components/replace/Replace";
+import SpellingAlphabet from "./components/spellingalphabet/SpellingAlphabet";
+import CaseTransform from "./components/casetransform/CaseTransform";
+import BitwiseOperation from "./components/bitwiseoperation/BitwiseOperation";
+import NumeralSystem from "./components/numeralsystem/NumeralSystem";
 import Home from "./Home";
 import gsap from "gsap";
 
@@ -57,8 +63,8 @@ export default function App() {
         return <A1Z26 setService={setService} />;
         break;
       }
-      case "rot": {
-        return <Rot setService={setService} />;
+      case "caesar": {
+        return <Caesar setService={setService} />;
         break;
       }
       case "vigenere": {
@@ -91,6 +97,34 @@ export default function App() {
       }
       case "reverse": {
         return <Reverse setService={setService} />;
+        break;
+      }
+      case "replace": {
+        return <Replace setService={setService} />;
+        break;
+      }
+      case "replace": {
+        return <Replace setService={setService} />;
+        break;
+      }
+      case "spellingalphabet": {
+        return <SpellingAlphabet setService={setService} />;
+        break;
+      }
+      case "casetransform": {
+        return <CaseTransform setService={setService} />;
+        break;
+      }
+      case "bitwiseoperation": {
+        return <BitwiseOperation setService={setService} />;
+        break;
+      }
+      case "rot13": {
+        return <Rot13 setService={setService} />;
+        break;
+      }
+      case "numeralsystem": {
+        return <NumeralSystem setService={setService} />;
         break;
       }
     }

@@ -87,7 +87,10 @@ export default function Xor({ setService }) {
   }
 
   function convert(keyType, inputType, outputType) {
-    let text = inputFieldRef.current.value;
+    let text =
+      selectInFormatRef.current.value === "binaryin"
+        ? inputFieldRef.current.value.replace(/ /g, "")
+        : inputFieldRef.current.value;
 
     switch (keyType) {
       case "textlengthkey": {
@@ -97,6 +100,7 @@ export default function Xor({ setService }) {
         );
 
         if (keyReg.test(keyFieldRef.current.value)) {
+          showErrPlaceholder("The output");
           let textBits = [];
           let keyBits = keyFieldRef.current.value.replaceAll(" ", "").split("");
 
@@ -109,7 +113,7 @@ export default function Xor({ setService }) {
                 textBits = splitted;
               } else {
                 showErrPlaceholder(
-                  "Invalid text format. the text should only contain 0,1 and be of the same length as key"
+                  "the text should only contain 0,1 and be of the same length as key\nthe text cannot be shorter than 8 characters"
                 );
                 return "";
               }
@@ -151,9 +155,16 @@ export default function Xor({ setService }) {
             }
           }
         } else {
-          showErrPlaceholder(
-            "1.the key must contain only binary digits(1,0) without linebreaks\n2.the key must be the same length as text length multipled by 8"
-          );
+          if (selectInFormatRef.current.value === "binaryin") {
+            showErrPlaceholder(
+              "the key must only contain binary digits(1,0) without linebreaks\nthe key must be the same length as text"
+            );
+          } else {
+            showErrPlaceholder(
+              "the key must only contain binary digits(1,0) without linebreaks\nthe key must be the same length as text length multipled by 8"
+            );
+          }
+
           return "";
         }
         break;
@@ -172,9 +183,7 @@ export default function Xor({ setService }) {
                     .split("");
                   textBits = splitted;
                 } else {
-                  showErrPlaceholder(
-                    "Invalid text format. the text should only contain 0,1"
-                  );
+                  showErrPlaceholder("the text should only contain 0,1");
                   return "";
                 }
                 break;
@@ -193,7 +202,7 @@ export default function Xor({ setService }) {
               let index = 0;
 
               textBits.forEach((bit) => {
-                cipher.push(Number(bit) ^ Number(key[index]));
+                cipher.push(Number(bit) & Number(key[index]));
                 index === 7 ? (index = 0) : (index += 1);
               });
             }
@@ -223,9 +232,9 @@ export default function Xor({ setService }) {
               "placeholder",
               "The key must only contain 1,0 and be 8 characters long"
             );
-            //return "";
+            return "";
           }
-        } //else return "";
+        }
         break;
       }
     }
@@ -233,7 +242,6 @@ export default function Xor({ setService }) {
 
   function triggerFn() {
     setRenderType(selectTypeRef.current.value);
-    console.log(outputPlaceholder);
     if (inputFieldRef.current.value != "") {
       outputFieldRef.current.value = convert(
         selectTypeRef.current.value,
@@ -243,7 +251,6 @@ export default function Xor({ setService }) {
     } else {
       outputFieldRef.current.value = "";
       keyFieldRef.current.value = "";
-      //outputFieldRef.current.setAttribute("placeholder", outputPlaceholder);
       showErrPlaceholder("The output");
     }
   }
@@ -255,7 +262,7 @@ export default function Xor({ setService }) {
         <div className="format-select">
           <span>input format: </span>
           <select ref={selectInFormatRef} onInput={() => triggerFn()}>
-            <option value="plaintextin">ASCII</option>
+            <option value="plaintextin">ASCII(8bit)</option>
             <option value="binaryin">binary</option>
           </select>{" "}
         </div>
@@ -356,7 +363,7 @@ export default function Xor({ setService }) {
         <div className="format-select">
           <span>output format:</span>{" "}
           <select ref={selectOutFormatRef} onInput={() => triggerFn()}>
-            <option value="plaintext">ASCII</option>
+            <option value="plaintext">ASCII(8bit)</option>
             <option value="binaryraw">binary(raw)</option>
             <option value="binaryspaced">binary(spaced out)</option>
           </select>
@@ -409,8 +416,14 @@ export default function Xor({ setService }) {
             </a>{" "}
             which cannot be represented by printable characters, it may also be
             a non-ASCII character. In either of cases the character will be
-            replaced with unicode: <code>U+FFFD</code>(�). We suggest viewing
-            the binary output should the ascii one be inaccurate.
+            replaced with unicode: <code>U+FFFD</code>(�).
+          </p>
+          <p>
+            4. if the ASCII output of a conversion contains the replacement
+            character(e.g "<code>PÚ�þQ</code>
+            "), using that text as an input for decoding will most likely return
+            inaccurate results. In those circumstances we suggest using binary
+            format of that text instead
           </p>
         </section>
       </section>

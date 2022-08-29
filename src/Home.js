@@ -31,30 +31,58 @@ export default function Home({ setService }) {
       <Header setService={setService} />
       <main className="home-wrapper" ref={homeWrapper}>
         <div className="category encryption">
-          <h3>Encryption methods</h3>
+          <h3>Encryption</h3>
           <div className="buttons-grid encryption-grid">
             <Button classN="a1z26" text="A1Z26" clickEvent={CE} />
-            <Button classN="rot" text="ROT1-25" clickEvent={CE} />
+            <Button classN="caesar" text="Caesar cipher" clickEvent={CE} />
+            <Button classN="rot13" text="ROT-13" clickEvent={CE} />
             <Button classN="vigenere" text="Vigenère" clickEvent={CE} />
             <Button classN="xor" text="XOR cipher" clickEvent={CE} />
           </div>
         </div>
 
         <div className="category encoding">
-          <h3>Encoding methods</h3>
+          <h3>Encoding</h3>
           <div className="buttons-grid encoding-grid">
             <Button classN="ascii85" text="Ascii85" clickEvent={CE} />
             <Button classN="base32" text="Base32" clickEvent={CE} />
             <Button classN="base64" text="Base64" clickEvent={CE} />
-            <Button classN="braille" text="Braille" clickEvent={CE} />
-            <Button classN="morse" text="Morse code" clickEvent={CE} />
           </div>
         </div>
 
-        <div className="category misc">
-          <h3>Miscellaneous</h3>
-          <div className="buttons-grid misc-grid">
-            <Button classN="reverse" text="reverse text" clickEvent={CE} />
+        <div className="category alphabet">
+          <h3>Alphabet</h3>
+          <div className="buttons-grid alphabet-grid">
+            <Button classN="braille" text="Braille" clickEvent={CE} />
+            <Button classN="morse" text="Morse code" clickEvent={CE} />
+            <Button
+              classN="spellingalphabet"
+              text="Spelling alphabet"
+              clickEvent={CE}
+            />
+          </div>
+        </div>
+
+        <div className="category transform">
+          <h3>Transform</h3>
+          <div className="buttons-grid text-grid">
+            <Button
+              classN="bitwiseoperation"
+              text="Bitwise operation"
+              clickEvent={CE}
+            />
+            <Button
+              classN="casetransform"
+              text="Case transform"
+              clickEvent={CE}
+            />
+            <Button
+              classN="numeralsystem"
+              text="Numeral system"
+              clickEvent={CE}
+            />
+            <Button classN="replace" text="Replace" clickEvent={CE} />
+            <Button classN="reverse" text="Reverse" clickEvent={CE} />
           </div>
         </div>
       </main>

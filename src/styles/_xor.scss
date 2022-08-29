@@ -52,6 +52,15 @@
       pointer-events: none;
     }
   }
+  .selects-flex {
+    div {
+      display: none;
+      gap: 0.5rem;
+      input {
+        flex: 1;
+      }
+    }
+  }
 }
 
 @media (max-width: 500px) {

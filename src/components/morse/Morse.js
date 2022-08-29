@@ -94,7 +94,9 @@ export default function Morse({ setService }) {
             durations, called dots and dashes, or dits and dahs. Morse code is
             named after Samuel Morse, one of the inventors of the telegraph.
           </p>
-          <a href="https://en.wikipedia.org/wiki/Morse_code">read more</a>
+          <a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">
+            read more
+          </a>
         </section>
         <section className="notes">
           <h1>Notes:</h1>
