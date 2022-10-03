@@ -8,6 +8,8 @@ export default function NumeralSystem({ setService }) {
   const selectFromRef = useRef(null);
   const selectToRef = useRef(null);
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  //const arabicNums = "٠١٢٣٤٥٦٧٨٩";
+  //const devanagariNums = "०१२३४५६७८९";
 
   /*this function will validate the input before doing anything with it
   to make sure that it doesn't contain unwanted characters or values 
@@ -17,11 +19,13 @@ export default function NumeralSystem({ setService }) {
     let selectRefValue = Number(selectFromRef.current.value);
 
     if (selectFromRef.current.value === "r") {
-      validator = /^M*(CM)*D*(CD)*C*(XC)*L*(XL)*X*(IX)*V*(IV)*I*$/i;
+      validator = /^M*(CM)*D*(CD)*C*(XC)*L*(XL)*X*(IX)*V*(IV)*I*\n?$/gim;
     } else if (selectRefValue <= 10) {
-      validator = new RegExp(`^[0-${selectRefValue - 1}]+$`);
+      let numRange = `0-${selectRefValue - 1}`;
+      validator = new RegExp(`^[\\n${numRange}]+$`);
     } else {
-      validator = new RegExp(`^[0-9A-${alphabet[selectRefValue - 11]}]+$`, "i");
+      let alphabetRange = `A-${alphabet[selectRefValue - 11]}`;
+      validator = new RegExp(`^[\\n0-9${alphabetRange}]+$`, "i");
     }
     return validator.test(inputFieldRef.current.value);
   }
@@ -212,11 +216,22 @@ export default function NumeralSystem({ setService }) {
       if (selectFromRef.current.value !== selectToRef.current.value) {
         if (validate()) {
           outputFieldRef.current.setAttribute("placeholder", "The output");
-          result = convert(
+          result = inputFieldRef.current.value
+            .match(/^.+$/gm)
+            .map((val) =>
+              convert(
+                val,
+                selectFromRef.current.value,
+                selectToRef.current.value
+              )
+            )
+            .join("\n");
+          console.log(result);
+          /*convert(
             inputFieldRef.current.value,
             selectFromRef.current.value,
             selectToRef.current.value
-          );
+          );*/
         } else {
           outputFieldRef.current.setAttribute("placeholder", "Invalid input");
           result = "";
@@ -255,7 +270,7 @@ export default function NumeralSystem({ setService }) {
               ref={selectFromRef}
               onInput={() => triggerFn()}
             >
-              <optgroup label="by notation">
+              <optgroup label="by position">
                 <option value="2">Base-2 (Binary)</option>
                 <option value="3">Base-3</option>
                 <option value="4">Base-4</option>
@@ -274,7 +289,7 @@ export default function NumeralSystem({ setService }) {
                 <option value="17">Base-17</option>
                 <option value="18">Base-18</option>
                 <option value="19">Base-19</option>
-                <option value="20">Base-20</option>
+                <option value="20">Base-20 (Vigesimal)</option>
                 <option value="21">Base-21</option>
                 <option value="22">Base-22</option>
                 <option value="23">Base-23</option>
@@ -300,7 +315,7 @@ export default function NumeralSystem({ setService }) {
           <div>
             <span>to </span>{" "}
             <select ref={selectToRef} onInput={() => triggerFn()}>
-              <optgroup label="by notation">
+              <optgroup label="by position">
                 <option value="2">Base-2 (Binary)</option>
                 <option value="3">Base-3</option>
                 <option value="4">Base-4</option>
@@ -319,7 +334,7 @@ export default function NumeralSystem({ setService }) {
                 <option value="17">Base-17</option>
                 <option value="18">Base-18</option>
                 <option value="19">Base-19</option>
-                <option value="20">Base-20</option>
+                <option value="20">Base-20 (Vigesimal)</option>
                 <option value="21">Base-21</option>
                 <option value="22">Base-22</option>
                 <option value="23">Base-23</option>
@@ -409,6 +424,10 @@ export default function NumeralSystem({ setService }) {
             numbers on the Big Ben tower's clock in London are written in Roman.
             the Numbers 0 through 12 are as follows: I, II, III, IV, V, VI ,VII,
             VIII, IX, X, XI, XII.
+          </p>
+          <p>
+            6. If you want to convert multiple numbers simultaneously, seperate
+            them with a line break.
           </p>
         </section>
       </section>

@@ -1,6 +1,4 @@
 import { useRef, useState } from "react";
-import tablesModule from "./tables";
-import binConvert from "./binary-converter";
 import Header from "../Header";
 import Footer from "../Footer";
 
@@ -8,236 +6,306 @@ export default function Ascii85({ setService }) {
   let inputFieldRef = useRef(null);
   let outputFieldRef = useRef(null);
   let selectOpRef = useRef(null);
+  let selectVariantRef = useRef(null);
   let selectOutFormatRef = useRef(null);
   let selectInFormatRef = useRef(null);
-  let asciiT = tablesModule.ASCII;
-  let [outputBinary, setOutputBinary] = useState("");
-  let [inputBinary, setInputBinary] = useState("");
-
+  let [inputBinary, outputBinary] = [[], []];
   let charsets = {
-    z85: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#",
+    original: [
+      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstu",
+      /^[\dA-Za-uz!"#$%&'()*+,\-./:;<=>?@[\\\]^_`]+$/,
+    ],
+    z85: [
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#",
+      /^[\dA-Z.\-:+=^!/*?&<>()[\]{}@%$#]+$/i,
+    ],
   };
 
-  /*returns a binary string if type is "getNum" or a character string if type is "getChar"*/
-  function getAscii(input, type) {
-    let value;
-    if (type === "getNum") {
-      asciiT.forEach((c) => {
-        if (c[2] === input) value = c[1];
-      });
-    } else if (type === "getChar") {
-      asciiT.forEach((c) => {
-        if (c[1] === binConvert(input, 8, "toBin")) value = c[2];
-      });
-    }
-    return value;
-  }
-
-  /*recieves an array of 32 bit binary numbers
-  returns an array of arrays containing 8bit binary numbers("z" if the item is 0)*/
-  function calculateNumbers(numbers) {
-    let allRemainderArrs = [];
-    numbers.forEach((number) => {
-      console.log(number);
-      if (Number(`0b${number}`) === 0) {
-        allRemainderArrs.push("z");
-      } else {
-        let num = Number(`0b${number}`);
-        let remainderArr = [];
-        while (num > 85) {
-          remainderArr.push(Math.floor((num % 85) + 33));
-          num /= 85;
-        }
-        if (num !== 0) remainderArr.push(Math.floor(num + 33));
-        allRemainderArrs.push(remainderArr.reverse());
-      }
-    });
-
-    return allRemainderArrs.map((arr) =>
-      arr === "z" ? "z" : arr.map((n) => binConvert(n, 8, "toBin"))
-    );
-  }
-
-  /*recieves an array of arrays containing 8bit binary numbers 
-  (the output from calculateNumbers())*/
-  function convertToAscii(arrays, paddedLength) {
-    let arr = [];
-    arrays.forEach((array) => {
-      console.log(arrays);
-      if (array === "z") {
-        arr.push("z");
-      } else {
-        array.forEach((i) => {
-          let numberAscii = getAscii(Number(`0b${i}`), "getChar");
-          arr.push(numberAscii);
-        });
-      }
-    });
-    console.log(arr);
-    if (paddedLength !== "0") {
-      arr.splice(arr.length - paddedLength, arr.length);
-    }
-
-    return arr.join("");
-  }
-
-  function handleOutputFormat(
-    grouped32bitBinaries,
-    textBinaries,
-    format,
-    asciiCallback
-  ) {
-    let output = calculateNumbers(grouped32bitBinaries).map((arr) =>
-      arr === "z" ? "00000000000000000000000000000000" : arr.join("")
-    );
-    console.log(output);
-    output = output.join("").match(/[01]{8}/g);
-
-    output.splice(
-      output.length -
-        (textBinaries.join("").match(/0{8}/g) == null
-          ? "0"
-          : textBinaries.join("").match(/0{8}/g).length),
-      output.length
-    );
-
-    setOutputBinary(output);
-    switch (format) {
-      case "ascii": {
-        return asciiCallback();
-        break;
-      }
-      case "binaryraw": {
-        return outputBinary.join("");
-        break;
-      }
-      case "binaryspaced": {
-        return outputBinary.join(" ");
-        break;
-      }
-    }
-  }
-
-  function convertInputFormat() {
+  //the function that evaluates input before proceeding with further operations
+  function validate() {
+    //first off, input must not be empty
     if (inputFieldRef.current.value !== "") {
+      let textArr = inputFieldRef.current.value.split("");
+      let reg;
+      /*assigns a certain regular expression to reg variable depending on 
+      whether the view mode is binary or plaintext*/
       switch (selectInFormatRef.current.value) {
-        case "binaryin": {
-          let arr = [];
-          for (let char of inputFieldRef.current.value) {
-            asciiT.forEach((c) => {
-              if (char === c[2]) arr.push(c[1]);
-            });
-          }
-          inputFieldRef.current.value = inputBinary.join(" ");
+        case "binary":
+          reg = /^([01]{8}( +)?)+$/;
           break;
-        }
-        case "asciiin": {
-          let arr = [];
-          inputBinary.forEach((byte) => {
-            asciiT.forEach((c) => {
-              if (byte === c[1]) arr.push(c[2]);
-            });
-          });
-          inputFieldRef.current.value = arr.join("");
+
+        case "ascii":
+          /*since certain characters don't exist in different variants of ascii85, 
+          when decoding(assuming the input will be ascii85 encoded text) those illegal characters will be weeded out
+          to avoid giving useless output to the user. In encoding part though any ascii(or unicode) character will be allowed 
+          including line break*/
+          reg =
+            selectOpRef.current.value === "decode"
+              ? charsets[selectVariantRef.current.value][1]
+              : /.|\n/;
           break;
-        }
       }
-    }
-  }
-
-  function handleInputFormat(text, inputFormat, outputFormat) {
-    switch (inputFormat) {
-      case "binaryin": {
-        if (inputFieldRef.current.validity.valid) {
-          let textBinaries = text.replace(/ /g, "").match(/[01]{8}/g); //[0]{32}|[01]{8}/g
-          let paddedTextBinaries = [...textBinaries];
-
-          console.log(textBinaries);
-          setInputBinary(textBinaries);
-
-          if (paddedTextBinaries.length % 4 !== 0) {
-            while (paddedTextBinaries.length % 4 !== 0) {
-              paddedTextBinaries.push("00000000");
-            }
-          }
-          let grouped32bitBinaries = paddedTextBinaries
-            .join("")
-            .match(/[01]{32}/g);
-
-          console.log(grouped32bitBinaries);
-          return handleOutputFormat(
-            grouped32bitBinaries,
-            textBinaries,
-            outputFormat,
-            () => {
-              return convertToAscii(
-                calculateNumbers(grouped32bitBinaries),
-                String(paddedTextBinaries.length - textBinaries.length)
-              );
-            }
+      /*the authentication procedure will be different for binary and plaintext input. 
+      in plaintext each single character will be evaluated but in binary the whole text on one go*/
+      if (
+        selectInFormatRef.current.value === "binary"
+          ? reg.test(textArr.join(""))
+          : textArr.every((c) => reg.test(c))
+      ) {
+        //if the evaluation is successful:
+        outputFieldRef.current.setAttribute("placeholder", `The output`);
+        return true;
+      } else {
+        //otherwise:
+        if (
+          selectInFormatRef.current.value === "binary" &&
+          textArr.length < 8
+        ) {
+          outputFieldRef.current.setAttribute("placeholder", `The output`);
+          outputFieldRef.current.value = "";
+        } else {
+          let illegalChar = textArr.find((x) => !reg.test(x));
+          outputFieldRef.current.value = "";
+          outputFieldRef.current.setAttribute(
+            "placeholder",
+            `Invalid character at index ${textArr.indexOf(illegalChar)}`
           );
         }
-        break;
+        return false;
       }
-
-      case "asciiin": {
-        let textBinaries = [];
-
-        text.split("").forEach((char, i) => {
-          if (char === "⁠") {
-            textBinaries.push(inputBinary[i]);
-          } else {
-            textBinaries.push(getAscii(char, "getNum"));
-          }
-        });
-
-        setInputBinary(textBinaries);
-
-        let paddedTextBinaries = [...textBinaries];
-        if (paddedTextBinaries.length % 4 !== 0) {
-          while (paddedTextBinaries.length % 4 !== 0) {
-            paddedTextBinaries.push("00000000");
-          }
-        }
-
-        let grouped32bitBinaries = paddedTextBinaries
-          .join("")
-          .match(/[01]{32}/g);
-
-        return handleOutputFormat(
-          grouped32bitBinaries,
-          textBinaries,
-          outputFormat,
-          () => {
-            return convertToAscii(
-              calculateNumbers(grouped32bitBinaries),
-              paddedTextBinaries.join("").match(/0{8}/g) == null
-                ? "0"
-                : paddedTextBinaries.join("").match(/0{8}/g).length
-            );
-          }
-        );
-        break;
-      }
+    } else {
+      //if input is empty:
+      outputFieldRef.current.setAttribute("placeholder", `The output`);
+      outputFieldRef.current.value = "";
+      return false;
     }
   }
 
-  function encode(text, inputFormat, outputFormat) {
-    return handleInputFormat(text, inputFormat, outputFormat);
+  //if user switches the input view this function would run
+  function handleInFormatSwap(value) {
+    let display;
+    switch (value) {
+      case "binary":
+        //input field will show the binary values of each input character stringed together.
+        display = inputBinary.join(" ");
+        break;
+
+      case "ascii":
+        /*input field will show the binary values of each input character
+        converted to it's utf-8 counterpart stringed together. */
+        display = inputBinary
+          .map((octet) => String.fromCharCode(Number(`0b${octet}`)))
+          .join("");
+        break;
+    }
+    inputFieldRef.current.value = display;
   }
-  function decode(text) {}
+
+  //if user switches the output view this function would run
+  function handleOutFormatSwap(value) {
+    let display;
+    switch (value) {
+      case "binary":
+        //output field will show the binary values of each output character stringed together.
+        display = outputBinary.join(" ");
+        break;
+
+      case "ascii":
+        /*output field will show the binary values of each output character
+        converted to it's utf-8 counterpart stringed together. */
+        display = outputBinary
+          .map((octet) => String.fromCharCode(Number(`0b${octet}`)))
+          .join("");
+        break;
+    }
+    outputFieldRef.current.value = display;
+  }
+
+  /*this block will recieve a string as an argument and will output an array 
+  containing it's 8-bit binary values*/
+  function asciiToBinary(text) {
+    let textArr = text.split("");
+    let output = [];
+    textArr.forEach((char) => {
+      let bin = char.charCodeAt().toString(2);
+      output.push(bin.padStart(8, "0"));
+    });
+    return output;
+  }
+
+  //recieves the string containing current input and outputs the array containing converted binaries
+  function encode(input) {
+    //will set the inputBinary variable to an array of octets based on input
+    //**this variable will be used on encoding operations from now on
+    switch (selectInFormatRef.current.value) {
+      case "binary":
+        inputBinary = input.match(/[01]{8}/g);
+        break;
+
+      case "ascii":
+        inputBinary = asciiToBinary(input);
+        break;
+    }
+
+    let paddedInputBinary = [...inputBinary] || [];
+    let paddedBytesCount = 0;
+
+    /*lengthens the above variable until it's length wholly divisable by 4 (4 bytes = 32 bits),
+    while also adding 1 to counter on each round to keep track of how many byte were appended*/
+    while (paddedInputBinary.length % 4 !== 0) {
+      paddedInputBinary.push("00000000");
+      paddedBytesCount++;
+    }
+
+    /*paddedInputBinary represented as shown below
+    ["01010101010101010101010101010101", "10110.....", ...]*/
+    let _32bitSeperated =
+      paddedInputBinary.join("").match(/[01]{32}|[01]{24}|[01]{16}|[01]{8}/g) ||
+      [];
+
+    let output = _32bitSeperated.map((chunk) => {
+      //the octet value in decimal format
+      let inDecimal = Number(`0b${chunk}`);
+      //-----------------------------------------------
+      /***since output characters are retrieved from the character set array
+       and not the entire ascii/utf8 table, adding 33 to the remainder of number divided by 85 is omitted*/
+      let remainders = [];
+      //runs while the decimal is more than or equal to 85
+      while (inDecimal >= 85) {
+        /*pushes a certain character in current charset at the index 
+        where index is equal to remainder of (current decimal/85). */
+        remainders.push(
+          charsets[selectVariantRef.current.value][0][inDecimal % 85]
+        );
+        inDecimal = Math.floor(inDecimal / 85);
+      }
+
+      /*does the above one more time if the inDecimal variable is still not zero,
+       this time without dividing by 85 (the number itself is considered remainder)*/
+      if (inDecimal !== 0)
+        remainders.push(charsets[selectVariantRef.current.value][0][inDecimal]);
+
+      //----------------------------------------------
+      return remainders.reverse().join("");
+    });
+    /*output is now an array in following structure:
+    ["abcde", "fghij", ....]*/
+
+    /* replaces the items that are empty string with "z" then joins output items together
+     before splitting to an array of single characters, which gives us as shown below:
+     ["abcde", ""] ===> ["a", "b", "c", "d", "e", "z"]*/
+    output = output
+      .map((x) => (x === "" ? "z" : x))
+      .join("")
+      .split("");
+
+    //removes as many bytes from output array as there were padded from the end of encoded text
+    for (let i = 0; i < paddedBytesCount; i++) output.pop();
+
+    //converts each byte to unicode character
+    outputBinary = output.map((x) => asciiToBinary(x));
+
+    //decides which format to return the output as based on user preference.
+    switch (selectOutFormatRef.current.value) {
+      case "binary":
+        return outputBinary.join(" ");
+
+      case "ascii":
+        return outputBinary
+          .map((x) => String.fromCharCode(Number(`0b${x}`)))
+          .join("");
+    }
+  }
+
+  function decode(input) {
+    //will set the inputBinary variable to an array of octets based on input
+    //**this variable will be used on encoding operations from now on
+    switch (selectInFormatRef.current.value) {
+      case "binary":
+        inputBinary = input.match(/[01]{8}/g);
+        break;
+
+      case "ascii":
+        inputBinary = asciiToBinary(input);
+        break;
+    }
+
+    let paddedInputArr = [...inputBinary] || [];
+    let paddedBytesCount = 0;
+
+    /*pads paddedInputArr with "u"(01110101) until it's length becomes divisible by 5 with a remainder of zero
+    while also keeping track of how many characters with padded*/
+    if (inputBinary) {
+      while (paddedInputArr.length % 5 !== 0) {
+        paddedInputArr.push("01110101");
+        paddedBytesCount++;
+      }
+    }
+
+    let _8bitsArr = paddedInputArr
+      .join("")
+      .match(/[01]{40}/g)
+      .map((string) =>
+        string.match(/[01]{8}/g).map((x) => Number(`0b${x}`) - 33)
+      );
+
+    let reverted32bitChunks = _8bitsArr.map((chunk) => {
+      let counter = 5;
+      let revertedChunk = chunk.map((x) => {
+        counter -= 1;
+        return x * 85 ** counter;
+      });
+      return revertedChunk.reduce((a, b) => a + b, 0);
+    });
+
+    let temp = reverted32bitChunks.map((num) => {
+      let out = num.toString(2).split("");
+      while (out.length % 8 !== 0) out.unshift("0");
+      return out.join("").match(/[01]{8}/g);
+    });
+
+    temp.forEach((array) => {
+      array.forEach((item) => {
+        outputBinary.push(item);
+      });
+    });
+
+    for (let i = 0; i < paddedBytesCount; i++) outputBinary.pop();
+    switch (selectOutFormatRef.current.value) {
+      case "binary":
+        return outputBinary.join(" ");
+
+      case "ascii":
+        return outputBinary
+          .map((x) => String.fromCharCode(Number(`0b${x}`)))
+          .join("");
+    }
+  }
 
   function triggerFn() {
-    if (inputFieldRef.current.value != "") {
-      selectOpRef.current.value === "encode"
-        ? (outputFieldRef.current.value = encode(
-            inputFieldRef.current.value,
-            selectInFormatRef.current.value,
-            selectOutFormatRef.current.value
-          ))
-        : (outputFieldRef.current.value = decode(inputFieldRef.current.value));
-    } else outputFieldRef.current.value = "";
+    [inputBinary, outputBinary] = [[], []];
+    if (validate()) {
+      switch (selectInFormatRef.current.value) {
+        case "binary":
+          inputBinary = inputFieldRef.current.value.match(/[01]{8}/g);
+          break;
+
+        case "ascii":
+          inputBinary = asciiToBinary(inputFieldRef.current.value);
+          break;
+      }
+      switch (selectOpRef.current.value) {
+        case "encode":
+          outputFieldRef.current.value = encode(inputFieldRef.current.value);
+          break;
+        case "decode":
+          outputFieldRef.current.value = decode(inputFieldRef.current.value);
+          break;
+      }
+    } else {
+    }
   }
+
   return (
     <>
       <Header setService={setService} />
@@ -245,9 +313,12 @@ export default function Ascii85({ setService }) {
         <h1>Ascii85</h1>
         <div className="format-select">
           <span>input format: </span>
-          <select ref={selectInFormatRef} onInput={() => convertInputFormat()}>
-            <option value="asciiin">ASCII(8bit)</option>
-            <option value="binaryin">binary</option>
+          <select
+            ref={selectInFormatRef}
+            onInput={(e) => handleInFormatSwap(e.target.value)}
+          >
+            <option value="ascii">ASCII(8bit)</option>
+            <option value="binary">binary</option>
           </select>{" "}
         </div>
         <textarea
@@ -259,14 +330,20 @@ export default function Ascii85({ setService }) {
           onInput={() => triggerFn()}
           ref={inputFieldRef}
         ></textarea>
-        <select onInput={() => triggerFn()} ref={selectOpRef}>
-          <option value="encode" id="encode">
-            encode
-          </option>
-          <option value="decode" id="decode">
-            decode
-          </option>
-        </select>
+        <div className="selects-flex">
+          <select onInput={() => triggerFn()} ref={selectOpRef}>
+            <option value="encode" id="encode">
+              encode
+            </option>
+            <option value="decode" id="decode">
+              decode
+            </option>
+          </select>
+          <select onInput={() => triggerFn()} ref={selectVariantRef}>
+            <option value="original">Original</option>
+            <option value="z85">ZeroMQ (z85)</option>
+          </select>
+        </div>
 
         <textarea
           id="output-area"
@@ -278,10 +355,12 @@ export default function Ascii85({ setService }) {
         ></textarea>
         <div className="format-select">
           <span>output format:</span>{" "}
-          <select ref={selectOutFormatRef} onInput={() => triggerFn()}>
+          <select
+            ref={selectOutFormatRef}
+            onInput={(e) => handleOutFormatSwap(e.target.value)}
+          >
             <option value="ascii">ASCII(8bit)</option>
-            <option value="binaryraw">binary(raw)</option>
-            <option value="binaryspaced">binary(spaced out)</option>
+            <option value="binary">binary</option>
           </select>
         </div>
       </main>
@@ -298,9 +377,9 @@ export default function Ascii85({ setService }) {
             increase, assuming eight bits per ASCII character).
           </p>
           <p>
-            Its main modern uses are in Adobe's PostScript and Portable Document
-            Format file formats, as well as in the patch encoding for binary
-            files used by Git.
+            Its main modern uses are in original's PostScript and Portable
+            Document Format file formats, as well as in the patch encoding for
+            binary files used by Git.
           </p>
 
           <a href="https://en.wikipedia.org/wiki/Ascii85" target="_blank">

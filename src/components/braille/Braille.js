@@ -32,7 +32,12 @@ export default function Braille({ setService }) {
         if (matches) {
           matches.forEach((match) => {
             if (index === 4 || index === 5) {
-              modifiedText = modifiedText.replace(pattern, symbol);
+              /*while (pattern.test(modifiedText)) {
+                console.log(modifiedText);
+                modifiedText = modifiedText.replace(pattern, symbol);
+                console.log(modifiedText);
+              }*/
+              //modifiedText = modifiedText.replace(punc[1], symbol);
             } else {
               /*this section prevents certain punctuation symbols from 
               unexpectedly repeating themselves*/
@@ -85,6 +90,8 @@ export default function Braille({ setService }) {
                 let symbol = cell[1];
                 if (letter === char) arr.push(symbol);
               });
+            } else if (brailleTable.alphabete.every((c) => c[0] !== char)) {
+              arr.push(char);
             } else {
               brailleTable.alphabete.forEach((cell) => {
                 let letter = cell[0];
@@ -204,13 +211,6 @@ export default function Braille({ setService }) {
 
         newText = convertNumbers(newText);
 
-        /*for (let char of newText) {
-          brailleTable.alphabete.forEach((cell) => {
-            let letter = cell[0];
-            let symbol = cell[1];
-            if (symbol === char) newText = newText.replace(char, letter);
-          });
-        }*/
         brailleTable.alphabete.forEach((cell) => {
           let letter = cell[0];
           let symbol = cell[1];
@@ -222,142 +222,52 @@ export default function Braille({ setService }) {
         break;
       }
       case "g2": {
-        function findGrade2MatchesOf(text) {
-          let existantMatches = [];
-          brailleTable.grade2.forEach((cell) => {
+        function engRegToBrailleReg() {
+          let arr = [];
+          brailleTable.grade2.forEach((cell, i) => {
             let symbol = cell[1];
             let phrase = cell[0];
             let reg = `${cell[2]}`;
-            reg = reg.replace(
-              /\(\?=\(\[ ,\\\.\]\|\$\)\)/g,
-              "(?=(⠀|([⠂⠲]⠀)|$))"
-            );
+            reg = reg.replace(/\[ ,\.\]/g, "[⠀⠂⠲]");
+            reg = reg.replace(/\(\^\|\[ ,\.\]\)/g, "(^|⠀|([⠂⠲]⠀))");
             reg = reg.replace(/ /g, "⠀");
-            let newReg = new RegExp(
-              reg.slice(1, reg.length - 2).replace(phrase, symbol),
-              "g"
-            );
-            if (newReg.test(text)) {
-              let newReg2 = new RegExp(
-                `(?<=(⠀[⠠]?|^))([^⠀]*(${String(newReg).slice(
-                  1,
-                  String(newReg).length - 2
-                )})[^⠀]*)(?=([⠀⠲⠂]|$))`
-              );
-              let surroundingWord = text.match(newReg2);
+            let regT = reg.slice(1, reg.length - 2).replace(phrase, symbol);
+            brailleTable.grade2.forEach((c) => {
+              if (c[2].test(regT)) regT = regT.replace(c[2], c[1]);
+            });
 
-              existantMatches.push([
-                phrase,
-                symbol,
-                newReg,
-                surroundingWord[0],
-              ]);
+            regT = regT
+              .replace(
+                /\\\(/g,
+                brailleTable.alphabete.find((c) => c[0] === "(")[1]
+              )
+              .replace(
+                /\\\)/g,
+                brailleTable.alphabete.find((c) => c[0] === ")")[1]
+              );
+
+            for (let char of regT) {
+              if (/[a-z]/gi.test(char)) {
+                brailleTable.alphabete.forEach((c) => {
+                  if (char === c[0]) regT = regT.replaceAll(c[0], c[1]);
+                });
+              }
             }
+            console.log(regT);
+            arr.push([phrase, symbol, new RegExp(regT, "g")]);
           });
 
-          return existantMatches;
+          return arr;
         }
 
         let newText = textToDecode;
         newText = convertNumbers(newText);
-        console.log(newText);
-        let existantMatches = findGrade2MatchesOf(newText);
-        if (existantMatches)
-          existantMatches.forEach((cell) => {
-            let phrase = cell[0];
-            let symbol = cell[1];
-            let reg = cell[2];
-            let surroundingWord = cell[3];
-            let matchesInWord = [];
-            existantMatches.forEach((match) => {
-              if (match[2].test(surroundingWord)) matchesInWord.push(match);
-            });
-            console.log(matchesInWord);
-            if (matchesInWord.length > 1) {
-              matchesInWord.push([...matchesInWord]);
-              matchesInWord = matchesInWord.map((match, index) => {
-                if (index === matchesInWord.length - 1) {
-                  return match;
-                } else {
-                  return [match];
-                }
-              });
-            }
-            if (symbol === surroundingWord.replaceAll("⠠", "")) {
-              newText = newText.replace(reg, phrase);
-            } else {
-              if (brailleTable.allowedCombs.hasOwnProperty(phrase)) {
-                let checkCombs = brailleTable.allowedCombs[phrase].find(
-                  (word) => {
-                    if (
-                      !(matchesInWord.length > 1 && matchesInWord.length !== 0)
-                    ) {
-                      let convertedWord = surroundingWord;
-                      if (matchesInWord[0]) {
-                        convertedWord = convertedWord.replace(
-                          matchesInWord[0][2],
-                          matchesInWord[0][0]
-                        );
-                      }
+        let braillifiedTable = engRegToBrailleReg();
+        console.log(braillifiedTable);
 
-                      brailleTable.alphabete.forEach((cell) => {
-                        let letter = cell[0];
-                        let symbol = cell[1];
-                        if (convertedWord.includes(symbol)) {
-                          convertedWord = convertedWord.replaceAll(
-                            symbol,
-                            letter
-                          );
-                        }
-                      });
-
-                      //console.log(convertedWord);
-                      //let checkReg = new RegExp(convertedWord);
-                      //return checkReg.test(word);
-                      return word === convertedWord;
-                    } else {
-                      matchesInWord.forEach((match) => {
-                        let convertedWord = surroundingWord;
-                        match.forEach((m) => {
-                          convertedWord = convertedWord.replace(m[2], m[0]);
-
-                          brailleTable.alphabete.forEach((cell) => {
-                            let letter = cell[0];
-                            let symbol = cell[1];
-                            if (newText.includes(symbol))
-                              convertedWord = convertedWord.replaceAll(
-                                symbol,
-                                letter
-                              );
-                          });
-
-                          console.log(convertedWord);
-                        });
-                        //console.log(convertedWord);
-
-                        //let checkReg = new RegExp(convertedWord);
-                        //return checkReg.test(word);
-                        return word === convertedWord;
-                      });
-                    }
-                  }
-                );
-                if (checkCombs) {
-                  newText = newText.replace(reg, phrase);
-                } else {
-                  let arr = [];
-                  for (let char of symbol) {
-                    brailleTable.alphabete.forEach((c) => {
-                      if (c[1] === char) arr.push(c[0]);
-                    });
-                  }
-                  newText = newText.replace(reg, arr.join(""));
-                }
-              } else {
-                newText = newText.replace(reg, phrase);
-              }
-            }
-          });
+        braillifiedTable.forEach((cell) => {
+          newText = newText.replace(cell[2], cell[0]);
+        });
 
         brailleTable.alphabete.forEach((cell) => {
           let letter = cell[0];
@@ -368,8 +278,8 @@ export default function Braille({ setService }) {
         });
         newText = convertCapitalCase(newText);
         //fix some errors
-        newText = newText.replace(/⠠Gg/g, '"');
-        newText = newText.replace(/(?<=(\d))cc(?=(\d))/g, ":");
+        //newText = newText.replace(/⠠Gg/g, '"');
+        //newText = newText.replace(/(?<=(\d))cc(?=(\d))/g, ":");
         return removePunctuation(newText);
         break;
       }
@@ -476,7 +386,11 @@ export default function Braille({ setService }) {
           <h1>Notes:</h1>
           <p>
             1. Grade 2 contraction system is a work in progress. Some
-            translations in decode phase may not work as expected
+            translations in decode phase may not work as expected.
+          </p>
+          <p>
+            2. For more accurate translations, it is important for the text to
+            be as grammatically and punctually valid as possible.
           </p>
         </section>
       </section>

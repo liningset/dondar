@@ -13,14 +13,20 @@
   }
 }
 
-@media (max-width: 500px) {
-  .selects-flex {
+@media (max-width: 600px) {
+  .numeral-wrapper .selects-flex {
+    flex-direction: column;
     > div {
-      justify-content: space-between;
+      justify-content: center;
 
       select {
         flex: 0;
       }
     }
+  }
+}
+@media (max-width: 500px) {
+  .numeral-wrapper .selects-flex > div {
+    justify-content: space-between;
   }
 }

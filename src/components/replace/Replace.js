@@ -68,12 +68,17 @@ export default function Replace({ setService }) {
           onInput={() => triggerFn()}
         ></textarea>
         <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
+          <select
+            ref={selectOpRef}
+            title="search method"
+            onInput={() => triggerFn()}
+          >
             <option value="normal">Normal search</option>
-            <option value="regex">RegExp</option>
+            <option value="regex">Regex</option>
           </select>
           <input
             type="text"
+            title="combination to search for"
             placeholder="search"
             ref={patternInputRef}
             onInput={() => triggerFn()}
@@ -82,6 +87,7 @@ export default function Replace({ setService }) {
           />
           <input
             type="text"
+            title="phrase to replace the matches with"
             placeholder="replace with"
             ref={replacementInputRef}
             onInput={() => triggerFn()}

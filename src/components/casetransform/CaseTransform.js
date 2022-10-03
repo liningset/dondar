@@ -49,7 +49,7 @@ export default function CaseTransform({ setService }) {
             "gi"
           );
         }
-        const reg = applyToReg("[a-z]{2,}");
+        const reg = applyToReg("[a-z]{3,}(-[a-z0-9]+)?");
         if (reg.test(text)) {
           transformed = text.toLowerCase();
           let matches = text.match(reg);
@@ -125,14 +125,24 @@ export default function CaseTransform({ setService }) {
           onInput={() => triggerFn()}
           ref={inputFieldRef}
         ></textarea>
-        <select ref={selectTypeRef} onInput={() => triggerFn()}>
-          <option value="allup">All uppercase</option>
-          <option value="alllow">All lowercase</option>
-          <option value="capwords">Capitalize words</option>
-          <option value="capsentences">Capitalize sentences</option>
-          <option value="oddupevenlow">Odds uppercase, Evens lowercase</option>
-          <option value="oddlowevenup">Odds lowercase, Evens uppercase</option>
-        </select>
+        <div className="selects-flex">
+          <select ref={selectTypeRef} onInput={() => triggerFn()}>
+            <option value="allup">All uppercase</option>
+            <option value="alllow">All lowercase</option>
+            <option value="capwords">Capitalize words</option>
+            <option value="capsentences">Capitalize sentences</option>
+            <option value="oddupevenlow">
+              Odds uppercase, Evens lowercase
+            </option>
+            <option value="oddlowevenup">
+              Odds lowercase, Evens uppercase
+            </option>
+          </select>
+          <label htmlFor="checkbox">
+            overwrite all
+            <input id="checkbox" type="checkbox" />
+          </label>
+        </div>
 
         <textarea
           id="output-area"

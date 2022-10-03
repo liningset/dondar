@@ -1,22 +1,43 @@
-import { React, useRef } from "react";
+import { React, useRef, useState } from "react";
 import tablesModule from "./tables.js";
 import binConvert from "./binary-converter.js";
 import Header from "../Header";
 import Footer from "../Footer";
 
 export default function Base64({ setService }) {
-  const inputField = useRef(null);
+  const inputFieldRef = useRef(null);
   const outputField = useRef(null);
   const selectVariantRef = useRef(null);
-  const select = useRef(null);
+  const selectOpRef = useRef(null);
   const asciiT = tablesModule.ASCII;
-  const base64T = tablesModule.base64;
+  let selectOutFormatRef = useRef(null);
+  let selectInFormatRef = useRef(null);
+  let [outputBinary, setOutputBinary] = useState("");
+  let [inputBinary, setInputBinary] = useState("");
 
   let charSets = {
     base64: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
     base64url:
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
   };
+
+  function validate() {
+    if (inputFieldRef.current.value !== "") {
+      switch (selectInFormatRef.current.value) {
+        case "binary":
+          return /^([0-1]{8}( +)?)+$/.test(inputFieldRef.current.value);
+
+        case "ascii":
+          if (selectOpRef.current.value === "decode") {
+            return new RegExp(
+              `^[a-z\d${
+                selectVariantRef.current.value === "base64" ? "\\+\\/" : "-_"
+              }]$`
+            ).test(inputFieldRef.current.value);
+          } else return true;
+      }
+    }
+  }
 
   //encoding process in 4 steps
   function encode(text) {
@@ -46,7 +67,7 @@ export default function Base64({ setService }) {
       return "";
     } else {
       outputField.current.setAttribute("placeholder", "The output");
-      const step1 = handlePadding(inputField.current.value, "remove");
+      const step1 = handlePadding(inputFieldRef.current.value, "remove");
       const step2 = base64Lookup(step1, "frombase64");
       const step3 = regroupBits(step2, "6to8bit");
       const step4 = asciiLookup(step3, "todecode");
@@ -188,10 +209,10 @@ export default function Base64({ setService }) {
   }
 
   function triggerFn() {
-    if (inputField.current.value != "") {
-      select.current.value === "encode"
-        ? (outputField.current.value = encode(inputField.current.value))
-        : (outputField.current.value = decode(inputField.current.value));
+    if (inputFieldRef.current.value != "") {
+      selectOpRef.current.value === "encode"
+        ? (outputField.current.value = encode(inputFieldRef.current.value))
+        : (outputField.current.value = decode(inputFieldRef.current.value));
     } else {
       outputField.current.setAttribute("placeholder", "The output");
       outputField.current.value = "";
@@ -202,6 +223,13 @@ export default function Base64({ setService }) {
       <Header setService={setService} />
       <main className="wrapper">
         <h1>Base64</h1>
+        <div className="format-select">
+          <span>input format: </span>
+          <select ref={selectInFormatRef}>
+            <option value="asciiin">ASCII(8bit)</option>
+            <option value="binaryin">binary</option>
+          </select>{" "}
+        </div>
         <textarea
           id="input-area"
           cols="30"
@@ -209,10 +237,10 @@ export default function Base64({ setService }) {
           spellCheck="false"
           placeholder="Your text goes here..."
           onInput={() => triggerFn()}
-          ref={inputField}
+          ref={inputFieldRef}
         ></textarea>
         <div className="selects-flex">
-          <select onInput={() => triggerFn()} ref={select}>
+          <select onInput={() => triggerFn()} ref={selectOpRef}>
             <option value="encode" id="encode">
               encode
             </option>
@@ -234,6 +262,14 @@ export default function Base64({ setService }) {
           placeholder="The output"
           ref={outputField}
         ></textarea>
+        <div className="format-select">
+          <span>input format: </span>
+          <select ref={selectOutFormatRef}>
+            <option value="ascii">ASCII(8bit)</option>
+            <option value="binary">binary (raw)</option>
+            <option value="binary-spaced">binary (spaced out))</option>
+          </select>{" "}
+        </div>
       </main>
       <section>
         <section className="info">

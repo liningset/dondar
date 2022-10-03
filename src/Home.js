@@ -36,7 +36,12 @@ export default function Home({ setService }) {
             <Button classN="a1z26" text="A1Z26" clickEvent={CE} />
             <Button classN="caesar" text="Caesar cipher" clickEvent={CE} />
             <Button classN="rot13" text="ROT-13" clickEvent={CE} />
-            <Button classN="vigenere" text="Vigenère" clickEvent={CE} />
+            <Button
+              classN="alphabeticalsub"
+              text="Substitution Cipher"
+              clickEvent={CE}
+            />
+            <Button classN="vigenere" text="Vigenère cipher" clickEvent={CE} />
             <Button classN="xor" text="XOR cipher" clickEvent={CE} />
           </div>
         </div>
@@ -47,19 +52,12 @@ export default function Home({ setService }) {
             <Button classN="ascii85" text="Ascii85" clickEvent={CE} />
             <Button classN="base32" text="Base32" clickEvent={CE} />
             <Button classN="base64" text="Base64" clickEvent={CE} />
-          </div>
-        </div>
-
-        <div className="category alphabet">
-          <h3>Alphabet</h3>
-          <div className="buttons-grid alphabet-grid">
-            <Button classN="braille" text="Braille" clickEvent={CE} />
-            <Button classN="morse" text="Morse code" clickEvent={CE} />
             <Button
-              classN="spellingalphabet"
-              text="Spelling alphabet"
+              classN="unicodepoints"
+              text="Unicode code points"
               clickEvent={CE}
             />
+            <Button classN="urlencoding" text="URL encoding" clickEvent={CE} />
           </div>
         </div>
 
@@ -83,6 +81,19 @@ export default function Home({ setService }) {
             />
             <Button classN="replace" text="Replace" clickEvent={CE} />
             <Button classN="reverse" text="Reverse" clickEvent={CE} />
+          </div>
+        </div>
+
+        <div className="category alphabet">
+          <h3>Alphabet</h3>
+          <div className="buttons-grid alphabet-grid">
+            <Button classN="braille" text="Braille" clickEvent={CE} />
+            <Button classN="morse" text="Morse code" clickEvent={CE} />
+            <Button
+              classN="spellingalphabet"
+              text="Spelling alphabet"
+              clickEvent={CE}
+            />
           </div>
         </div>
       </main>

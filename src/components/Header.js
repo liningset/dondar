@@ -104,10 +104,8 @@ export default function Header({ setService }) {
   return (
     <header className="nav-container" ref={navContainer}>
       <nav className="navbar">
-        <div className="logo">
-          <span style={{ color: "rgb(255, 87, 87)" }}>D</span>
-          <span>E</span>
-          <span style={{ color: "rgb(113, 255, 113)" }}>N</span>CODE
+        <div className="logo" onClick={() => goHome()}>
+          DONDAR
         </div>
         <ul className="navlist">
           <li title="switch theme">

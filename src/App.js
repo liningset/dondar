@@ -15,6 +15,9 @@ import SpellingAlphabet from "./components/spellingalphabet/SpellingAlphabet";
 import CaseTransform from "./components/casetransform/CaseTransform";
 import BitwiseOperation from "./components/bitwiseoperation/BitwiseOperation";
 import NumeralSystem from "./components/numeralsystem/NumeralSystem";
+import AlphabeticalSub from "./components/alphabeticalsub/AlphabeticalSub";
+import UnicodePoints from "./components/unicodepoints/UnicodePoints";
+import UrlEncoding from "./components/urlencoding/UrlEncoding";
 import Home from "./Home";
 import gsap from "gsap";
 
@@ -125,6 +128,18 @@ export default function App() {
       }
       case "numeralsystem": {
         return <NumeralSystem setService={setService} />;
+        break;
+      }
+      case "alphabeticalsub": {
+        return <AlphabeticalSub setService={setService} />;
+        break;
+      }
+      case "unicodepoints": {
+        return <UnicodePoints setService={setService} />;
+        break;
+      }
+      case "urlencoding": {
+        return <UrlEncoding setService={setService} />;
         break;
       }
     }
