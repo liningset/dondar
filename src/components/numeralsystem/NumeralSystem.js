@@ -22,10 +22,10 @@ export default function NumeralSystem({ setService }) {
       validator = /^M*(CM)*D*(CD)*C*(XC)*L*(XL)*X*(IX)*V*(IV)*I*\n?$/gim;
     } else if (selectRefValue <= 10) {
       let numRange = `0-${selectRefValue - 1}`;
-      validator = new RegExp(`^[\\n${numRange}]+$`);
+      validator = new RegExp(`^[\\n${numRange} ]+$`);
     } else {
       let alphabetRange = `A-${alphabet[selectRefValue - 11]}`;
-      validator = new RegExp(`^[\\n0-9${alphabetRange}]+$`, "i");
+      validator = new RegExp(`^[\\n0-9${alphabetRange} ]+$`, "i");
     }
     return validator.test(inputFieldRef.current.value);
   }
@@ -217,7 +217,7 @@ export default function NumeralSystem({ setService }) {
         if (validate()) {
           outputFieldRef.current.setAttribute("placeholder", "The output");
           result = inputFieldRef.current.value
-            .match(/^.+$/gm)
+            .match(/(?<=(^| ))[\da-z]+(?=($| ))/gms)
             .map((val) =>
               convert(
                 val,
