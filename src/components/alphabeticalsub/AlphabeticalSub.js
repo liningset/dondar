@@ -105,58 +105,35 @@ export default function AlphabeticalSub({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper alphabeticalsub-wrapper">
-        <h1>Substitution Cipher</h1>
-        <textarea
-          onInput={() => triggerFn()}
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <div className="inputs-flex">
-            <label htmlFor="plainAlpha">
-              plaintext alphabet
-              <input
-                type="text"
-                id="plainAlpha"
-                defaultValue="abcdefghijklmnopqrstuvwxyz"
-                placeholder="plaintext alphabet"
-                ref={plainAlphaRef}
-                onInput={() => triggerFn()}
-                pattern=".{2,}"
-                required
-              />
-            </label>
-            <label htmlFor="cipherAlpha">
-              ciphertext alphabet
-              <input
-                type="text"
-                id="cipherAlpha"
-                defaultValue="zyxwvutsrqponmlkjihgfedcba"
-                placeholder="ciphertext alphabet"
-                ref={cipherAlphaRef}
-                onInput={() => triggerFn()}
-                pattern=".{2,}"
-                required
-              />
-            </label>
-          </div>
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <div className="inputs-flex">
+        <label htmlFor="plainAlpha">
+          plaintext alphabet
+          <input
+            type="text"
+            id="plainAlpha"
+            defaultValue="abcdefghijklmnopqrstuvwxyz"
+            placeholder="plaintext alphabet"
+            ref={plainAlphaRef}
+            onInput={() => triggerFn()}
+            pattern=".{2,}"
+            required
+          />
+        </label>
+        <label htmlFor="cipherAlpha">
+          ciphertext alphabet
+          <input
+            type="text"
+            id="cipherAlpha"
+            defaultValue="zyxwvutsrqponmlkjihgfedcba"
+            placeholder="ciphertext alphabet"
+            ref={cipherAlphaRef}
+            onInput={() => triggerFn()}
+            pattern=".{2,}"
+            required
+          />
+        </label>
+      </div>
+      {/* <section>
         <section className="info">
           <h3>What is Substitution cipher?</h3>
           <p>
@@ -193,8 +170,7 @@ export default function AlphabeticalSub({ setService }) {
             read more
           </a>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

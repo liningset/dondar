@@ -220,58 +220,11 @@ export default function Base64({ setService }) {
   }
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Base64</h1>
-        <div className="format-select">
-          <span>input format: </span>
-          <select ref={selectInFormatRef}>
-            <option value="asciiin">ASCII(8bit)</option>
-            <option value="binaryin">binary</option>
-          </select>{" "}
-        </div>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          onInput={() => triggerFn()}
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select onInput={() => triggerFn()} ref={selectOpRef}>
-            <option value="encode" id="encode">
-              encode
-            </option>
-            <option value="decode" id="decode">
-              decode
-            </option>
-          </select>
-          <select onInput={() => triggerFn()} ref={selectVariantRef}>
-            <option value="base64">Base64 (RFC 4648)</option>
-            <option value="base64url">Base64url (RFC 4648)</option>
-          </select>
-        </div>
-
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputField}
-        ></textarea>
-        <div className="format-select">
-          <span>input format: </span>
-          <select ref={selectOutFormatRef}>
-            <option value="ascii">ASCII(8bit)</option>
-            <option value="binary">binary (raw)</option>
-            <option value="binary-spaced">binary (spaced out))</option>
-          </select>{" "}
-        </div>
-      </main>
-      <section>
+      <select onInput={() => triggerFn()} ref={selectVariantRef}>
+        <option value="base64">Base64 (RFC 4648)</option>
+        <option value="base64url">Base64url (RFC 4648)</option>
+      </select>
+      {/* <section>
         <section className="info">
           <h1>What is Base64?</h1>
           <p>
@@ -300,8 +253,7 @@ export default function Base64({ setService }) {
             read more
           </a>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

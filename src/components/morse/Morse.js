@@ -56,36 +56,8 @@ export default function Morse({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper morse-wrapper">
-        <h1>Morse code</h1>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-          onInput={() => triggerFn()}
-        ></textarea>
-        <select ref={selectRef} onInput={() => triggerFn()}>
-          <option value="encode" id="encode">
-            encode
-          </option>
-          <option value="decode" id="decode">
-            decode
-          </option>
-        </select>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <span>No advanced options</span>
+      {/* <section>
         <section className="info">
           <h1>What is Morse Code?</h1>
           <p>
@@ -102,8 +74,7 @@ export default function Morse({ setService }) {
           <h1>Notes:</h1>
           <p>none</p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

@@ -55,54 +55,30 @@ export default function Replace({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Replace</h1>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-          onInput={() => triggerFn()}
-        ></textarea>
-        <div className="selects-flex">
-          <select
-            ref={selectOpRef}
-            title="search method"
-            onInput={() => triggerFn()}
-          >
-            <option value="normal">Normal search</option>
-            <option value="regex">Regex</option>
-          </select>
-          <input
-            type="text"
-            title="combination to search for"
-            placeholder="search"
-            ref={patternInputRef}
-            onInput={() => triggerFn()}
-            pattern=".+"
-            required
-          />
-          <input
-            type="text"
-            title="phrase to replace the matches with"
-            placeholder="replace with"
-            ref={replacementInputRef}
-            onInput={() => triggerFn()}
-          />
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <Footer />
+      <select
+        ref={selectOpRef}
+        title="search method"
+        onInput={() => triggerFn()}
+      >
+        <option value="normal">Normal search</option>
+        <option value="regex">Regex</option>
+      </select>
+      <input
+        type="text"
+        title="combination to search for"
+        placeholder="search"
+        ref={patternInputRef}
+        onInput={() => triggerFn()}
+        pattern=".+"
+        required
+      />
+      <input
+        type="text"
+        title="phrase to replace the matches with"
+        placeholder="replace with"
+        ref={replacementInputRef}
+        onInput={() => triggerFn()}
+      />
     </>
   );
 }

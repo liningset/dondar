@@ -64,53 +64,19 @@ export default function SpellingAlphabet({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Spelling Alphabet</h1>
-        <textarea
-          onInput={() => triggerFn()}
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
-            <option value="encode" id="encode">
-              encode
-            </option>
-            <option value="decode" id="decode">
-              decode
-            </option>
-          </select>
-          <select ref={selectAlphabetRef} onInput={() => triggerFn()}>
-            <option value="nato">NATO/ICAO phonetic alphabet</option>
-            <option value="dutch">Dutch spelling alphabet</option>
-            <option value="german">German spelling alphabet</option>
-            <option value="swedish">
-              Swedish Armed Forces\' radio alphabet
-            </option>
-            <option value="russian">
-              Russian spelling alphabet (official, excludes Ё)
-            </option>
-            <option value="russian2">
-              Russian spelling alphabet (unofficial, includes Ё)
-            </option>
-          </select>
-        </div>
-
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <select ref={selectAlphabetRef} onInput={() => triggerFn()}>
+        <option value="nato">NATO/ICAO phonetic alphabet</option>
+        <option value="dutch">Dutch spelling alphabet</option>
+        <option value="german">German spelling alphabet</option>
+        <option value="swedish">Swedish Armed Forces\' radio alphabet</option>
+        <option value="russian">
+          Russian spelling alphabet (official, excludes Ё)
+        </option>
+        <option value="russian2">
+          Russian spelling alphabet (unofficial, includes Ё)
+        </option>
+      </select>
+      {/* <section>
         <section className="info">
           <h3>What is Spelling Alphabet?</h3>
           <p>
@@ -149,8 +115,7 @@ export default function SpellingAlphabet({ setService }) {
             read more
           </a>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

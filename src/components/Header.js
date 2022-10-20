@@ -105,7 +105,7 @@ export default function Header({ setService }) {
     <header className="nav-container" ref={navContainer}>
       <nav className="navbar">
         <div className="logo" onClick={() => goHome()}>
-          DONDAR
+          <img src="./dondar.png" />
         </div>
         <ul className="navlist">
           <li title="switch theme">

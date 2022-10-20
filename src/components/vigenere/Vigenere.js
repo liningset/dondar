@@ -223,47 +223,18 @@ it also returns all the positions and required info of mentioned characters in a
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Vigenère</h1>
-        <textarea
-          id="input-area"
-          rows="10"
-          placeholder="Your text goes here..."
-          spellCheck="false"
-          onInput={() => triggerFn()}
-          ref={inputField}
-        ></textarea>
-        <div className="inner-wrapper">
-          <select
-            id="choose-operation"
-            ref={chooseOp}
-            onInput={() => triggerFn()}
-          >
-            <option value="encrypt">encrypt</option>
-            <option value="decrypt">decrypt</option>
-          </select>
-          <input
-            type="text"
-            placeholder="The key"
-            id="ask-user-key"
-            spellCheck="false"
-            title="Key cannot be empty or contain non-alphabetic
+      <input
+        type="text"
+        placeholder="The key"
+        id="ask-user-key"
+        spellCheck="false"
+        title="Key cannot be empty or contain non-alphabetic
         characters"
-            pattern="[A-Za-z\s]+"
-            ref={askKeyFromUser}
-            onInput={() => triggerFn()}
-          />
-        </div>
-        <textarea
-          id="output-area"
-          rows="10"
-          spellCheck="false"
-          ref={outputField}
-          placeholder="The output"
-        ></textarea>
-      </main>
-      <section>
+        pattern="[A-Za-z\s]+"
+        ref={askKeyFromUser}
+        onInput={() => triggerFn()}
+      />
+      {/* <section>
         <section className="info">
           <h1>What is Vigenère Cipher?</h1>
           <p>
@@ -308,8 +279,7 @@ it also returns all the positions and required info of mentioned characters in a
             3. The alphabet used at each point depends on a repeating keyword.
           </p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

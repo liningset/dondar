@@ -308,63 +308,12 @@ export default function Ascii85({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Ascii85</h1>
-        <div className="format-select">
-          <span>input format: </span>
-          <select
-            ref={selectInFormatRef}
-            onInput={(e) => handleInFormatSwap(e.target.value)}
-          >
-            <option value="ascii">ASCII(8bit)</option>
-            <option value="binary">binary</option>
-          </select>{" "}
-        </div>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          onInput={() => triggerFn()}
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select onInput={() => triggerFn()} ref={selectOpRef}>
-            <option value="encode" id="encode">
-              encode
-            </option>
-            <option value="decode" id="decode">
-              decode
-            </option>
-          </select>
-          <select onInput={() => triggerFn()} ref={selectVariantRef}>
-            <option value="original">Original</option>
-            <option value="z85">ZeroMQ (z85)</option>
-          </select>
-        </div>
+      <select onInput={() => triggerFn()} ref={selectVariantRef}>
+        <option value="original">Original</option>
+        <option value="z85">ZeroMQ (z85)</option>
+      </select>
 
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-        <div className="format-select">
-          <span>output format:</span>{" "}
-          <select
-            ref={selectOutFormatRef}
-            onInput={(e) => handleOutFormatSwap(e.target.value)}
-          >
-            <option value="ascii">ASCII(8bit)</option>
-            <option value="binary">binary</option>
-          </select>
-        </div>
-      </main>
-      <section>
+      {/* <section>
         <section className="info">
           <h1>What is Ascii85(Base85)?</h1>
           <p>
@@ -386,8 +335,7 @@ export default function Ascii85({ setService }) {
             read more
           </a>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

@@ -113,47 +113,14 @@ export default function CaseTransform({ setService }) {
   }
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Case transform</h1>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          onInput={() => triggerFn()}
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectTypeRef} onInput={() => triggerFn()}>
-            <option value="allup">All uppercase</option>
-            <option value="alllow">All lowercase</option>
-            <option value="capwords">Capitalize words</option>
-            <option value="capsentences">Capitalize sentences</option>
-            <option value="oddupevenlow">
-              Odds uppercase, Evens lowercase
-            </option>
-            <option value="oddlowevenup">
-              Odds lowercase, Evens uppercase
-            </option>
-          </select>
-          <label htmlFor="checkbox">
-            overwrite all
-            <input id="checkbox" type="checkbox" />
-          </label>
-        </div>
-
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <Footer />
+      <select ref={selectTypeRef} onInput={() => triggerFn()}>
+        <option value="allup">All uppercase</option>
+        <option value="alllow">All lowercase</option>
+        <option value="capwords">Capitalize words</option>
+        <option value="capsentences">Capitalize sentences</option>
+        <option value="oddupevenlow">Odds uppercase, Evens lowercase</option>
+        <option value="oddlowevenup">Odds lowercase, Evens uppercase</option>
+      </select>
     </>
   );
 }

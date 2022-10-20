@@ -1,5 +1,6 @@
-.numeral-wrapper {
-  .selects-flex {
+.numeralsystem {
+  .op-advanced-inner {
+    gap: 2rem;
     > div {
       flex: 1;
       display: flex;
@@ -14,7 +15,7 @@
 }
 
 @media (max-width: 600px) {
-  .numeral-wrapper .selects-flex {
+  .numeralsystem .op-advanced-inner {
     flex-direction: column;
     > div {
       justify-content: center;

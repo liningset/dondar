@@ -218,46 +218,13 @@ export default function Base32({ setService }) {
   }
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper base32-wrapper">
-        <h1>Base32</h1>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          onInput={() => triggerFn()}
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select onInput={() => triggerFn()} ref={selectOpRef}>
-            <option value="encode" id="encode">
-              encode
-            </option>
-            <option value="decode" id="decode">
-              decode
-            </option>
-          </select>
-          <select ref={selectVariantRef} onInput={() => triggerFn()}>
-            <option value="base32">Base32 (RFC 4648)</option>
-            <option value="crockford">Crockford's base32</option>
-            <option value="base32hex">Base32Hex (RFC 4648)</option>
-            <option value="zbase32">Z-base32</option>
-          </select>
-        </div>
-
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          data-error="false"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <select ref={selectVariantRef} onInput={() => triggerFn()}>
+        <option value="base32">Base32 (RFC 4648)</option>
+        <option value="crockford">Crockford's base32</option>
+        <option value="base32hex">Base32Hex (RFC 4648)</option>
+        <option value="zbase32">Z-base32</option>
+      </select>
+      {/* <section>
         <section className="info">
           <h1>What is Base32?</h1>
           <p>
@@ -287,8 +254,7 @@ export default function Base32({ setService }) {
             So bear that in mind.
           </p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

@@ -4,34 +4,37 @@ import table from "./table";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function Xor({ setService }) {
+export default function Xor({
+  currentOp,
+  binaries,
+  setBinaries,
+  outputFieldRef,
+}) {
   let [renderType, setRenderType] = useState("");
   let [outputPlaceholder, setOutputPlaceholder] = useState("The output");
   let inputRandBtn = useRef(null);
   let textareaRandBtn = useRef(null);
   let inputFieldRef = useRef(null);
   let keyFieldRef = useRef(null);
-  let outputFieldRef = useRef(null);
-  let selectOpRef = useRef(null);
   let selectTypeRef = useRef(null);
   let selectOutFormatRef = useRef(null);
   let selectInFormatRef = useRef(null);
   let keyInputRef = useRef(null);
   let asciiT = table.ASCII;
 
-  switch (renderType) {
-    case "textlengthkey": {
-      keyFieldRef.current.parentElement.style.display = "flex";
-      keyInputRef.current.parentElement.style.display = "none";
-      break;
-    }
+  // switch (renderType) {
+  //   case "textlengthkey": {
+  //     keyFieldRef.current.parentElement.style.display = "flex";
+  //     keyInputRef.current.parentElement.style.display = "none";
+  //     break;
+  //   }
 
-    case "repeatedkey": {
-      keyFieldRef.current.parentElement.style.display = "none";
-      keyInputRef.current.parentElement.style.display = "flex";
-      break;
-    }
-  }
+  //   case "repeatedkey": {
+  //     keyFieldRef.current.parentElement.style.display = "none";
+  //     keyInputRef.current.parentElement.style.display = "flex";
+  //     break;
+  //   }
+  // }
   function showErrPlaceholder(text) {
     setOutputPlaceholder(text);
     outputFieldRef.current.setAttribute("placeholder", outputPlaceholder);
@@ -43,7 +46,7 @@ export default function Xor({ setService }) {
     switch (type) {
       case "byte-long": {
         key.push(binConvert(Math.floor(Math.random() * 256), 8, "toBin"));
-        keyInputRef.current.value = key.join("");
+        keyFieldRef.current.value = key.join("");
         break;
       }
       case "text-long": {
@@ -113,7 +116,7 @@ export default function Xor({ setService }) {
                 textBits = splitted;
               } else {
                 showErrPlaceholder(
-                  "the text should only contain 0,1 and be of the same length as key\nthe text cannot be shorter than 8 characters"
+                  "XOR: the text should only contain 0,1 and be of the same length as key\nthe text cannot be shorter than 8 characters"
                 );
                 return "";
               }
@@ -256,120 +259,44 @@ export default function Xor({ setService }) {
   }
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper xor-wrapper">
-        <h1>XOR cipher</h1>
-        <div className="format-select">
-          <span>input format: </span>
-          <select ref={selectInFormatRef} onInput={() => triggerFn()}>
-            <option value="plaintextin">ASCII(8bit)</option>
-            <option value="binaryin">binary</option>
-          </select>{" "}
-        </div>
-        <div className="input-container">
-          <div className="input-area-container">
-            <textarea
-              id="input-area"
-              cols="30"
-              rows="10"
-              spellCheck="false"
-              placeholder="Your text goes here..."
-              title="your text"
-              onInput={() => triggerFn()}
-              ref={inputFieldRef}
-            ></textarea>
-          </div>
-          <div className="key-area-container">
-            <button
-              id="randtextlength-btn"
-              title="generate random key"
-              className="rand"
-              data-type="text-long"
-              ref={textareaRandBtn}
-              onClick={(e) => {
-                generateRandomKey(
-                  inputFieldRef.current.value,
-                  e.target.dataset.type,
-                  selectInFormatRef.current.value === "binaryin"
-                    ? "binary"
-                    : "plaintext"
-                );
-                triggerFn();
-              }}
-            >
-              <i className="fas fa-dice"></i>
-            </button>
-            <textarea
-              id="key-area"
-              cols="30"
-              rows="10"
-              spellCheck="false"
-              placeholder="The key"
-              title="your key"
-              onInput={() => triggerFn()}
-              ref={keyFieldRef}
-            ></textarea>
-          </div>
-        </div>
-        <div className="selects-flex">
-          <select
-            onInput={() => triggerFn()}
-            ref={selectOpRef}
-            title="it is a symmetric proceedure so the operation for both encryption and decryption is the same"
+      <div className="input-container">
+        <div className="key-area-container">
+          <button
+            id="randtextlength-btn"
+            title="generate random key"
+            className="rand"
+            data-type="text-long"
+            ref={textareaRandBtn}
+            onClick={(e) => {
+              generateRandomKey(
+                inputFieldRef.current.value,
+                e.target.dataset.type,
+                selectInFormatRef.current.value === "binaryin"
+                  ? "binary"
+                  : "plaintext"
+              );
+              triggerFn();
+            }}
           >
-            <option value="encrypt" id="encrypt">
-              convert
-            </option>
-          </select>
+            <i className="fas fa-dice"></i>
+          </button>
+          <textarea
+            id="key-area"
+            cols="30"
+            rows="5"
+            spellCheck="false"
+            placeholder="The key"
+            title="your key"
+            onInput={() => triggerFn()}
+            ref={keyFieldRef}
+          ></textarea>
           <select onInput={() => triggerFn()} ref={selectTypeRef}>
             <option value="textlengthkey">Text-length key</option>
             <option value="repeatedkey">Repeated key</option>
           </select>
-          <div>
-            <input
-              type="text"
-              placeholder="The key"
-              id="key-input"
-              pattern="^[0-1]{8}$"
-              ref={keyInputRef}
-              onInput={() => triggerFn()}
-              required
-            />
-            <button
-              id="rand8bit-btn"
-              title="generate random key"
-              className="rand"
-              ref={inputRandBtn}
-              data-type="byte-long"
-              onClick={(e) => {
-                generateRandomKey(null, e.target.dataset.type, "plaintext");
-                triggerFn();
-              }}
-            >
-              <i className="fas fa-dice"></i>
-            </button>
-          </div>
         </div>
-
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          title="the output"
-          ref={outputFieldRef}
-        ></textarea>
-        <div className="format-select">
-          <span>output format:</span>{" "}
-          <select ref={selectOutFormatRef} onInput={() => triggerFn()}>
-            <option value="plaintext">ASCII(8bit)</option>
-            <option value="binaryraw">binary(raw)</option>
-            <option value="binaryspaced">binary(spaced out)</option>
-          </select>
-        </div>
-      </main>
-      <section>
+      </div>
+      {/* <section>
         <section className="info">
           <h1>What is XOR cipher?</h1>
           <p>
@@ -426,8 +353,7 @@ export default function Xor({ setService }) {
             format of that text instead
           </p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

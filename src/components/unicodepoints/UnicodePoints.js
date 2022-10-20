@@ -151,55 +151,24 @@ export default function UnicodePoints({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Unicode code points</h1>
-        <textarea
-          onInput={() => triggerFn()}
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
-            <option value="encode">encode</option>
-            <option value="decode">decode</option>
-          </select>
-          <select
-            ref={selectFormatRef}
-            title="format"
-            onInput={() => triggerFn()}
-          >
-            <option value="unicode">Unicode notation</option>
-            <option value="decimal">Decimal</option>
-            <option value="hexadecimal">Hexadecimal</option>
-            <option value="binary">Binary</option>
-            <option value="octal">Octal</option>
-            <option value="ncr-d">NCR (Decimal)</option>
-            <option value="ncr-h">NCR (Hexadecimal)</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Seperator"
-            ref={seperatorRef}
-            onInput={() => triggerFn()}
-            defaultValue=" "
-            title="seperator"
-          />
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section className="info">
+      <select ref={selectFormatRef} title="format" onInput={() => triggerFn()}>
+        <option value="unicode">Unicode notation</option>
+        <option value="decimal">Decimal</option>
+        <option value="hexadecimal">Hexadecimal</option>
+        <option value="binary">Binary</option>
+        <option value="octal">Octal</option>
+        <option value="ncr-d">NCR (Decimal)</option>
+        <option value="ncr-h">NCR (Hexadecimal)</option>
+      </select>
+      <input
+        type="text"
+        placeholder="Seperator"
+        ref={seperatorRef}
+        onInput={() => triggerFn()}
+        defaultValue=" "
+        title="seperator"
+      />
+      {/* <section className="info">
         <h3>What is Unicode?</h3>
         <p>
           Unicode, formally The Unicode Standard is an information technology
@@ -216,8 +185,7 @@ export default function UnicodePoints({ setService }) {
         <a href="https://en.wikipedia.org/wiki/Unicode" target="_blank">
           read more
         </a>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

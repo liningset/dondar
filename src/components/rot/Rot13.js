@@ -1,12 +1,14 @@
-import React, { useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
-import Table from "./table";
+import React, { useEffect, useRef } from "react";
 
-export default function Rot13({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
-  const selectOpRef = useRef(null);
+export default function Rot13({
+  opsList,
+  inputBinary,
+  setInputBinary,
+  outputBinary,
+  setOutputBinary,
+  count,
+  helpers,
+}) {
   const selectRotRef = useRef(null);
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
@@ -72,52 +74,40 @@ export default function Rot13({ setService }) {
         }
       }
     }
-    return arr.join("");
+    return arr;
   }
 
   function triggerFn() {
-    outputFieldRef.current.value = convert(inputFieldRef.current.value);
+    let inputArr = outputBinary.map((x) =>
+      String.fromCharCode(Number(`0b${x}`))
+    );
+    let convertedArr = convert(inputArr.join(""));
+    let result = convertedArr.map((x) =>
+      helpers.lengthen(x.charCodeAt().toString(2), "0")
+    );
+    setOutputBinary(result);
   }
+
+  useEffect(() => {
+    triggerFn();
+  }, [inputBinary, opsList, count]);
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper caesar-wrapper">
-        <h1>ROT-13</h1>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-          onInput={() => triggerFn()}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
-            <option value="convert">convert</option>
-          </select>
-          <select
-            defaultValue="13"
-            ref={selectRotRef}
-            onInput={() => triggerFn()}
-          >
-            <option value="5">rot5(0-9)</option>
-            <option value="13">rot13(A-Z,a-z)</option>
-            <option value="18">rot18(A-Z,a-z,0-9)</option>
-            <option value="47">rot47(!-~)</option>
-          </select>
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <select
+        defaultValue="13"
+        ref={selectRotRef}
+        onInput={() => {
+          setInputBinary(inputBinary);
+          triggerFn();
+        }}
+      >
+        <option value="5">rot5(0-9)</option>
+        <option value="13">rot13(A-Z,a-z)</option>
+        <option value="18">rot18(A-Z,a-z,0-9)</option>
+        <option value="47">rot47(!-~)</option>
+      </select>
+      {/* <section>
         <section className="info">
           <h1>What is ROT-13?</h1>
           <p>
@@ -156,8 +146,7 @@ export default function Rot13({ setService }) {
             encryption follow the same procedure
           </p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

@@ -52,42 +52,15 @@ export default function A1Z26({ setService }) {
   }
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>A1Z26</h1>
-        <textarea
-          onInput={() => triggerFn()}
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
-            <option value="encrypt">encrypt</option>
-            <option value="decrypt">decrypt</option>
-          </select>
-          <input
-            type="text"
-            ref={seperatorInputRef}
-            placeholder="Seperator"
-            pattern=".{1,}"
-            onInput={() => triggerFn()}
-            required
-          />
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <input
+        type="text"
+        ref={seperatorInputRef}
+        placeholder="Seperator"
+        pattern=".{1,}"
+        onInput={() => triggerFn()}
+        required
+      />
+      {/* <section>
         <section className="info">
           <h1>What is A1Z26?</h1>
           <p>
@@ -107,8 +80,7 @@ export default function A1Z26({ setService }) {
             boundary in ciphertext.
           </p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

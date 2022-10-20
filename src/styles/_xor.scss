@@ -1,4 +1,4 @@
-.xor-wrapper {
+.xor {
   width: 90vw;
   .format-select {
     align-self: flex-start;
@@ -64,7 +64,7 @@
 }
 
 @media (max-width: 500px) {
-  .xor-wrapper {
+  .xor {
     .format-select {
       width: 100%;
       flex-direction: column;

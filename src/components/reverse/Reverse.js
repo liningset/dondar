@@ -1,46 +1,15 @@
-import React, { useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
+import React, { useEffect } from "react";
 
-export default function Reverse({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
+export default function Reverse({
+  opsList,
+  outputBinary,
+  inputBinary,
+  setOutputBinary,
+  count,
+}) {
+  useEffect(() => {
+    setOutputBinary(outputBinary.reverse());
+  }, [opsList, inputBinary, outputBinary]);
 
-  function reverser() {
-    let userText = inputFieldRef.current.value;
-    let arr = [];
-    if (userText) {
-      for (let i = userText.length; i >= 0; i--) {
-        arr.push(userText[i]);
-      }
-    } else arr = [];
-
-    outputFieldRef.current.value = arr.join("");
-  }
-  return (
-    <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Reverse</h1>
-        <textarea
-          onInput={() => reverser()}
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-        ></textarea>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <Footer />
-    </>
-  );
+  return <span>No advanced options</span>;
 }

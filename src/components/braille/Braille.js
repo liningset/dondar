@@ -305,45 +305,18 @@ export default function Braille({ setService }) {
   }
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper">
-        <h1>Braille</h1>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-          onInput={() => triggerFn()}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
-            <option value="encode">encode</option>
-            <option value="decode">decode</option>
-          </select>
-          <select ref={selectGradeRef} onInput={() => triggerFn()}>
-            <option value="g1" title="punctuation + alphabete">
-              grade 1
-            </option>
-            <option
-              value="g2"
-              title="punctuation + alphabete + common words contractions"
-            >
-              grade 2
-            </option>
-          </select>
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <select ref={selectGradeRef} onInput={() => triggerFn()}>
+        <option value="g1" title="punctuation + alphabete">
+          grade 1
+        </option>
+        <option
+          value="g2"
+          title="punctuation + alphabete + common words contractions"
+        >
+          grade 2
+        </option>
+      </select>
+      {/* <section>
         <section className="info">
           <h1>What is Braille?</h1>
           <p>
@@ -393,8 +366,7 @@ export default function Braille({ setService }) {
             be as grammatically and punctually valid as possible.
           </p>
         </section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }

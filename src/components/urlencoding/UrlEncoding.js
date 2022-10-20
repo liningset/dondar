@@ -80,42 +80,15 @@ export default function UrlEncoding({ setService }) {
 
   return (
     <>
-      <Header setService={setService} />
-      <main className="wrapper url-encoding-wrapper">
-        <h1>URL encoding</h1>
-        <textarea
-          onInput={() => triggerFn()}
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your text goes here..."
-          ref={inputFieldRef}
-        ></textarea>
-        <div className="selects-flex">
-          <select ref={selectOpRef} onInput={() => triggerFn()}>
-            <option value="encode">encode</option>
-            <option value="decode">decode</option>
-          </select>
-          <select
-            ref={selectSpaceRef}
-            onInput={() => triggerFn()}
-            title="choose what to encode space characters as"
-          >
-            <option value="hex">encode space as %20</option>
-            <option value="plus">encode space as +</option>
-          </select>
-        </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
-      </main>
-      <section>
+      <select
+        ref={selectSpaceRef}
+        onInput={() => triggerFn()}
+        title="choose what to encode space characters as"
+      >
+        <option value="hex">encode space as %20</option>
+        <option value="plus">encode space as +</option>
+      </select>
+      {/* <section>
         <section className="info">
           <h3>What is URL encoding?</h3>
           <p>
@@ -137,8 +110,7 @@ export default function UrlEncoding({ setService }) {
           </a>
         </section>
         <section></section>
-      </section>
-      <Footer />
+      </section> */}
     </>
   );
 }
