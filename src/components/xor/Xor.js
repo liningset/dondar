@@ -259,42 +259,40 @@ export default function Xor({
   }
   return (
     <>
-      <div className="input-container">
-        <div className="key-area-container">
-          <button
-            id="randtextlength-btn"
-            title="generate random key"
-            className="rand"
-            data-type="text-long"
-            ref={textareaRandBtn}
-            onClick={(e) => {
-              generateRandomKey(
-                inputFieldRef.current.value,
-                e.target.dataset.type,
-                selectInFormatRef.current.value === "binaryin"
-                  ? "binary"
-                  : "plaintext"
-              );
-              triggerFn();
-            }}
-          >
-            <i className="fas fa-dice"></i>
-          </button>
-          <textarea
-            id="key-area"
-            cols="30"
-            rows="5"
-            spellCheck="false"
-            placeholder="The key"
-            title="your key"
-            onInput={() => triggerFn()}
-            ref={keyFieldRef}
-          ></textarea>
-          <select onInput={() => triggerFn()} ref={selectTypeRef}>
-            <option value="textlengthkey">Text-length key</option>
-            <option value="repeatedkey">Repeated key</option>
-          </select>
-        </div>
+      <div className="key-area-container">
+        <button
+          id="randtextlength-btn"
+          title="generate random key"
+          className="rand"
+          data-type="text-long"
+          ref={textareaRandBtn}
+          onClick={(e) => {
+            generateRandomKey(
+              inputFieldRef.current.value,
+              e.target.dataset.type,
+              selectInFormatRef.current.value === "binaryin"
+                ? "binary"
+                : "plaintext"
+            );
+            triggerFn();
+          }}
+        >
+          <i className="fas fa-dice"></i>
+        </button>
+        <textarea
+          id="key-area"
+          cols="30"
+          rows="5"
+          spellCheck="false"
+          placeholder="The key"
+          title="your key"
+          onInput={() => triggerFn()}
+          ref={keyFieldRef}
+        ></textarea>
+        <select onInput={() => triggerFn()} ref={selectTypeRef}>
+          <option value="textlengthkey">Text-length key</option>
+          <option value="repeatedkey">Repeated key</option>
+        </select>
       </div>
       {/* <section>
         <section className="info">

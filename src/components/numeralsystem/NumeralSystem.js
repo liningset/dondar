@@ -1,60 +1,114 @@
-import React, { useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
+import React, { useRef, useEffect } from "react";
 
-export default function NumeralSystem({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
+export default function NumeralSystem({
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   const selectFromRef = useRef(null);
   const selectToRef = useRef(null);
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  //const arabicNums = "٠١٢٣٤٥٦٧٨٩";
-  //const devanagariNums = "०१२३४५६७८९";
+  const sanskrit = "०१२३४५६७८९".split("");
+  const arabic = "٠١٢٣٤٥٦٧٨٩".split("");
 
   /*this function will validate the input before doing anything with it
   to make sure that it doesn't contain unwanted characters or values 
   depending on the selected format*/
-  function validate() {
-    let validator;
-    let selectRefValue = Number(selectFromRef.current.value);
+  function validate(input) {
+    let isNotEmpty = input.length !== 0;
+    if (isNotEmpty) {
+      let validator;
+      let selectRefValue = Number(selectFromRef.current.value);
 
-    if (selectFromRef.current.value === "r") {
-      validator = /^M*(CM)*D*(CD)*C*(XC)*L*(XL)*X*(IX)*V*(IV)*I*\n?$/gim;
-    } else if (selectRefValue <= 10) {
-      let numRange = `0-${selectRefValue - 1}`;
-      validator = new RegExp(`^[\\n${numRange}]+$`);
-    } else {
-      let alphabetRange = `A-${alphabet[selectRefValue - 11]}`;
-      validator = new RegExp(`^[\\n0-9${alphabetRange}]+$`, "i");
+      if (selectFromRef.current.value === "r") {
+        validator = /^M*(CM)*D*(CD)*C*(XC)*L*(XL)*X*(IX)*V*(IV)*I*\n?$/gim;
+      } else if (selectFromRef.current.value === "s") {
+        validator = /^[\n०१२३४५६७८९]+$/;
+      } else if (selectFromRef.current.value === "a") {
+        validator = /^[\n٠١٢٣٤٥٦٧٨٩]+$/;
+      } else if (selectRefValue <= 10) {
+        let numRange = `0-${selectRefValue - 1}`;
+        validator = new RegExp(`^[\\n${numRange}]+$`);
+      } else {
+        let alphabetRange = `A-${alphabet[selectRefValue - 11]}`;
+        validator = new RegExp(`^[\\n0-9${alphabetRange}]+$`, "i");
+      }
+      if (validator.test(helpers.binToChar(input).join(""))) {
+        return true;
+      } else {
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: `Invalid ${
+                /(?<=\().+(?=\))/.test(
+                  document.querySelector(
+                    `[value="${selectFromRef.current.value}"]`
+                  ).innerText
+                )
+                  ? document
+                      .querySelector(`[value="${selectFromRef.current.value}"]`)
+                      .innerText.match(/(?<=\().+(?=\))/)[0]
+                  : document.querySelector(
+                      `[value="${selectFromRef.current.value}"]`
+                    ).innerText
+              }`,
+            },
+          ],
+        });
+        return false;
+      }
     }
-    return validator.test(inputFieldRef.current.value);
   }
 
   /*numbers of all types are converted to deciaml first and later to the target format.
   this function recieves a number of any format(binary, hex, etc.) and the base that number has 
   to return the decimalized output*/
   function convertToDecimal(numberInput, base) {
-    if (base === "r") {
-      /*because Roman numerals dont follow the generic rule, 
+    switch (base) {
+      case "r":
+        /*because Roman numerals dont follow the generic rule, 
       another dedicated function converts it to and from decimal*/
-      return convertRoman(numberInput.toUpperCase(""), "romanToDecimal");
-    } else {
-      let arr = [];
-      //a reversed array of input number's digits Uppercased
-      let digits = `${numberInput}`.toUpperCase("").split("").reverse("");
-      digits.forEach((digit, index) => {
-        /*each digit is run through a test. 
+        return convertRoman(numberInput.toUpperCase(""), "romanToDecimal");
+
+      case "s":
+        return Number(
+          numberInput
+            .replace(/,/g, "")
+            .split("")
+            .map((letter) =>
+              sanskrit.indexOf(sanskrit.find((d) => d === letter))
+            )
+            .join("")
+        );
+      case "a":
+        return Number(
+          numberInput
+            .replace(/,/g, "")
+            .split("")
+            .map((letter) => arabic.indexOf(arabic.find((d) => d === letter)))
+            .join("")
+        );
+
+      default:
+        let arr = [];
+        //a reversed array of input number's digits Uppercased
+        let digits = `${numberInput}`.toUpperCase("").split("").reverse("");
+        digits.forEach((digit, index) => {
+          /*each digit is run through a test. 
         if the digit is alphabetic it's index in alphabete is added by 10 
         and multipled by base times current index
         else the digit itself is multiplied by base times current index
         in either case the output is added to the above array*/
-        /[A-Z]/.test(digit)
-          ? arr.push((alphabet.indexOf(digit) + 10) * base ** index)
-          : arr.push(digit * base ** index);
-      });
+          /[A-Z]/.test(digit)
+            ? arr.push((alphabet.indexOf(digit) + 10) * base ** index)
+            : arr.push(digit * base ** index);
+        });
 
-      //returns arr numbers' sum
-      return arr.reduce((a, b) => Number(a) + Number(b), 0);
+        //returns arr numbers' sum
+        return arr.reduce((a, b) => Number(a) + Number(b), 0);
     }
   }
 
@@ -96,13 +150,17 @@ export default function NumeralSystem({ setService }) {
       case "r": {
         //the function that deals with roman seperately
         return convertRoman(numberInDecimal, "decimalToRoman");
-        break;
+      }
+      case "s": {
+        return numberInDecimal.toLocaleString("sa");
+      }
+      case "a": {
+        return numberInDecimal.toLocaleString("ar-EG");
       }
       case "10": {
         /*we don't want to do anything else to a number
          that is already decimal on a decimal request*/
         return numberInDecimal;
-        break;
       }
       default: {
         /*run convertToBase function if both above cases don't match 
@@ -113,7 +171,6 @@ export default function NumeralSystem({ setService }) {
           isNaN(Number(toBase)) ? toBase : Number(toBase)
         );
         //the second argument will be the string "r" if it's supposed to be converted to Roman
-        break;
       }
     }
   }
@@ -183,13 +240,17 @@ export default function NumeralSystem({ setService }) {
             return arr.join("");
           }
         } else {
-          outputFieldRef.current.setAttribute(
-            "placeholder",
-            "Input cannot exceed 3999₁₀"
-          );
+          helpers.updateStorage({
+            haltedAt: [
+              ...helpers.getFromStorage("haltedAt"),
+              {
+                at: `${opInfo.index + 1}.${opInfo.title}: `,
+                error: "Input cannot exceed 3999₁₀",
+              },
+            ],
+          });
           return "";
         }
-        break;
       }
 
       case "romanToDecimal": {
@@ -205,57 +266,66 @@ export default function NumeralSystem({ setService }) {
 
         //returns the output that is the sum of all numbers in convertedNumbers
         return convertedNumbers.reduce((a, b) => a + b, 0);
-        break;
       }
     }
   }
 
   function triggerFn() {
-    let result;
-    if (inputFieldRef.current.value !== "") {
-      if (selectFromRef.current.value !== selectToRef.current.value) {
-        if (validate()) {
-          outputFieldRef.current.setAttribute("placeholder", "The output");
-          result = inputFieldRef.current.value
-            .match(/^.+$/gm)
-            .map((val) =>
-              convert(
-                val,
-                selectFromRef.current.value,
-                selectToRef.current.value
-              )
-            )
-            .join("\n");
-          console.log(result);
-          /*convert(
-            inputFieldRef.current.value,
-            selectFromRef.current.value,
-            selectToRef.current.value
-          );*/
-        } else {
-          outputFieldRef.current.setAttribute("placeholder", "Invalid input");
-          result = "";
-        }
-      } else {
-        outputFieldRef.current.setAttribute("placeholder", "The output");
-        result = inputFieldRef.current.value;
-      }
-    } else {
-      outputFieldRef.current.setAttribute("placeholder", "The output");
-      result = "";
+    let inputBinary = helpers.getFromStorage("outputBins");
+
+    if (validate(inputBinary)) {
+      let result;
+      result = helpers
+        .binToChar(inputBinary)
+        .join("")
+        .match(/^.+$/gm)
+        .map((val) =>
+          convert(val, selectFromRef.current.value, selectToRef.current.value)
+        )
+        .join("\n");
+
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split("")),
+      });
     }
 
-    outputFieldRef.current.value = result;
+    let info = `<h1>What is a numeral system?</h1>
+    <p>
+      A numeral system (or system of numeration) is a writing system for
+      expressing numbers; that is, a mathematical notation for
+      representing numbers of a given set, using digits or other symbols
+      in a consistent manner.
+    </p>
+    <p>
+      The same sequence of symbols may represent different numbers in
+      different numeral systems. For example, "11" represents the number
+      eleven in the decimal numeral system (used in common life), the
+      number three in the binary numeral system (used in computers), and
+      the number two in the unary numeral system (e.g. used in tallying
+      scores).
+    </p>
+
+    <a
+      href="https://en.wikipedia.org/wiki/Numeral_system"
+      target="_blank"
+    >
+      read more
+    </a>
+  `;
+
+    //helpers.updateStorage({descryption});
   }
+
+  useEffect(() => triggerFn());
 
   return (
     <>
-      <div>
-        <span>from </span>{" "}
+      <div className="div">
+        <span>convert from</span>
         <select
           defaultValue="10"
           ref={selectFromRef}
-          onInput={() => triggerFn()}
+          onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
         >
           <optgroup label="by position">
             <option value="2">Base-2 (Binary)</option>
@@ -296,12 +366,17 @@ export default function NumeralSystem({ setService }) {
           </optgroup>
           <optgroup label="by culture/history">
             <option value="r">Roman numerals</option>
+            <option value="s">Sanskrit numerals</option>
+            <option value="a">Arabic numerals</option>
           </optgroup>
         </select>
       </div>
-      <div>
-        <span>to </span>{" "}
-        <select ref={selectToRef} onInput={() => triggerFn()}>
+      <div className="div">
+        <span>convert to</span>
+        <select
+          ref={selectToRef}
+          onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+        >
           <optgroup label="by position">
             <option value="2">Base-2 (Binary)</option>
             <option value="3">Base-3</option>
@@ -341,6 +416,8 @@ export default function NumeralSystem({ setService }) {
           </optgroup>
           <optgroup label="by culture/history">
             <option value="r">Roman numerals</option>
+            <option value="s">Sanskrit numerals</option>
+            <option value="a">Arabic numerals</option>
           </optgroup>
         </select>
       </div>

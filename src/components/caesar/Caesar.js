@@ -1,11 +1,14 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function Caesar({ currentOp, setService }) {
-  let inputFieldRef = useRef(null);
-  let outputFieldRef = useRef(null);
-  let selectMethodRef = useRef(null);
+export default function Caesar({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   let subtractionRef = useRef(null);
   let additionRef = useRef(null);
   let shiftInputRef = useRef(null);
@@ -35,7 +38,31 @@ export default function Caesar({ currentOp, setService }) {
       : alphabete[currentIndex];
   }
 
-  function encrypt(text, shiftNum) {
+  function validate(input) {
+    let isNotEmpty = input.length !== 0;
+    let shiftNumIsValid = shiftInputRef.current.validity.valid;
+    if (isNotEmpty) {
+      if (shiftNumIsValid) {
+        return true;
+      } else {
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error:
+                "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long",
+            },
+          ],
+        });
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  function encode(text, shiftNum) {
     let arr = [];
     for (let char of text) {
       if (!alphabete.includes(char.toUpperCase())) {
@@ -48,11 +75,10 @@ export default function Caesar({ currentOp, setService }) {
         }
       }
     }
-    //outputFieldRef.current.value = arr.join("");
-    console.log(arr.join(""));
+    return arr.join("");
   }
 
-  function decrypt(text, shiftNum) {
+  function decode(text, shiftNum) {
     let arr = [];
     for (let char of text) {
       if (!alphabete.includes(char.toUpperCase())) {
@@ -65,34 +91,46 @@ export default function Caesar({ currentOp, setService }) {
         }
       }
     }
-    //outputFieldRef.current.value = arr.join("");
-    console.log(arr.join(""));
+    return arr.join("");
   }
 
-  function triggerFn() {
+  function overwriteRangeReg() {
     if (shiftInputRef.current.validity.valid) {
       rangeRef.current.innerText = `a → ${iterator(
         "a",
         Math.abs(shiftInputRef.current.value),
         shiftInputRef.current.value > 0 ? "forwards" : "backwards"
       )}`;
+    } else rangeRef.current.innerText = "a → ?";
+  }
 
-      if (currentOp === "encode") {
-        encrypt("joqvuGjfmeSfg.dvssfou.wbmvf", shiftInputRef.current.value);
-      } else if (currentOp === "decode") {
-        decrypt("joqvuGjfmeSfg.dvssfou.wbmvf", shiftInputRef.current.value);
+  function triggerFn() {
+    let inputBinary = helpers.getFromStorage("outputBins");
+    if (validate(inputBinary)) {
+      let result;
+
+      switch (currentOp) {
+        case "encode":
+          result = encode(
+            helpers.binToChar(inputBinary).join(""),
+            shiftInputRef.current.value
+          );
+          break;
+
+        case "decode":
+          result = decode(
+            helpers.binToChar(inputBinary).join(""),
+            shiftInputRef.current.value
+          );
+          break;
       }
-
-      outputFieldRef.current.setAttribute("placeholder", "The output");
-    } else {
-      rangeRef.current.innerText = "a → ?";
-      // outputFieldRef.current.value = "";
-      // outputFieldRef.current.setAttribute(
-      //   "placeholder",
-      //   "1. shift value cannot be empty\n2. shift value has to be a number\n3. shift value can be no more than 7 digits long"
-      // );
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split("")),
+      });
     }
   }
+
+  useEffect(() => triggerFn());
 
   return (
     <>
@@ -100,15 +138,14 @@ export default function Caesar({ currentOp, setService }) {
         className="subtract"
         ref={subtractionRef}
         onClick={() => {
-          if (shiftInputRef.current.value === "")
-            shiftInputRef.current.value = "0";
-          if (shiftInputRef.current.validity.valid) {
+          if (shiftInputRef.current.validity.valid)
             shiftInputRef.current.value--;
-          }
-          triggerFn();
+          else shiftInputRef.current.value = "0";
+          overwriteRangeReg();
+          setOutputBinary(helpers.getFromStorage("inputBins"));
         }}
       >
-        -
+        <i className="fas fa-minus"></i>
       </button>
       <div className="div">
         <span ref={rangeRef}>a → a</span>
@@ -116,8 +153,21 @@ export default function Caesar({ currentOp, setService }) {
           type="text"
           pattern="-?[0-9]{1,7}|0+"
           ref={shiftInputRef}
-          onInput={() => {
-            triggerFn();
+          onInput={(e) => {
+            overwriteRangeReg();
+            if (!e.target.validity.valid) {
+              helpers.updateStorage({
+                haltedAt: [
+                  ...helpers.getFromStorage("haltedAt"),
+                  {
+                    at: `${opInfo.index + 1}.${opInfo.title}: `,
+                    error:
+                      "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long",
+                  },
+                ],
+              });
+            }
+            setOutputBinary(helpers.getFromStorage("inputBins"));
           }}
           defaultValue="0"
           placeholder="shift by"
@@ -128,15 +178,15 @@ export default function Caesar({ currentOp, setService }) {
         className="add"
         ref={additionRef}
         onClick={() => {
-          if (shiftInputRef.current.value === "")
-            shiftInputRef.current.value = "0";
-          if (shiftInputRef.current.validity.valid) {
+          if (shiftInputRef.current.validity.valid)
             shiftInputRef.current.value++;
-          }
-          triggerFn();
+          else shiftInputRef.current.value = "0";
+
+          overwriteRangeReg();
+          setOutputBinary(helpers.getFromStorage("inputBins"));
         }}
       >
-        +
+        <i className="fas fa-plus"></i>
       </button>
     </>
   );

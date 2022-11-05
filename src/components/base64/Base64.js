@@ -219,7 +219,8 @@ export default function Base64({ setService }) {
     }
   }
   return (
-    <>
+    <div className="div">
+      <span>Variant</span>
       <select onInput={() => triggerFn()} ref={selectVariantRef}>
         <option value="base64">Base64 (RFC 4648)</option>
         <option value="base64url">Base64url (RFC 4648)</option>
@@ -254,6 +255,6 @@ export default function Base64({ setService }) {
           </a>
         </section>
       </section> */}
-    </>
+    </div>
   );
 }

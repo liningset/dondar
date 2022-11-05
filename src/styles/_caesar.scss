@@ -3,6 +3,7 @@
   justify-content: center;
 
   .div {
+    flex: 5;
     position: relative;
     box-shadow: var(--shadow2);
     input {
@@ -14,9 +15,10 @@
     span {
       position: absolute;
       display: flex;
-      right: -7rem;
+      right: 1rem;
       top: 50%;
       transform: translateY(-50%);
+      pointer-events: none;
       &:focus {
         display: none;
       }

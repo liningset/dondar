@@ -29,10 +29,12 @@ export default function Home({ setService }) {
   const [inputFieldRef, outputFieldRef] = [useRef(null), useRef(null)];
   const opsContainer = useRef(null);
   const [overlay, modal2] = [useRef(null), useRef(null)];
+  const [opsList, setOpsList] = useState([]);
   const [inputBinary, setInputBinary] = useState([]);
   const [outputBinary, setOutputBinary] = useState([]);
-  const [opsList, setOpsList] = useState([]);
-  const [count, setCount] = useState(0);
+  const [haltedAt, setHaltedAt] = useState([]);
+  const [descryptionMain, setDescryptionMain] = useState("");
+
   const importsArr = [
     { comp: Ascii85, category: "encoding", title: "Ascii85", asymmetric: true },
     { comp: Base64, category: "encoding", title: "Base64", asymmetric: true },
@@ -46,7 +48,7 @@ export default function Home({ setService }) {
     {
       comp: Reverse,
       category: "transform",
-      title: "Reversal",
+      title: "Reverse",
       asymmetric: false,
     },
     { comp: A1Z26, category: "encryption", title: "A1Z26", asymmetric: true },
@@ -73,7 +75,7 @@ export default function Home({ setService }) {
     {
       comp: Replace,
       category: "transform",
-      title: "Replacement",
+      title: "Replace",
       asymmetric: false,
     },
     {
@@ -104,7 +106,7 @@ export default function Home({ setService }) {
       comp: AlphabeticalSub,
       category: "encryption",
       title: "Substitution cipher",
-      asymmetric: true,
+      asymmetric: false,
     },
     {
       comp: UnicodePoints,
@@ -139,7 +141,39 @@ export default function Home({ setService }) {
       }
       return uuid.join("");
     },
+    updateStorage: function (slots) {
+      Object.entries(slots).forEach(([key, value]) => {
+        sessionStorage.setItem(key, JSON.stringify(value));
+      });
+    },
+    getFromStorage: function (input) {
+      return typeof input === "string"
+        ? JSON.parse(sessionStorage.getItem(input))
+        : input.map((slot) => JSON.parse(sessionStorage.getItem(slot)));
+    },
   };
+  helpers.charToBin = function (input) {
+    return typeof input === "string"
+      ? helpers.lengthen(input.charCodeAt(0).toString(2), "0")
+      : input.map((char) =>
+          helpers.lengthen(char.charCodeAt(0).toString(2), "0")
+        );
+  };
+  helpers.binToChar = function (input) {
+    return typeof input === "string"
+      ? String.fromCharCode(Number(`0b${input}`))
+      : input.map((octet) => String.fromCharCode(Number(`0b${octet}`)));
+  };
+
+  helpers.toUTF8 = function () {};
+
+  helpers.updateStorage({
+    opsList: opsList,
+    inputBins: inputBinary,
+    outputBins: outputBinary,
+    haltedAt: [],
+    descryptionMain: "",
+  });
 
   function introAnim() {
     try {
@@ -203,16 +237,15 @@ export default function Home({ setService }) {
   }
 
   function handleInFormatSwap(value) {
+    let inputBinary = helpers.getFromStorage("inputBins");
     let display;
     switch (value) {
       case "binary":
         display = inputBinary.join(" ");
         break;
 
-      case "ascii":
-        display = inputBinary
-          .map((octet) => String.fromCharCode(Number(`0b${octet}`)))
-          .join("");
+      case "text":
+        display = helpers.binToChar(inputBinary).join("");
         break;
 
       case "hex":
@@ -225,16 +258,15 @@ export default function Home({ setService }) {
   }
 
   function handleOutFormatSwap(value) {
+    let outputBinary = helpers.getFromStorage("outputBins");
     let display;
     switch (value) {
       case "binary":
         display = outputBinary.join(" ");
         break;
 
-      case "ascii":
-        display = outputBinary
-          .map((octet) => String.fromCharCode(Number(`0b${octet}`)))
-          .join("");
+      case "text":
+        display = display = helpers.binToChar(outputBinary).join("");
         break;
 
       case "hex":
@@ -247,51 +279,65 @@ export default function Home({ setService }) {
   }
 
   function menuBtnHandler(info) {
-    let toAdd = {
+    //let arr = helpers.getFromStorage(["opsList", "inputBins"]);
+    let newOp = {
       ...info,
       id: helpers.uuid(),
     };
-    toAdd.asymmetric = importsArr.find(
-      (x) => x.comp.name === toAdd.dataAttr
+    newOp.asymmetric = importsArr.find(
+      (x) => x.comp.name === newOp.dataAttr
     ).asymmetric;
-    let newOpsList = opsList.concat(toAdd);
-    setOutputBinary(inputBinary);
+    let newOpsList = opsList.concat(newOp);
+    //helpers.updateStorage({ outputBins: arr[1], opsList: newOpsList });
     setOpsList(newOpsList);
+    //setRender(render + 1);
   }
 
   function inputChangeHandler() {
-    [setInputBinary, setOutputBinary].forEach((fn) => {
-      fn(
-        inputFieldRef.current.value.split("").map((char) => {
-          return helpers.lengthen(char.charCodeAt(0).toString(2), "0");
-        })
-      );
+    let extractedInputBins = helpers.charToBin(
+      inputFieldRef.current.value.split("")
+    );
+    helpers.updateStorage({
+      inputBins: extractedInputBins,
+      outputBins: extractedInputBins,
     });
+    [setInputBinary, setOutputBinary].forEach((fn) => fn(extractedInputBins));
   }
 
   useEffect(() => {
+    let outputBinary = helpers.getFromStorage("outputBins");
+    let haltedAt = helpers.getFromStorage("haltedAt");
     introAnim();
 
     if (opsContainer.current.children.length === 0)
       opsContainer.current.parentElement.style.gap = "0";
     else opsContainer.current.parentElement.style.gap = "0.5rem";
 
-    switch (selectOutFormatRef.current.value) {
-      case "binary":
-        outputFieldRef.current.value = outputBinary.join(" ");
-        break;
+    if (haltedAt.length === 0) {
+      outputFieldRef.current.setAttribute("placeholder", "The output");
+      switch (selectOutFormatRef.current.value) {
+        case "binary":
+          outputFieldRef.current.value = outputBinary.join(" ");
+          break;
 
-      case "ascii":
-        outputFieldRef.current.value = outputBinary
-          .map((x) => String.fromCharCode(Number(`0b${x}`)))
-          .join("");
-        break;
+        case "text":
+          outputFieldRef.current.value = helpers
+            .binToChar(outputBinary)
+            .join("");
+          break;
 
-      case "hex":
-        outputFieldRef.current.value = outputBinary
-          .map((x) => Number(`0b${x}`).toString(16))
-          .join(" ");
-        break;
+        case "hex":
+          outputFieldRef.current.value = outputBinary
+            .map((x) => Number(`0b${x}`).toString(16))
+            .join(" ");
+          break;
+      }
+    } else {
+      outputFieldRef.current.value = "";
+      outputFieldRef.current.setAttribute(
+        "placeholder",
+        `${haltedAt.map((obj) => `${obj.at + obj.error}\n`).join("")}`
+      );
     }
   });
 
@@ -362,7 +408,7 @@ export default function Home({ setService }) {
                     (x) => x.id !== modal2.current.dataset.todelete
                   )
                 );
-                setOutputBinary(inputBinary);
+                setOutputBinary(helpers.getFromStorage("inputBins"));
                 modalAnim("close", 1);
               }}
             >
@@ -373,31 +419,63 @@ export default function Home({ setService }) {
             </button>
           </div>
         </div>
+
+        <div className="modal3" data-active="false">
+          <button
+            className="close-modal-btn"
+            onClick={() => modalAnim("close", 2)}
+          >
+            <i className="fas fa-times"></i>
+          </button>
+
+          <div className="info">{}</div>
+        </div>
       </div>
+
+      <button
+        data-scrollto="up"
+        id="scroll-btn"
+        onClick={(e) => {
+          let target = e.target;
+          if (target.dataset.scrollto === "up") {
+            target.dataset.scrollto = "down";
+            window.scrollTo(0, document.body.scrollHeight);
+          } else {
+            target.dataset.scrollto = "up";
+            window.scrollTo(0, 0);
+          }
+        }}
+      >
+        <i className="fas fa-arrow-down"></i>{" "}
+      </button>
 
       <Header setService={setService} />
       <main className="wrapper">
         <div className="adjustments">
           <div className="adjustment">
-            <span>input format: </span>
+            <span>Input view: </span>
             <select
               ref={selectInFormatRef}
               onInput={(e) => handleInFormatSwap(e.target.value)}
             >
-              <option value="ascii">ASCII(8bit)</option>
-              <option value="binary">binary</option>
-              <option value="hex">hexadecimal</option>
+              <optgroup label="UTF-8">
+                <option value="text">Text</option>
+                <option value="binary">Binary</option>
+                <option value="hex">Hexadecimal</option>
+              </optgroup>
             </select>
           </div>
           <div className="adjustment">
-            <span>output format: </span>
+            <span>Output view: </span>
             <select
               ref={selectOutFormatRef}
               onInput={(e) => handleOutFormatSwap(e.target.value)}
             >
-              <option value="ascii">ASCII(8bit)</option>
-              <option value="binary">binary</option>
-              <option value="hex">hexadecimal</option>
+              <optgroup label="UTF-8">
+                <option value="text">Text</option>
+                <option value="binary">Binary</option>
+                <option value="hex">Hexadecimal</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -406,7 +484,7 @@ export default function Home({ setService }) {
           cols="30"
           rows="10"
           spellCheck="false"
-          placeholder="Your text goes here..."
+          placeholder="Your input"
           ref={inputFieldRef}
           onInput={() => inputChangeHandler()}
         ></textarea>
@@ -420,14 +498,9 @@ export default function Home({ setService }) {
                     Component={
                       importsArr.find((x) => x.comp.name === op.dataAttr).comp
                     }
-                    opInfo={{ ...op, index }}
-                    opsList={opsList}
-                    inputBinary={inputBinary}
-                    setInputBinary={setInputBinary}
-                    outputBinary={outputBinary}
                     setOutputBinary={setOutputBinary}
-                    count={count}
-                    setCount={setCount}
+                    setHaltedAt={setHaltedAt}
+                    opInfo={{ ...op, index }}
                     helpers={helpers}
                     modals={{ main: modalAnim, side1: modal2 }}
                     outputFieldRef={outputFieldRef}

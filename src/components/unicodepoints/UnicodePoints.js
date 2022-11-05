@@ -1,13 +1,52 @@
-import React, { useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
+import React, { useEffect, useRef } from "react";
 
-export default function UnicodePoints({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
-  const selectOpRef = useRef(null);
+export default function UnicodePoints({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   const selectFormatRef = useRef(null);
   const seperatorRef = useRef(null);
+
+  function validate(input) {
+    const isNotEmpty = input.length !== 0;
+    const seperatorNotEmpty = seperatorRef.current.value !== "";
+
+    if (isNotEmpty) {
+      if (seperatorNotEmpty) {
+        return true;
+      } else {
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: "Seperator cannot be empty",
+            },
+          ],
+        });
+        return false;
+      }
+    } else return false;
+
+    /*if (inputFieldRef.current.value !== "") {
+      if (seperatorRef.current.value === "") {
+        outputFieldRef.current.placeholder = "Seperator cannot be empty";
+        outputFieldRef.current.value = "";
+      } else {
+        outputFieldRef.current.placeholder = "The output";
+      }
+    } else {
+      outputFieldRef.current.placeholder = "The output";
+      outputFieldRef.current.value = "";
+    }
+
+    return (
+      inputFieldRef.current.value !== "" && seperatorRef.current.value !== ""
+    );*/
+  }
 
   function encode(text) {
     let arr = [];
@@ -116,58 +155,57 @@ export default function UnicodePoints({ setService }) {
       .join("");
   }
 
-  function validate() {
-    if (inputFieldRef.current.value !== "") {
-      if (seperatorRef.current.value === "") {
-        outputFieldRef.current.placeholder = "Seperator cannot be empty";
-        outputFieldRef.current.value = "";
-      } else {
-        outputFieldRef.current.placeholder = "The output";
-      }
-    } else {
-      outputFieldRef.current.placeholder = "The output";
-      outputFieldRef.current.value = "";
-    }
-
-    return (
-      inputFieldRef.current.value !== "" && seperatorRef.current.value !== ""
-    );
-  }
-
   function triggerFn() {
-    if (validate()) {
-      switch (selectOpRef.current.value) {
+    let inputBinary = helpers.getFromStorage("outputBins");
+    if (validate(inputBinary)) {
+      let result;
+      switch (currentOp) {
         case "encode": {
-          outputFieldRef.current.value = encode(inputFieldRef.current.value);
+          result = encode(helpers.binToChar(inputBinary).join(""));
           break;
         }
         case "decode": {
-          outputFieldRef.current.value = decode(inputFieldRef.current.value);
+          result = decode(helpers.binToChar(inputBinary).join(""));
           break;
         }
       }
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split("")),
+      });
     }
   }
 
+  useEffect(() => triggerFn());
+
   return (
     <>
-      <select ref={selectFormatRef} title="format" onInput={() => triggerFn()}>
-        <option value="unicode">Unicode notation</option>
-        <option value="decimal">Decimal</option>
-        <option value="hexadecimal">Hexadecimal</option>
-        <option value="binary">Binary</option>
-        <option value="octal">Octal</option>
-        <option value="ncr-d">NCR (Decimal)</option>
-        <option value="ncr-h">NCR (Hexadecimal)</option>
-      </select>
-      <input
-        type="text"
-        placeholder="Seperator"
-        ref={seperatorRef}
-        onInput={() => triggerFn()}
-        defaultValue=" "
-        title="seperator"
-      />
+      <div className="div">
+        <span>Format</span>
+        <select
+          ref={selectFormatRef}
+          title="format"
+          onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+        >
+          <option value="unicode">Unicode notation</option>
+          <option value="decimal">Decimal</option>
+          <option value="hexadecimal">Hexadecimal</option>
+          <option value="binary">Binary</option>
+          <option value="octal">Octal</option>
+          <option value="ncr-d">NCR (Decimal)</option>
+          <option value="ncr-h">NCR (Hexadecimal)</option>
+        </select>
+      </div>
+      <div className="div">
+        <span>Seperator</span>
+        <input
+          type="text"
+          placeholder="Seperator"
+          ref={seperatorRef}
+          onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+          defaultValue=" "
+          title="seperator"
+        />
+      </div>
       {/* <section className="info">
         <h3>What is Unicode?</h3>
         <p>

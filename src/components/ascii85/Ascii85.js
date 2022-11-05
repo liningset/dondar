@@ -1,15 +1,18 @@
-import { useRef, useState } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
+import { useEffect, useRef, useState } from "react";
 
-export default function Ascii85({ setService }) {
+export default function Ascii85({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   let inputFieldRef = useRef(null);
   let outputFieldRef = useRef(null);
   let selectOpRef = useRef(null);
   let selectVariantRef = useRef(null);
   let selectOutFormatRef = useRef(null);
   let selectInFormatRef = useRef(null);
-  let [inputBinary, outputBinary] = [[], []];
   let charsets = {
     original: [
       "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstu",
@@ -21,123 +24,55 @@ export default function Ascii85({ setService }) {
     ],
   };
 
+  //---------------------------------------------------------------------------------
+
   //the function that evaluates input before proceeding with further operations
-  function validate() {
+  function validate(input) {
     //first off, input must not be empty
-    if (inputFieldRef.current.value !== "") {
-      let textArr = inputFieldRef.current.value.split("");
+    if (input !== []) {
+      //let textArr = helpers.binToChar(inputBinary);
       let reg;
-      /*assigns a certain regular expression to reg variable depending on 
-      whether the view mode is binary or plaintext*/
-      switch (selectInFormatRef.current.value) {
-        case "binary":
-          reg = /^([01]{8}( +)?)+$/;
+      switch (currentOp) {
+        case "encode":
+          reg = /\n|./;
           break;
 
-        case "ascii":
-          /*since certain characters don't exist in different variants of ascii85, 
-          when decoding(assuming the input will be ascii85 encoded text) those illegal characters will be weeded out
-          to avoid giving useless output to the user. In encoding part though any ascii(or unicode) character will be allowed 
-          including line break*/
-          reg =
-            selectOpRef.current.value === "decode"
-              ? charsets[selectVariantRef.current.value][1]
-              : /.|\n/;
+        case "decode":
+          reg = charsets[selectVariantRef.current.value][1];
           break;
       }
-      /*the authentication procedure will be different for binary and plaintext input. 
-      in plaintext each single character will be evaluated but in binary the whole text on one go*/
-      if (
-        selectInFormatRef.current.value === "binary"
-          ? reg.test(textArr.join(""))
-          : textArr.every((c) => reg.test(c))
-      ) {
-        //if the evaluation is successful:
-        outputFieldRef.current.setAttribute("placeholder", `The output`);
+
+      if (input.every((o) => reg.test(helpers.binToChar(o)))) {
         return true;
       } else {
         //otherwise:
-        if (
-          selectInFormatRef.current.value === "binary" &&
-          textArr.length < 8
-        ) {
-          outputFieldRef.current.setAttribute("placeholder", `The output`);
-          outputFieldRef.current.value = "";
-        } else {
-          let illegalChar = textArr.find((x) => !reg.test(x));
-          outputFieldRef.current.value = "";
-          outputFieldRef.current.setAttribute(
-            "placeholder",
-            `Invalid character at index ${textArr.indexOf(illegalChar)}`
-          );
-        }
+        let illegalChar = input.find(
+          (char) => !reg.test(helpers.binToChar(char))
+        );
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: `Invalid character at index ${input.indexOf(illegalChar)}`,
+            },
+          ],
+        });
         return false;
       }
     } else {
-      //if input is empty:
       outputFieldRef.current.setAttribute("placeholder", `The output`);
-      outputFieldRef.current.value = "";
       return false;
     }
   }
 
-  //if user switches the input view this function would run
-  function handleInFormatSwap(value) {
-    let display;
-    switch (value) {
-      case "binary":
-        //input field will show the binary values of each input character stringed together.
-        display = inputBinary.join(" ");
-        break;
-
-      case "ascii":
-        /*input field will show the binary values of each input character
-        converted to it's utf-8 counterpart stringed together. */
-        display = inputBinary
-          .map((octet) => String.fromCharCode(Number(`0b${octet}`)))
-          .join("");
-        break;
-    }
-    inputFieldRef.current.value = display;
-  }
-
-  //if user switches the output view this function would run
-  function handleOutFormatSwap(value) {
-    let display;
-    switch (value) {
-      case "binary":
-        //output field will show the binary values of each output character stringed together.
-        display = outputBinary.join(" ");
-        break;
-
-      case "ascii":
-        /*output field will show the binary values of each output character
-        converted to it's utf-8 counterpart stringed together. */
-        display = outputBinary
-          .map((octet) => String.fromCharCode(Number(`0b${octet}`)))
-          .join("");
-        break;
-    }
-    outputFieldRef.current.value = display;
-  }
-
-  /*this block will recieve a string as an argument and will output an array 
-  containing it's 8-bit binary values*/
-  function asciiToBinary(text) {
-    let textArr = text.split("");
-    let output = [];
-    textArr.forEach((char) => {
-      let bin = char.charCodeAt().toString(2);
-      output.push(bin.padStart(8, "0"));
-    });
-    return output;
-  }
+  //---------------------------------------------------------------------------------
 
   //recieves the string containing current input and outputs the array containing converted binaries
   function encode(input) {
     //will set the inputBinary variable to an array of octets based on input
     //**this variable will be used on encoding operations from now on
-    switch (selectInFormatRef.current.value) {
+    /*switch (selectInFormatRef.current.value) {
       case "binary":
         inputBinary = input.match(/[01]{8}/g);
         break;
@@ -145,9 +80,9 @@ export default function Ascii85({ setService }) {
       case "ascii":
         inputBinary = asciiToBinary(input);
         break;
-    }
+    }*/
 
-    let paddedInputBinary = [...inputBinary] || [];
+    let paddedInputBinary = [...input] || [];
     let paddedBytesCount = 0;
 
     /*lengthens the above variable until it's length wholly divisable by 4 (4 bytes = 32 bits),
@@ -203,10 +138,11 @@ export default function Ascii85({ setService }) {
     for (let i = 0; i < paddedBytesCount; i++) output.pop();
 
     //converts each byte to unicode character
-    outputBinary = output.map((x) => asciiToBinary(x));
+    //outputBinary = output.map((x) => asciiToBinary(x));
+    //outputBinary = ;
 
     //decides which format to return the output as based on user preference.
-    switch (selectOutFormatRef.current.value) {
+    /*switch (selectOutFormatRef.current.value) {
       case "binary":
         return outputBinary.join(" ");
 
@@ -214,13 +150,16 @@ export default function Ascii85({ setService }) {
         return outputBinary
           .map((x) => String.fromCharCode(Number(`0b${x}`)))
           .join("");
-    }
+    }*/
+    return helpers.charToBin(output);
   }
+
+  //---------------------------------------------------------------------------------
 
   function decode(input) {
     //will set the inputBinary variable to an array of octets based on input
     //**this variable will be used on encoding operations from now on
-    switch (selectInFormatRef.current.value) {
+    /*switch (selectInFormatRef.current.value) {
       case "binary":
         inputBinary = input.match(/[01]{8}/g);
         break;
@@ -228,14 +167,14 @@ export default function Ascii85({ setService }) {
       case "ascii":
         inputBinary = asciiToBinary(input);
         break;
-    }
+    }*/
 
-    let paddedInputArr = [...inputBinary] || [];
+    let paddedInputArr = [...input] || [];
     let paddedBytesCount = 0;
 
     /*pads paddedInputArr with "u"(01110101) until it's length becomes divisible by 5 with a remainder of zero
     while also keeping track of how many characters with padded*/
-    if (inputBinary) {
+    if (input) {
       while (paddedInputArr.length % 5 !== 0) {
         paddedInputArr.push("01110101");
         paddedBytesCount++;
@@ -264,14 +203,15 @@ export default function Ascii85({ setService }) {
       return out.join("").match(/[01]{8}/g);
     });
 
+    let output = [];
     temp.forEach((array) => {
       array.forEach((item) => {
-        outputBinary.push(item);
+        output.push(item);
       });
     });
 
-    for (let i = 0; i < paddedBytesCount; i++) outputBinary.pop();
-    switch (selectOutFormatRef.current.value) {
+    for (let i = 0; i < paddedBytesCount; i++) output.pop();
+    /*switch (selectOutFormatRef.current.value) {
       case "binary":
         return outputBinary.join(" ");
 
@@ -279,13 +219,17 @@ export default function Ascii85({ setService }) {
         return outputBinary
           .map((x) => String.fromCharCode(Number(`0b${x}`)))
           .join("");
-    }
+    }*/
+    return output;
   }
 
+  //---------------------------------------------------------------------------------
+
   function triggerFn() {
-    [inputBinary, outputBinary] = [[], []];
-    if (validate()) {
-      switch (selectInFormatRef.current.value) {
+    let inputBinary = helpers.getFromStorage("outputBins");
+
+    if (validate(inputBinary)) {
+      /*switch (selectInFormatRef.current.value) {
         case "binary":
           inputBinary = inputFieldRef.current.value.match(/[01]{8}/g);
           break;
@@ -293,22 +237,38 @@ export default function Ascii85({ setService }) {
         case "ascii":
           inputBinary = asciiToBinary(inputFieldRef.current.value);
           break;
-      }
-      switch (selectOpRef.current.value) {
+      }*/
+      let result;
+      switch (currentOp) {
         case "encode":
-          outputFieldRef.current.value = encode(inputFieldRef.current.value);
+          result = encode(inputBinary);
           break;
         case "decode":
-          outputFieldRef.current.value = decode(inputFieldRef.current.value);
+          result = decode(inputBinary);
           break;
       }
+      helpers.updateStorage({
+        outputBins: result,
+      });
     } else {
     }
   }
 
+  //---------------------------------------------------------------------------------
+
+  useEffect(() => {
+    triggerFn();
+  });
+
+  //---------------------------------------------------------------------------------
+
   return (
-    <>
-      <select onInput={() => triggerFn()} ref={selectVariantRef}>
+    <div className="div">
+      <span>Variant</span>
+      <select
+        onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+        ref={selectVariantRef}
+      >
         <option value="original">Original</option>
         <option value="z85">ZeroMQ (z85)</option>
       </select>
@@ -336,7 +296,7 @@ export default function Ascii85({ setService }) {
           </a>
         </section>
       </section> */}
-    </>
+    </div>
   );
 }
 

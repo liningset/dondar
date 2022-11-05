@@ -69,6 +69,10 @@ h1 {
   margin-block: 2rem 1rem;
 }
 
+i {
+  pointer-events: none;
+}
+
 button {
   cursor: pointer;
 }
@@ -122,6 +126,7 @@ main {
 }
 
 select {
+  width: 100%;
   font-family: inherit;
   background: var(--inputs-bg);
   box-shadow: var(--shadow2);
@@ -155,7 +160,8 @@ textarea {
 }
 
 input {
-  width: min(100%, 250px);
+  //width: min(100%, 250px);
+  width: 100%;
   border-radius: 5px;
   padding: 0.5rem 0.75rem;
   background: var(--inputs-bg);
@@ -196,7 +202,7 @@ input {
   }
 }
 
-.info,
+/*.info,
 .notes {
   display: flex;
   flex-direction: column;
@@ -217,7 +223,7 @@ input {
   a {
     color: #1da1f2;
   }
-}
+}*/
 
 .theme-toggle-btn,
 .home-btn {

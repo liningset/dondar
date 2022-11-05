@@ -1,23 +1,58 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import ASCIItable from "./table"; //ascii (extended) character table
 import binConvert from "./binary-converter"; //converts to and from binary
-import Header from "../Header";
-import Footer from "../Footer";
 
-export default function Base32({ setService }) {
-  let inputFieldRef = useRef(null);
-  let outputFieldRef = useRef(null);
-  let selectOpRef = useRef(null);
+export default function Base32({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   let selectVariantRef = useRef(null);
   let asciiT = ASCIItable.ASCII;
 
   //four character sets for different variants of base32
-  const charSets = {
+  const charsets = {
     base32: "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",
     crockford: "0123456789ABCDEFGHJKMNPQRSTVWXYZ",
     base32hex: "0123456789ABCDEFGHIJKLMNOPQRSTUV",
     zbase32: "ybndrfg8ejkmcpqxot1uwisza345h769",
   };
+
+  function validate(input) {
+    let isNotEmpty = input.length !== 0;
+    let reg;
+    let unpadded = input.filter((x) => x !== "00111101");
+
+    switch (currentOp) {
+      case "encode":
+        reg = /\n|./;
+        break;
+
+      case "decode":
+        reg = new RegExp(`[${charsets[selectVariantRef.current.value]}]`);
+        break;
+    }
+
+    if (isNotEmpty) {
+      if (unpadded.every((c) => reg.test(helpers.binToChar(c)))) {
+        return true;
+      } else {
+        let illegalChar = unpadded.find((c) => !reg.test(helpers.binToChar(c)));
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: `Invalid character at index ${input.indexOf(illegalChar)}`,
+            },
+          ],
+        });
+        return false;
+      }
+    } else return false;
+  }
 
   /*1. the first argument recieves the text to be encoded/decoded 
     2. the second argument recieves the option of whether to look for binaries in ascii table
@@ -32,6 +67,7 @@ export default function Base32({ setService }) {
           asciiT.forEach((c, i) => {
             if (c[2] === char) binaryValue.push(c[1]);
           });
+          //binaryValue.push(helpers.charToBin(char));
         }
         break;
       }
@@ -39,6 +75,7 @@ export default function Base32({ setService }) {
         for (let char of text) {
           binaryValue.push(binConvert(charset.indexOf(char), 5, "toBin"));
         }
+
         break;
       }
     }
@@ -69,8 +106,6 @@ export default function Base32({ setService }) {
           }
         });
         return regroupedBits;
-
-        break;
       }
       case "to8bit": {
         let regex = /\d{8}|\d{7}|\d{6}|\d{5}|\d{4}\d{3}|\d{2}|\d{1}/g;
@@ -87,7 +122,6 @@ export default function Base32({ setService }) {
         });
         regroupedBits = regroupedBits.filter((byte) => !/0{8}/g.test(byte));
         return regroupedBits;
-        break;
       }
     }
   }
@@ -98,35 +132,33 @@ export default function Base32({ setService }) {
     2. the second argument recieves the option of whether to convert to base32 or plaintext
     3.the third argument recieves the character set to generate the base32 table with*/
   function convert(arrayInput, type, set) {
-    let textToReturn = [];
+    let output = [];
     let charset = set.split("");
     switch (type) {
-      case "toBase32": {
+      case "encode": {
         arrayInput.forEach((group) => {
-          textToReturn.push(charset[binConvert(group, "", "toDec")]);
+          output.push(charset[binConvert(group, "", "toDec")]);
         });
         if (
-          textToReturn.length % 8 !== 0 &&
+          output.length % 8 !== 0 &&
           !["crockford", "zbase32"].includes(selectVariantRef.current.value)
         ) {
-          while (textToReturn.length % 8 !== 0) {
-            textToReturn.push("=");
+          while (output.length % 8 !== 0) {
+            output.push("=");
           }
         }
         break;
       }
-      case "toPlainText": {
-        arrayInput.forEach((group) => {
-          asciiT.forEach((cell) => {
-            if (cell[1] === group) textToReturn.push(cell[2]);
-          });
-        });
-
+      case "decode": {
+        if (arrayInput) output = helpers.binToChar(arrayInput);
+        /*while (output.length % 8 !== 0) {
+          output.push("=");
+        }*/
         break;
       }
     }
 
-    return textToReturn.join("");
+    return helpers.charToBin(output);
   }
 
   //----------------------------------------------------------------------------------
@@ -137,11 +169,11 @@ export default function Base32({ setService }) {
   (e.g WXYZ in base32hex or I in crockford)*/
   function displayError(bool, index = null) {
     if (bool) {
-      outputFieldRef.current.dataset.error = "true";
-      outputFieldRef.current.placeholder = `Invalid character at index ${index}`;
+      //outputFieldRef.current.dataset.error = "true";
+      //outputFieldRef.current.placeholder = `Invalid character at index ${index}`;
     } else {
-      outputFieldRef.current.dataset.error = "false";
-      outputFieldRef.current.placeholder = `The output`;
+      //outputFieldRef.current.dataset.error = "false";
+      //outputFieldRef.current.placeholder = `The output`;
     }
   }
 
@@ -152,16 +184,12 @@ export default function Base32({ setService }) {
   2.passing that array as an argument to regroup() to get the array 5bit binaries
   3.passing that array to convert()
   4.displaying the encoded text*/
-  function encode(charset) {
+  function encode(input, charset) {
     displayError(false);
-    let text = inputFieldRef.current.value;
-    outputFieldRef.current.dataset.error = "false";
+    //let text = helpers.binToChar(input).join("");
+    //outputFieldRef.current.dataset.error = "false";
 
-    return convert(
-      regroup(getBinaryValues(text, "asciiT", charset), "to5bit"),
-      "toBase32",
-      charset
-    );
+    return convert(regroup(input, "to5bit"), "encode", charset);
   }
 
   //-----------------------------------------------------------------------------
@@ -172,14 +200,17 @@ export default function Base32({ setService }) {
   2.pass that array as an argument to regroup() to get the array 8bit binaries
   3.pass that array to convert()
   4.display the decoded text*/
-  function decode(charset) {
+  function decode(input, charset) {
     /*let text =
       selectVariantRef.current.value === "zbase32"
         ? inputFieldRef.current.value.toLowerCase("")
         : inputFieldRef.current.value.toUpperCase("");*/
-    let text = inputFieldRef.current.value;
-    let textArr = text.split("");
-    let filteredTextArr = textArr.filter((c) => c !== "=");
+    let textArr = helpers.binToChar(input);
+    console.log(textArr);
+    //let text = inputFieldRef.current.value;
+    //let textArr = text.split("");
+
+    /*let filteredTextArr = textArr.filter((c) => c !== "=");
     let errorStats = { isactive: false, index: null };
 
     filteredTextArr.forEach((char, i) => {
@@ -189,16 +220,16 @@ export default function Base32({ setService }) {
       }
     });
     if (errorStats.isactive) {
-      displayError(true, errorStats.index);
+      //displayError(true, errorStats.index);
       return "";
-    } else {
-      displayError(false);
-      return convert(
-        regroup(getBinaryValues(text, "base32T", charset), "to8bit"),
-        "toPlainText",
-        charset
-      );
-    }
+    } else {*/
+    //displayError(false);
+    return convert(
+      regroup(getBinaryValues(textArr.join(""), "base32T", charset), "to8bit"),
+      "decode",
+      charset
+    );
+    //}
   }
 
   //-----------------------------------------------------------------------------
@@ -206,19 +237,38 @@ export default function Base32({ setService }) {
   /*the function that sets the whole program in motion.
    it gets triggered when interacting with the input fields(textarea {only input area}, select)*/
   function triggerFn() {
-    if (inputFieldRef.current.value != "") {
-      selectOpRef.current.value === "encode"
-        ? (outputFieldRef.current.value = encode(
-            charSets[selectVariantRef.current.value]
-          ))
-        : (outputFieldRef.current.value = decode(
-            charSets[selectVariantRef.current.value]
-          ));
-    } else outputFieldRef.current.value = "";
+    let inputBinary = helpers.getFromStorage("outputBins");
+    if (validate(inputBinary)) {
+      let result;
+      switch (currentOp) {
+        case "encode":
+          result = encode(
+            inputBinary,
+            charsets[selectVariantRef.current.value]
+          );
+          break;
+
+        case "decode":
+          result = decode(
+            inputBinary,
+            charsets[selectVariantRef.current.value]
+          );
+          break;
+      }
+
+      helpers.updateStorage({ outputBins: result });
+    } //else outputFieldRef.current.value = "";
   }
+
+  useEffect(() => triggerFn());
+
   return (
-    <>
-      <select ref={selectVariantRef} onInput={() => triggerFn()}>
+    <div className="div">
+      <span>Variant</span>
+      <select
+        ref={selectVariantRef}
+        onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+      >
         <option value="base32">Base32 (RFC 4648)</option>
         <option value="crockford">Crockford's base32</option>
         <option value="base32hex">Base32Hex (RFC 4648)</option>
@@ -255,6 +305,6 @@ export default function Base32({ setService }) {
           </p>
         </section>
       </section> */}
-    </>
+    </div>
   );
 }

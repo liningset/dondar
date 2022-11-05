@@ -1,38 +1,46 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function UrlEncoding({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
-  const selectOpRef = useRef(null);
+export default function UrlEncoding({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   const selectSpaceRef = useRef(null);
 
-  function validate() {
-    switch (selectOpRef.current.value) {
+  function validate(input) {
+    switch (currentOp) {
       case "encode": {
-        return inputFieldRef.current.value !== "";
-        break;
+        return input.length !== 0;
       }
       case "decode": {
-        let textArr = inputFieldRef.current.value.split("");
+        let textArr = helpers.binToChar(input);
         let allowedCharsReg =
           selectSpaceRef.current.value === "plus"
             ? /[^!#$&'()*,/:;=?@[\]]/
             : /[^!#$&'()*,/+:;=?@[\]]/;
 
         if (textArr.every((char) => allowedCharsReg.test(char))) {
-          outputFieldRef.current.setAttribute("placeholder", "The output");
           return true;
         } else {
           let errorChar = textArr.find((x) => !allowedCharsReg.test(x));
-          outputFieldRef.current.value = "";
-          outputFieldRef.current.setAttribute(
-            "placeholder",
-            `Invalid character at index ${textArr.indexOf(errorChar)}`
-          );
+
+          helpers.updateStorage({
+            haltedAt: [
+              ...helpers.getFromStorage("haltedAt"),
+              {
+                at: `${opInfo.index + 1}.${opInfo.title}: `,
+                error: `Invalid character at index ${textArr.indexOf(
+                  errorChar
+                )}`,
+              },
+            ],
+          });
+          return false;
         }
-        break;
       }
     }
   }
@@ -61,28 +69,33 @@ export default function UrlEncoding({ setService }) {
   }
 
   function triggerFn() {
-    if (validate()) {
-      outputFieldRef.current.placeholder = "The output";
-      switch (selectOpRef.current.value) {
-        case "encode": {
-          outputFieldRef.current.value = encode(inputFieldRef.current.value);
+    let inputBinary = helpers.getFromStorage("outputBins");
+    if (validate(inputBinary)) {
+      let result;
+      switch (currentOp) {
+        case "encode":
+          result = encode(helpers.binToChar(inputBinary).join(""));
           break;
-        }
-        case "decode": {
-          outputFieldRef.current.value = decode(inputFieldRef.current.value);
+
+        case "decode":
+          result = decode(helpers.binToChar(inputBinary).join(""));
           break;
-        }
       }
-    } else {
-      outputFieldRef.current.value = "";
+
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split("")),
+      });
     }
   }
 
+  useEffect(() => triggerFn());
+
   return (
-    <>
+    <div className="div">
+      <span>Variant</span>
       <select
         ref={selectSpaceRef}
-        onInput={() => triggerFn()}
+        onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
         title="choose what to encode space characters as"
       >
         <option value="hex">encode space as %20</option>
@@ -111,6 +124,6 @@ export default function UrlEncoding({ setService }) {
         </section>
         <section></section>
       </section> */}
-    </>
+    </div>
   );
 }

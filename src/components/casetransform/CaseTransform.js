@@ -1,11 +1,20 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function CaseTransform({ setService }) {
+export default function CaseTransform({
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   let inputFieldRef = useRef(null);
   let outputFieldRef = useRef(null);
   let selectTypeRef = useRef(null);
+
+  function validate(input) {
+    return input.length !== 0;
+  }
 
   function transform(text, type) {
     let transformed;
@@ -44,12 +53,9 @@ export default function CaseTransform({ setService }) {
       }
       case "capwords": {
         function applyToReg(text) {
-          return new RegExp(
-            `(?<=([ ,\\.'"\\(\\)\\x0A]|^))${text}(?=([ ,\\.'"\\(\\)\\x0A]|$))`,
-            "gi"
-          );
+          return new RegExp(`${text}`, "gi");
         }
-        const reg = applyToReg("[a-z]{3,}(-[a-z0-9]+)?");
+        const reg = applyToReg("\\b([a-z]){3,}(\\w+)?\\b"); //[a-z]{3,}(-[a-z0-9]+)?
         if (reg.test(text)) {
           transformed = text.toLowerCase();
           let matches = text.match(reg);
@@ -104,23 +110,33 @@ export default function CaseTransform({ setService }) {
   }
 
   function triggerFn() {
-    if (inputFieldRef.current.value !== "") {
-      outputFieldRef.current.value = transform(
-        inputFieldRef.current.value,
+    let inputBinary = helpers.getFromStorage("outputBins");
+    if (validate(inputBinary)) {
+      let result = transform(
+        helpers.binToChar(inputBinary).join(""),
         selectTypeRef.current.value
       );
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split("")),
+      });
     }
   }
+
+  useEffect(() => triggerFn());
   return (
-    <>
-      <select ref={selectTypeRef} onInput={() => triggerFn()}>
-        <option value="allup">All uppercase</option>
-        <option value="alllow">All lowercase</option>
-        <option value="capwords">Capitalize words</option>
-        <option value="capsentences">Capitalize sentences</option>
-        <option value="oddupevenlow">Odds uppercase, Evens lowercase</option>
-        <option value="oddlowevenup">Odds lowercase, Evens uppercase</option>
+    <div className="div">
+      <span>Type</span>
+      <select
+        ref={selectTypeRef}
+        onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+      >
+        <option value="allup">Uppercase (ABCDEFG)</option>
+        <option value="alllow">Lowercase (abcdefg)</option>
+        <option value="capwords">Capitalize words (Abcd Efg)</option>
+        <option value="capsentences">Capitalize sentences (Abcd efg)</option>
+        <option value="oddupevenlow">Alternating 1 (AbCdEfG)</option>
+        <option value="oddlowevenup">Alternating 2 (aBcDeFg)</option>
       </select>
-    </>
+    </div>
   );
 }

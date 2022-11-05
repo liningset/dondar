@@ -1,12 +1,12 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import brailleTable from "./braille-table";
-import Header from "../Header";
-import Footer from "../Footer";
 
-export default function Braille({ setService }) {
-  let inputFieldRef = useRef(null);
-  let outputFieldRef = useRef(null);
-  let selectOpRef = useRef(null);
+export default function Braille({
+  currentOp,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   let selectGradeRef = useRef(null);
 
   //---------------------------------------------------------------------------
@@ -291,7 +291,29 @@ export default function Braille({ setService }) {
   /*the function that sets the whole program in motion.
    it gets triggered when interacting with the input fields(textarea {only input area}, selects)*/
   function triggerFn() {
-    if (selectOpRef.current.value === "encode") {
+    let inputBinary = helpers.getFromStorage("outputBins");
+    let result;
+
+    switch (currentOp) {
+      case "encode":
+        result = encode(
+          helpers.binToChar(inputBinary).join(""),
+          selectGradeRef.current.value
+        );
+        break;
+
+      case "decode":
+        result = decode(
+          helpers.binToChar(inputBinary).join(""),
+          selectGradeRef.current.value
+        );
+        break;
+    }
+    helpers.updateStorage({
+      outputBins: helpers.charToBin(result.split("")),
+    });
+
+    /*if (selectOpRef.current.value === "encode") {
       outputFieldRef.current.value = encode(
         inputFieldRef.current.value,
         selectGradeRef.current.value
@@ -301,11 +323,18 @@ export default function Braille({ setService }) {
         inputFieldRef.current.value,
         selectGradeRef.current.value
       );
-    }
+    }*/
   }
+
+  useEffect(() => triggerFn());
+
   return (
-    <>
-      <select ref={selectGradeRef} onInput={() => triggerFn()}>
+    <div className="div">
+      <span>Grade</span>
+      <select
+        ref={selectGradeRef}
+        onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+      >
         <option value="g1" title="punctuation + alphabete">
           grade 1
         </option>
@@ -367,6 +396,6 @@ export default function Braille({ setService }) {
           </p>
         </section>
       </section> */}
-    </>
+    </div>
   );
 }

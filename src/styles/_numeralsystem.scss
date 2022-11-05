@@ -1,23 +1,17 @@
 .numeralsystem {
   .op-advanced-inner {
     gap: 2rem;
-    > div {
-      flex: 1;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
 
-      select {
-        flex: 1;
-      }
+    > .div select {
+      flex: 1;
     }
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   .numeralsystem .op-advanced-inner {
     flex-direction: column;
-    > div {
+    > .div {
       justify-content: center;
 
       select {

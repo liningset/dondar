@@ -2,14 +2,9 @@ import { useEffect, useRef, useState } from "react";
 
 export default function OpBoilerplate({
   Component,
-  opInfo,
-  opsList,
-  inputBinary,
-  setInputBinary,
-  outputBinary,
   setOutputBinary,
-  count,
-  setCount,
+  setHaltedAt,
+  opInfo,
   helpers,
   modals,
   outputFieldRef,
@@ -19,43 +14,32 @@ export default function OpBoilerplate({
   const opBriefArrowRef = useRef(null);
   const encodeBtn = useRef(null);
   const decodeBtn = useRef(null);
-  let [opType, setOpType] = useState("encode");
+  const [opType, setOpType] = useState("encode");
+  const [descryption, setDescryption] = useState("");
   const { dataAttr, title, id, asymmetric, index } = opInfo;
 
   function clickEventMain(e) {
     const ID = e.target.closest(".op").dataset.id;
 
-    if (/^op-brief(__title| )?/.test(e.target.className)) {
+    if (/^op-brief(__title|__arrow)?$/.test(e.target.className)) {
       let currentOp = document.querySelector(`[data-id="${ID}"]`);
-      console.log(currentOp);
-      /*if (currentOp.classList.contains("opened")) {
-        currentOp.classList.remove("opened");
-      } else {
-        currentOp.classList.add("opened");
-      }*/
       currentOp.classList.toggle("opened");
+      if (currentOp.classList.contains("opened"))
+        opBriefArrowRef.current.className = "fas fa-minus";
+      else opBriefArrowRef.current.className = "fas fa-plus";
     }
   }
   function clickEventSide(e) {
+    setOpType(opType === "encode" ? "decode" : "encode");
+    setOutputBinary(helpers.getFromStorage("inputBins"));
     if (e.target.classList.contains("encode-btn")) {
       encodeBtn.current.classList.add("active");
       decodeBtn.current.classList.remove("active");
-      setOpType("encode");
     } else {
       decodeBtn.current.classList.add("active");
       encodeBtn.current.classList.remove("active");
-      setOpType("decode");
     }
   }
-
-  useEffect(() => {
-    setCount(index);
-    console.log(
-      outputBinary.map((x) => String.fromCharCode(Number(`0b${x}`))).join(""),
-      index,
-      count
-    );
-  });
 
   return (
     <div
@@ -87,7 +71,7 @@ export default function OpBoilerplate({
                   ref={encodeBtn}
                   onClick={(e) => clickEventSide(e)}
                 >
-                  encode
+                  ENCODE
                 </button>
 
                 <button
@@ -95,30 +79,39 @@ export default function OpBoilerplate({
                   ref={decodeBtn}
                   onClick={(e) => clickEventSide(e)}
                 >
-                  decode
+                  DECODE
                 </button>
               </div>
             );
         })()}
 
-        <i
-          className="op-brief__arrow fas fa-angle-down"
-          ref={opBriefArrowRef}
-        ></i>
+        <i className="op-brief__arrow fas fa-plus" ref={opBriefArrowRef}></i>
       </div>
       <div className="op-advanced" ref={opAdvancedRef}>
         <div className="op-advanced-inner">
           <Component
             currentOp={opType}
-            opsList={opsList}
-            inputBinary={inputBinary}
-            setInputBinary={setInputBinary}
-            outputBinary={outputBinary}
+            opInfo={opInfo}
+            setHaltedAt={setHaltedAt}
             setOutputBinary={setOutputBinary}
-            count={count}
+            setDescryption={setDescryption}
             outputField={outputFieldRef.current}
             helpers={helpers}
           />
+        </div>
+        <div className="op-related-btns">
+          <button
+            className="op-descryption-btn"
+            title="Descryption"
+            onClick={() => {
+              modals.main("open", 2);
+            }}
+          >
+            <i className="fas fa-info-circle"></i>
+          </button>
+          <button className="op-notes-btn" title="Notes">
+            <i className="fas fa-thumbtack"></i>
+          </button>
         </div>
       </div>
     </div>

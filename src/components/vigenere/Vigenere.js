@@ -1,12 +1,38 @@
-import React, { useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
+import React, { useRef, useEffect } from "react";
 
-export default function Vigenere({ setService }) {
-  const inputField = useRef(null);
-  const outputField = useRef(null);
-  const chooseOp = useRef(null);
+export default function Vigenere({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   const askKeyFromUser = useRef(null);
+
+  function validate(input) {
+    let isNotEmpty = input.length !== 0;
+    let keyIsValid = askKeyFromUser.current.validity.valid;
+    let inputIsValid = helpers
+      .binToChar(input)
+      .every((x) => /[\x00-\xff]/.test(x));
+
+    if (isNotEmpty && inputIsValid) {
+      if (keyIsValid) {
+        return true;
+      } else {
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: "key cannot be empty and must only contain letters.",
+            },
+          ],
+        });
+        return false;
+      }
+    } else return false;
+  }
 
   //-----------------------------------------------------------------------------------------
 
@@ -138,7 +164,7 @@ it also returns all the positions and required info of mentioned characters in a
 
   //-----------------------------------------------------------------------------------------
 
-  function encrypt(key, text) {
+  function encode(key, text) {
     const [formatDetails1, formatDetails2] = [format(text), format(key)];
     const [formattedText, formattedKey] = [
       formatDetails1.text.split(""),
@@ -160,12 +186,12 @@ it also returns all the positions and required info of mentioned characters in a
       });
     });
     let deformattedCipher = deformat(formatDetails1, cipherText.join(""));
-    outputField.current.value = deformattedCipher;
+    return deformattedCipher;
   }
 
   //-----------------------------------------------------------------------------------------
 
-  function decrypt(key, cipher) {
+  function decode(key, cipher) {
     const [formatDetails1, formatDetails2] = [format(cipher), format(key)];
     const [formattedCipher, formattedKey] = [
       formatDetails1.text.split(""),
@@ -186,13 +212,13 @@ it also returns all the positions and required info of mentioned characters in a
 
       /*checks each column to see which one of them have current character of cipher in the same index
     as it's keyword alternative index then it will add the first item of that column to the
-     plainText array as a decrypted piece of the cipher text*/
+     plainText array as a decodeed piece of the cipher text*/
       vigenereColumns.forEach((column, i) => {
         if (column[keyCurrentIndex] === char) plainText.push(column[0]);
       });
     });
     let deformattedText = deformat(formatDetails1, plainText.join(""));
-    outputField.current.value = deformattedText;
+    return deformattedText;
   }
 
   //-----------------------------------------------------------------------------------------
@@ -200,45 +226,55 @@ it also returns all the positions and required info of mentioned characters in a
   /*the function that sets the whole program in motion the moment user 
   interacts with html input fields*/
   function triggerFn() {
-    if (askKeyFromUser.current.value !== "") {
-      if (/[a-z]/gi.test(inputField.current.value)) {
-        let keyword = askKeyFromUser.current.value.replace(
-          /(\r\n|\n|\r)/gm,
-          ""
-        );
-        let userText = inputField.current.value.replace(/(\r\n|\n|\r)/gm, "");
+    let inputBinary = helpers.getFromStorage("outputBins");
 
-        switch (chooseOp.current.value) {
-          case "encrypt":
-            encrypt(keyword, userText);
-            break;
+    if (validate(inputBinary)) {
+      let result;
+      switch (currentOp) {
+        case "encode":
+          result = encode(
+            askKeyFromUser.current.value,
+            helpers.binToChar(inputBinary).join("")
+          );
+          break;
 
-          case "decrypt":
-            decrypt(keyword, userText);
-            break;
-        }
-      } else outputField.current.value = inputField.current.value;
-    } else outputField.current.value = "";
+        case "decode":
+          result = decode(
+            askKeyFromUser.current.value,
+            helpers.binToChar(inputBinary).join("")
+          );
+          break;
+      }
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split("")),
+      });
+    }
   }
+
+  useEffect(() => triggerFn());
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="The key"
-        id="ask-user-key"
-        spellCheck="false"
-        title="Key cannot be empty or contain non-alphabetic
+      <div className="div">
+        <span>The key</span>
+        <input
+          type="text"
+          placeholder="e.g. apple"
+          id="ask-user-key"
+          spellCheck="false"
+          title="Key cannot be empty or contain non-alphabetic
         characters"
-        pattern="[A-Za-z\s]+"
-        ref={askKeyFromUser}
-        onInput={() => triggerFn()}
-      />
+          pattern="[A-Za-z\s]+"
+          ref={askKeyFromUser}
+          onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+          required
+        />
+      </div>
       {/* <section>
         <section className="info">
           <h1>What is Vigenère Cipher?</h1>
           <p>
-            The Vigenère cipher is a method of encrypting alphabetic text by
+            The Vigenère cipher is a method of encodeing alphabetic text by
             using a series of interwoven Caesar ciphers, based on the letters of
             a keyword on a 26*26 table known as Vigenere Square (
             <a href="https://en.wikipedia.org/wiki/Tabula_recta">
@@ -252,7 +288,7 @@ it also returns all the positions and required info of mentioned characters in a
             break it until 1863, three centuries later. This earned it the
             description le chiffrage indéchiffrable (French for 'the
             indecipherable cipher'). Many people have tried to implement
-            encryption schemes that are essentially Vigenère ciphers. In 1863,
+            encodeion schemes that are essentially Vigenère ciphers. In 1863,
             Friedrich Kasiski was the first to publish a general method of
             deciphering Vigenère ciphers.
           </p>
@@ -272,7 +308,7 @@ it also returns all the positions and required info of mentioned characters in a
             Caesar Ciphers.
           </p>
           <p>
-            2. At different points in the encryption process, the cipher uses a
+            2. At different points in the encodeion process, the cipher uses a
             different alphabet from one of the rows.
           </p>
           <p>

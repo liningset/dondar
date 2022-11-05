@@ -1,41 +1,18 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function AlphabeticalSub({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
-  const selectOpRef = useRef(null);
+export default function AlphabeticalSub({
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   const plainAlphaRef = useRef(null);
   const cipherAlphaRef = useRef(null);
 
-  function substitude(text) {
-    let arr = [];
-    for (let char of text) {
-      if (plainAlphaRef.current.value.includes(char.toLowerCase())) {
-        let indexInPlainAlpha = plainAlphaRef.current.value
-          .split("")
-          .indexOf(char.toLowerCase());
-        if (cipherAlphaRef.current.value[indexInPlainAlpha] !== undefined) {
-          arr.push(
-            char.toLowerCase() === char
-              ? cipherAlphaRef.current.value.toLowerCase()[indexInPlainAlpha]
-              : cipherAlphaRef.current.value
-                  .toLowerCase()
-                  [indexInPlainAlpha].toUpperCase()
-          );
-        } else {
-          arr.push(char);
-        }
-      } else {
-        arr.push(char);
-      }
-    }
-    return arr.join("");
-  }
-
   function validate() {
-    let checkIfNotEmpty = inputFieldRef.current.value !== "";
+    let checkIfNotEmpty = helpers.getFromStorage("outputBins").length !== 0;
     let checkLackOfPlainDuplicate = true;
     let checkLackOfCipherDuplicate = true;
 
@@ -45,8 +22,9 @@ export default function AlphabeticalSub({ setService }) {
           .split("")
           .some(
             (char) =>
-              plainAlphaRef.current.value.match(new RegExp(char, "g")).length >
-              1
+              plainAlphaRef.current.value.match(
+                new RegExp(`[\\\\${char}]`, "g")
+              ).length > 1
           )
       ) {
         checkLackOfPlainDuplicate = false;
@@ -57,8 +35,9 @@ export default function AlphabeticalSub({ setService }) {
           .split("")
           .some(
             (char) =>
-              cipherAlphaRef.current.value.match(new RegExp(char, "g")).length >
-              1
+              cipherAlphaRef.current.value.match(
+                new RegExp(`[\\\\${char}]`, "g")
+              ).length > 1
           )
       ) {
         checkLackOfCipherDuplicate = false;
@@ -69,39 +48,62 @@ export default function AlphabeticalSub({ setService }) {
       checkLackOfPlainDuplicate &&
       checkIfNotEmpty
     ) {
-      return (
-        checkLackOfCipherDuplicate &&
-        checkLackOfPlainDuplicate &&
-        checkIfNotEmpty
-      );
+      return true;
     } else {
       if (!checkLackOfPlainDuplicate) {
-        plainAlphaRef.current.setCustomValidity(
-          "duplicate characters are not allowed"
-        );
-      } else {
-        plainAlphaRef.current.setCustomValidity("");
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: "duplicate characters are not allowed in plaintext field",
+            },
+          ],
+        });
       }
       if (!checkLackOfCipherDuplicate) {
-        cipherAlphaRef.current.setCustomValidity(
-          "duplicate characters are not allowed"
-        );
-      } else {
-        cipherAlphaRef.current.setCustomValidity("");
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: "duplicate characters are not allowed in ciphertext field",
+            },
+          ],
+        });
       }
+      return false;
     }
+  }
+
+  function substitude(text) {
+    let arr = [];
+    for (let char of text) {
+      if (plainAlphaRef.current.value.includes(char)) {
+        let indexInPlainAlpha = plainAlphaRef.current.value
+          .split("")
+          .indexOf(char);
+        if (cipherAlphaRef.current.value[indexInPlainAlpha] !== undefined) {
+          arr.push(cipherAlphaRef.current.value[indexInPlainAlpha]);
+        } else arr.push(char);
+      } else arr.push(char);
+    }
+    return arr;
   }
 
   function triggerFn() {
-    plainAlphaRef.current.value = plainAlphaRef.current.value.toLowerCase();
-    cipherAlphaRef.current.value = cipherAlphaRef.current.value.toLowerCase();
-
     if (validate()) {
-      outputFieldRef.current.value = substitude(inputFieldRef.current.value);
-    } else {
-      outputFieldRef.current.value = "";
+      const InputInString = helpers
+        .binToChar(helpers.getFromStorage("outputBins"))
+        .join("");
+      let result = substitude(InputInString);
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result),
+      });
     }
   }
+
+  useEffect(() => triggerFn());
 
   return (
     <>
@@ -114,8 +116,8 @@ export default function AlphabeticalSub({ setService }) {
             defaultValue="abcdefghijklmnopqrstuvwxyz"
             placeholder="plaintext alphabet"
             ref={plainAlphaRef}
-            onInput={() => triggerFn()}
-            pattern=".{2,}"
+            onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+            pattern=".+"
             required
           />
         </label>
@@ -127,8 +129,8 @@ export default function AlphabeticalSub({ setService }) {
             defaultValue="zyxwvutsrqponmlkjihgfedcba"
             placeholder="ciphertext alphabet"
             ref={cipherAlphaRef}
-            onInput={() => triggerFn()}
-            pattern=".{2,}"
+            onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+            pattern=".+"
             required
           />
         </label>

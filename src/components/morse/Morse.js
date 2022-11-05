@@ -1,9 +1,15 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import morseTable from "./morse-table";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function Morse({ setService }) {
+export default function Morse({
+  currentOp,
+  opInfo,
+  helpers,
+  setOutputBinary,
+  setDescryption,
+}) {
   let inputFieldRef = useRef(null);
   let outputFieldRef = useRef(null);
   let selectRef = useRef(null);
@@ -39,20 +45,33 @@ export default function Morse({ setService }) {
     } else return userInput;
   }
 
-  function encode() {
-    return convert(inputFieldRef.current.value, "encode");
+  function encode(input) {
+    return convert(input, "encode");
   }
 
-  function decode() {
-    return convert(inputFieldRef.current.value.split(" "), "decode");
+  function decode(input) {
+    return convert(input.split(" "), "decode");
   }
 
   function triggerFn() {
-    if (selectRef.current.value === "encode")
-      outputFieldRef.current.value = encode();
-    else if (selectRef.current.value === "decode")
-      outputFieldRef.current.value = decode();
+    let inputBinary = helpers.getFromStorage("outputBins");
+    let result;
+
+    switch (currentOp) {
+      case "encode":
+        result = encode(helpers.binToChar(inputBinary).join(""));
+        break;
+
+      case "decode":
+        result = decode(helpers.binToChar(inputBinary).join(""));
+        break;
+    }
+    helpers.updateStorage({
+      outputBins: helpers.charToBin(result.split("")),
+    });
   }
+
+  useEffect(() => triggerFn());
 
   return (
     <>

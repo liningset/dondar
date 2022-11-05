@@ -1,63 +1,80 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../Header";
 import Footer from "../Footer";
 
-export default function A1Z26({ setService }) {
-  const inputFieldRef = useRef(null);
-  const outputFieldRef = useRef(null);
+export default function A1Z26({
+  currentOp,
+  helpers,
+  opInfo,
+  setOutputBinary,
+  setHaltedAt,
+  outputField,
+}) {
   const seperatorInputRef = useRef(null);
-  const selectOpRef = useRef(null);
   const alphabete = "abcdefghijklmnopqrstuvwxyz";
 
-  function encrypt(text) {
+  function encode(text) {
     let indexes = [];
     for (let char of text) {
       if (alphabete.includes(char.toLowerCase())) {
         indexes.push(alphabete.indexOf(char.toLowerCase()) + 1);
       }
     }
-    return indexes.join(seperatorInputRef.current.value);
+    return indexes.join(seperatorInputRef.current.value).split("");
   }
-  function decrypt(text) {
+  function decode(text) {
     let sanitizedText = text.replace(/(^[^\d]+)|([^\d]+$)/g, "");
     let matches = sanitizedText.split(seperatorInputRef.current.value);
 
     let convertedArr = matches.map((item) => alphabete[item - 1]);
 
-    return convertedArr.join("");
+    return convertedArr.join("").split("");
   }
 
   function triggerFn() {
-    if (inputFieldRef.current.value !== "") {
-      if (seperatorInputRef.current.validity.valid) {
-        outputFieldRef.current.setAttribute("placeholder", "The output");
-        selectOpRef.current.value === "encrypt"
-          ? (outputFieldRef.current.value = encrypt(
-              inputFieldRef.current.value
-            ))
-          : (outputFieldRef.current.value = decrypt(
-              inputFieldRef.current.value
-            ));
-      } else {
-        outputFieldRef.current.setAttribute(
-          "placeholder",
-          "seperator cannot be empty"
-        );
-        outputFieldRef.current.value = "";
+    if (seperatorInputRef.current.validity.valid) {
+      //outputField.setAttribute("placeholder", "The output");
+      let inputBinary = helpers.getFromStorage("outputBins");
+      let result;
+      switch (currentOp) {
+        case "encode":
+          result = encode(helpers.binToChar(inputBinary).join(""));
+          break;
+
+        case "decode":
+          result = decode(helpers.binToChar(inputBinary).join(""));
+          break;
       }
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result),
+      });
     } else {
-      outputFieldRef.current.setAttribute("placeholder", "The output");
-      outputFieldRef.current.value = "";
+      helpers.updateStorage({
+        haltedAt: [
+          ...helpers.getFromStorage("haltedAt"),
+          {
+            at: `${opInfo.index + 1}.${opInfo.title}: `,
+            error: "seperator cannot be empty",
+          },
+        ],
+      });
     }
   }
+
+  useEffect(() => {
+    triggerFn();
+  });
   return (
-    <>
+    <div className="div">
+      <span>Seperator</span>
       <input
         type="text"
         ref={seperatorInputRef}
         placeholder="Seperator"
-        pattern=".{1,}"
-        onInput={() => triggerFn()}
+        pattern=".+"
+        onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
+        defaultValue="/"
+        title="seperator"
         required
       />
       {/* <section>
@@ -81,6 +98,6 @@ export default function A1Z26({ setService }) {
           </p>
         </section>
       </section> */}
-    </>
+    </div>
   );
 }

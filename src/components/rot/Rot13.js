@@ -1,14 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-export default function Rot13({
-  opsList,
-  inputBinary,
-  setInputBinary,
-  outputBinary,
-  setOutputBinary,
-  count,
-  helpers,
-}) {
+export default function Rot13({ setOutputBinary, helpers, setDescryption }) {
   const selectRotRef = useRef(null);
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
@@ -78,28 +70,23 @@ export default function Rot13({
   }
 
   function triggerFn() {
-    let inputArr = outputBinary.map((x) =>
-      String.fromCharCode(Number(`0b${x}`))
-    );
+    let outputBinary = helpers.getFromStorage("outputBins");
+    let inputArr = helpers.binToChar(outputBinary);
     let convertedArr = convert(inputArr.join(""));
-    let result = convertedArr.map((x) =>
-      helpers.lengthen(x.charCodeAt().toString(2), "0")
-    );
-    setOutputBinary(result);
+    let result = helpers.charToBin(convertedArr);
+    helpers.updateStorage({ outputBins: result });
   }
 
-  useEffect(() => {
-    triggerFn();
-  }, [inputBinary, opsList, count]);
+  useEffect(() => triggerFn());
 
   return (
-    <>
+    <div className="div">
+      <span>Variant</span>
       <select
         defaultValue="13"
         ref={selectRotRef}
         onInput={() => {
-          setInputBinary(inputBinary);
-          triggerFn();
+          setOutputBinary(helpers.getFromStorage("inputBins"));
         }}
       >
         <option value="5">rot5(0-9)</option>
@@ -107,46 +94,6 @@ export default function Rot13({
         <option value="18">rot18(A-Z,a-z,0-9)</option>
         <option value="47">rot47(!-~)</option>
       </select>
-      {/* <section>
-        <section className="info">
-          <h1>What is ROT-13?</h1>
-          <p>
-            ROT13 ("rotate by 13 places", sometimes hyphenated ROT-13) is a
-            simple letter substitution cipher that replaces a letter with the
-            13th letter after it in the alphabet. ROT13 is a special case of the
-            Caesar cipher which was developed in ancient Rome.
-          </p>
-          <p>
-            Because there are 26 letters (2×13) in the basic Latin alphabet,
-            ROT13 is its own inverse; that is, to undo ROT13, the same algorithm
-            is applied, so the same action can be used for encoding and
-            decoding. The algorithm provides virtually no cryptographic
-            security, and is often cited as a canonical example of weak
-            encryption
-          </p>
-          <a href="https://en.wikipedia.org/wiki/ROT13" target="_blank">
-            read more
-          </a>
-        </section>
-        <section className="notes">
-          <h1>Notes:</h1>
-          <p>
-            1. In addition to ROT-13, this module also provides support for
-            numeric ROT-5 (0-9), alphanumeric ROT-18 (A-Za-z0-9) and ROT-47 in
-            the ASCII range of 33 - 127 (!-~)
-          </p>
-          <p>
-            2. In ROT-18 unlike what the name might suggest, alphabetic
-            characters from A-Z are rotated by 13 and numeric charcacters 0-9 by
-            5
-          </p>
-          <p>
-            3. The similarity between ROT-5,8,47 as well as ROT-13 is that they
-            all have a symmetric algorithm, which means that both decryption and
-            encryption follow the same procedure
-          </p>
-        </section>
-      </section> */}
-    </>
+    </div>
   );
 }
