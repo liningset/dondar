@@ -294,64 +294,6 @@ export default function Xor({
           <option value="repeatedkey">Repeated key</option>
         </select>
       </div>
-      {/* <section>
-        <section className="info">
-          <h1>What is XOR cipher?</h1>
-          <p>
-            In cryptography, the simple XOR cipher is a type of additive cipher,
-            an encryption algorithm that operates according to the principles:
-          </p>
-          <ul>
-            <li>A ⊕ 0 = A,</li>
-            <li>A ⊕ A = 0,</li>
-            <li>A ⊕ B = B ⊕ A,</li>
-            <li>(A ⊕ B) ⊕ C = A ⊕ (B ⊕ C),</li>
-            <li>(B ⊕ A) ⊕ A = B ⊕ 0 = B,</li>
-          </ul>
-          <p>
-            where ⊕ denotes the exclusive disjunction (XOR) operation. This
-            operation is sometimes called modulus 2 addition (or subtraction,
-            which is identical). With this logic, a string of text can be
-            encrypted by applying the bitwise XOR operator to every character
-            using a given key. To decrypt the output, merely reapplying the XOR
-            function with the key will remove the cipher.
-          </p>
-
-          <a href="https://en.wikipedia.org/wiki/XOR_cipher" target="_blank">
-            read more
-          </a>
-        </section>
-        <section className="info notes">
-          <h1>Notes:</h1>
-          <p>
-            1. Seperation of bytes by spaces is only used for readability
-            purposes and serves no other purpose. <code>11011010 10101001</code>{" "}
-            and <code>1101101010101001</code> practically have the same result.
-          </p>
-          <p>
-            2. Spaces are only valid when used in following manner:{" "}
-            <code>"10011001 00011111 10...."</code> . Using more than one space
-            side by side and/or not ending up with groups of 8 bits are
-            considered invalid format.
-          </p>
-          <p>
-            3. Some of the XOR'd bytes may correspond to ASCII{" "}
-            <a href="https://www.geeksforgeeks.org/control-characters/">
-              Control Characters
-            </a>{" "}
-            which cannot be represented by printable characters, it may also be
-            a non-ASCII character. In either of cases the character will be
-            replaced with unicode: <code>U+FFFD</code>(�).
-          </p>
-          <p>
-            4. if the ASCII output of a conversion contains the replacement
-            character(e.g "<code>PÚ�þQ</code>
-            "), using that text as an input for decoding will most likely return
-            inaccurate results. In those circumstances we suggest using binary
-            format of that text instead
-          </p>
-        </section>
-      </section> */}
     </>
   );
 }

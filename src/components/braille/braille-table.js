@@ -127,36 +127,48 @@ let brailleTable = {
     [
       "rejoicing",
       "⠗⠚⠉⠛",
-      /(?<=((^|[ ,.])(un)?))rejoicing(?=((ly)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un)?))rejoicing(?=((ly)?([ ,.]|$)))/g,
     ],
-    ["receiving", "⠗⠉⠧⠛", /(?<=((^|[ ,.])(p)?))receiving(?=([ ,.]|$))/g],
+    ["receiving", "⠗⠉⠧⠛", /(?<=((^|[,.]|⠠{0,2})(p)?))receiving(?=([ ,.]|$))/g],
     ["ourselves", "⠳⠗⠧⠎", /ourselves/g],
-    ["necessary", "⠝⠑⠉", /(?<=((^|[ ,.])(un)?))necessary(?=([ ,.]|$))/g],
+    ["necessary", "⠝⠑⠉", /(?<=((^|[,.]|⠠{0,2})(un)?))necessary(?=([ ,.]|$))/g],
     ["immediate", "⠊⠍⠍", /(?<=(^|[ ,.]))immediate(?=((ly|ness)?([ ,.]|$)))/g],
     [
       "declaring",
       "⠙⠉⠇⠛",
-      /(?<=((^|[ ,.])(un)?))declaring(?=((ly|ness)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un)?))declaring(?=((ly|ness)?([ ,.]|$)))/g,
     ],
     [
       "deceiving",
       "⠙⠉⠧⠛",
-      /(?<=((^|[ ,.])(un)?))deceiving(?=((ly)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un)?))deceiving(?=((ly)?([ ,.]|$)))/g,
     ],
     ["character", "⠐⠡", /character/g],
-    ["afterward", "⠁⠋⠺", /(?<=((^|[ ,.])(in)?))afterward(?=((s)?([ ,.]|$)))/g],
+    [
+      "afterward",
+      "⠁⠋⠺",
+      /(?<=((^|[,.]|⠠{0,2})(in)?))afterward(?=((s)?([ ,.]|$)))/g,
+    ],
     [
       "afternoon",
       "⠁⠋⠝",
-      /(?<=((^|[ ,.])(good|mid)?))afternoon(?=((tea)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(good|mid)?))afternoon(?=((tea)?([ ,.]|$)))/g,
     ],
-    ["according", "⠁⠉", /(?<=((^|[ ,.])(un)?))according(?=((ly)?([ ,.]|$)))/g],
+    [
+      "according",
+      "⠁⠉",
+      /(?<=((^|[,.]|⠠{0,2})(un)?))according(?=((ly)?([ ,.]|$)))/g,
+    ],
     ["yourself", "⠽⠗⠋", /(?<=(^|[ ,.]))yourself(?=([ ,.]|$))/g],
     ["tomorrow", "⠞⠍", /(?<=(^|[ ,.]))tomorrow(?=([ ,.]|$))/g],
     ["together", "⠞⠛⠗", /(?<=(^|[ ,.]))together(?=([ ,.]|$))/g],
     ["question", "⠐⠟", /question/g],
     ["perceive", "⠏⠻⠉⠧", /perceive/g],
-    ["conceive", "⠒⠉⠧", /(?<=((^|[ ,.])(un)?))conceive(?=((d|r)?([ ,.]|$)))/g],
+    [
+      "conceive",
+      "⠒⠉⠧",
+      /(?<=((^|[,.]|⠠{0,2})(un)?))conceive(?=((d|r)?([ ,.]|$)))/g,
+    ],
     ["children", "⠡⠝", /(?<=(^|[ ,.]))children(?=([ ,.']|$))/g],
     ["although", "⠁⠇⠹", /although/g],
     ["tonight", "⠞⠝", /(?<=(^|[ ,.]))tonight(?=([ ,.]|$))/g],
@@ -165,34 +177,38 @@ let brailleTable = {
     [
       "rejoice",
       "⠗⠚⠉",
-      /(?<=((^|[ ,.])(un)?))rejoice(?=((d|ful(ly)?|fullness)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un)?))rejoice(?=((d|ful(ly)?|fullness)?([ ,.]|$)))/g,
     ],
     [
       "receive",
       "⠗⠉⠧",
-      /(?<=((^|[ ,.])(un|p)?))receive(?=((d|r|ership)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un|p)?))receive(?=((d|r|ership)?([ ,.]|$)))/g,
     ],
     ["perhaps", "⠏⠻⠓", /perhaps/g],
     ["oneself", "⠐⠕⠋", /oneself/g],
     ["neither", "⠝⠑⠊", /(?<=(^|[ ,.]))neither(?=([ ,.]|$))/g],
     ["himself", "⠓⠍⠋", /(?<=(^|[ ,.]))himself(?=([ ,.]|$))/g],
     ["herself", "⠓⠻⠋", /herself/g],
-    ["declare", "⠙⠉⠇", /(?<=((^|[ ,.])(un)?))declare(?=((d|r)?([ ,.]|$)))/g],
+    [
+      "declare",
+      "⠙⠉⠇",
+      /(?<=((^|[,.]|⠠{0,2})(un)?))declare(?=((d|r)?([ ,.]|$)))/g,
+    ],
     [
       "deceive",
       "⠙⠉⠧",
-      /(?<=((^|[ ,.])(un|arch)?))deceive(?=((d|r)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un|arch)?))deceive(?=((d|r)?([ ,.]|$)))/g,
     ],
     [
       "braille",
       "⠃⠗⠇",
-      /(?<=((^|[ ,.])(mis|re|un)?))braille(?=((d|r|writ(er|ing)|y)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(mis|re|un)?))braille(?=((d|r|writ(er|ing)|y)?([ ,.]|$)))/g,
     ],
 
     [
       "between",
       "⠆⠞",
-      /(?<=((^|[ ,.])(in)?))between(?=((deck|time|while)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(in)?))between(?=((deck|time|while)?([ ,.]|$)))/g,
     ],
     ["beneath", "⠆⠝", /(?<=(^|[ ,.]))beneath(?=((deck|ground)?([ ,.]|$)))/g],
     ["because", "⠆⠉", /(?<=(^|[ ,.]))because(?=((of)?([ ,.]|$)))/g],
@@ -201,7 +217,7 @@ let brailleTable = {
     [
       "friend",
       "⠋⠗",
-      /(?<=((^|[ ,.])(be|boy|de|gal|girl|lady|school|un)?))friend(?=((less(ness)?|li(er|es|est|ness(es)?)|ly|ship(s)?|s|ed))?([ ,.]|$))/g,
+      /(?<=((^|[,.]|⠠{0,2})(be|boy|de|gal|girl|lady|school|un)?))friend(?=((less(ness)?|li(er|es|est|ness(es)?)|ly|ship(s)?|s|ed))?([ ,.]|$))/g,
     ],
     ["spirit", "⠸⠎", /spirit/g],
     ["should", "⠩⠙", /should/g],
@@ -210,12 +226,12 @@ let brailleTable = {
     [
       "little",
       "⠇⠇",
-      /(?<=((^|[ ,.])(be)?))little(?=((d|ne(ss(es)?|ck)|r|st|ment)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(be)?))little(?=((d|ne(ss(es)?|ck)|r|st|ment)?([ ,.]|$)))/g,
     ], //
     [
       "letter",
       "⠇⠗",
-      /(?<=((^|[ ,.])(blood|chain|hate|love|news)?))letter(?=((bomb(ed|er|ing)?|box(ed|er|es|ing)?|er|ed)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(blood|chain|hate|love|news)?))letter(?=((bomb(ed|er|ing)?|box(ed|er|es|ing)?|er|ed)?([ ,.]|$)))/g,
     ],
     ["itself", "⠭⠋", /(?<=(^|[ ,.]))itself(?=([ ,.]|$))/g],
     ["either", "⠑⠊", /(?<=(^|[ ,.]))either(?=((way(s?))?([ ,.]|$)))/g],
@@ -227,14 +243,14 @@ let brailleTable = {
     ["before", "⠆⠋", /(?<=(^|[ ,.]))before(?=([ ,.]|$))/g],
     ["always", "⠁⠇⠺", /(?<=(^|[ ,.]))always(?=([ ,.]|$))/g],
     ["almost", "⠁⠇⠍", /(?<=(^|[ ,.]))almost(?=([ ,.]|$))/g],
-    ["across", "⠁⠉⠗", /(?<=((^|[ ,.])(read)?))across(?=([ ,.]|$))/g],
+    ["across", "⠁⠉⠗", /(?<=((^|[,.]|⠠{0,2})(read)?))across(?=([ ,.]|$))/g],
     ["first", "⠋⠌", /first/g],
     ["whose", "⠘⠱", /whose/g],
     ["young", "⠐⠽", /young/g],
     [
       "would",
       "⠺⠙",
-      /(?<=((^|[ ,.])('t)?))would(?=((|a|e?st|(n't)?('ve)?)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})('t)?))would(?=((|a|e?st|(n't)?('ve)?)?([ ,.]|$)))/g,
     ], //
     ["world", "⠸⠺", /world/g],
     ["where", "⠐⠱", /where/g],
@@ -248,7 +264,7 @@ let brailleTable = {
     [
       "quick",
       "⠟⠅",
-      /(?<=((^|[ ,.])(un|super|double)?))quick(?=((draw|en(er|d|ing|)?|er|est|fir(e|ing)?|fr(eez(e|ing)|ozen?)|i(e|sh(ly)?)|lime|l?y|ness(es)?|silver(ed|ing)?|s(and|et|nap|tep(ped|per|ping))|tempered|time|witted(ly|ness)?)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(un|super|double)?))quick(?=((draw|en(er|d|ing|)?|er|est|fir(e|ing)?|fr(eez(e|ing)|ozen?)|i(e|sh(ly)?)|lime|l?y|ness(es)?|silver(ed|ing)?|s(and|et|nap|tep(ped|per|ping))|tempered|time|witted(ly|ness)?)?([ ,.]|$)))/g,
     ],
 
     ["ought", "⠐⠳", /ought/g],
@@ -265,14 +281,18 @@ let brailleTable = {
     [
       "blind",
       "⠃⠇",
-      /(?<=((^|[ ,.])(colou?r|deaf|pur|snow|un)?))blind(?=((fish|fold(ed|er|ing)?|ly|ness(es)?|si(ded|der|ding|ght)|stor(y|ies)|worm)([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(colou?r|deaf|pur|snow|un)?))blind(?=((fish|fold(ed|er|ing)?|ly|ness(es)?|si(ded|der|ding|ght)|stor(y|ies)|worm)([ ,.]|$)))/g,
     ],
     ["below", "⠆⠇", /(?<=(^|[ ,.]))below(?=([ ,.]|$))/g],
-    ["again", "⠁⠛", /(?<=((^|[ ,.])((h|th|wh)ere(in)?)?))again(?=([ ,.]|$))/g],
+    [
+      "again",
+      "⠁⠛",
+      /(?<=((^|[,.]|⠠{0,2})((h|th|wh)ere(in)?)?))again(?=([ ,.]|$))/g,
+    ],
     [
       "after",
       "⠁⠋",
-      /(?<=((^|[ ,.])((h|th|wh)ere(in)?|morning)?))after(?=((burn(ed|er|ing)?|care|clap|damp|dark|deck|dinner|flow|glow|guard|hatch(es)?|hour|li(fe|ves)|light|lunch(es)?|market|match(es)?|math|meeting|most|pain|part(y|ies)|piece|play|sale|school|sensation|shave|shock|show(er)?|supper|taste|tax(es)?|thought|time|treatment|word|work|world|battle|birth)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})((h|th|wh)ere(in)?|morning)?))after(?=((burn(ed|er|ing)?|care|clap|damp|dark|deck|dinner|flow|glow|guard|hatch(es)?|hour|li(fe|ves)|light|lunch(es)?|market|match(es)?|math|meeting|most|pain|part(y|ies)|piece|play|sale|school|sensation|shave|shock|show(er)?|supper|taste|tax(es)?|thought|time|treatment|word|work|world|battle|birth)?([ ,.]|$)))/g,
     ],
     [
       "above",
@@ -282,7 +302,7 @@ let brailleTable = {
     [
       "about",
       "⠁⠃",
-      /(?<=((^|[ ,.])(((th|h)ere|(we|ea)st|gad|knock|lay|(nor|sou)th|right|rou(nd|st)|run|stir|turn|walk))?))about(?=(fac(e|ed|er|ing)|s|turn(ed)?)?([ ,.]|$))/g,
+      /(?<=((^|[,.]|⠠{0,2})(((th|h)ere|(we|ea)st|gad|knock|lay|(nor|sou)th|right|rou(nd|st)|run|stir|turn|walk))?))about(?=(fac(e|ed|er|ing)|s|turn(ed)?)?([ ,.]|$))/g,
     ],
     ["ever", "⠐⠑", /ever/g],
     ["your", "⠽⠗", /(?<=(^|[ ,.]))your(?=((s)?([ ,.]|$)))/g],
@@ -296,13 +316,13 @@ let brailleTable = {
     [
       "said",
       "⠎⠙",
-      /(?<=((^|[ ,.])(a?fore|gain|mis)?))said(?=((e?st)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(a?fore|gain|mis)?))said(?=((e?st)?([ ,.]|$)))/g,
     ],
     ["part", "⠐⠏", /part/g],
     [
       "paid",
       "⠏⠙",
-      /(?<=((^|[ ,.])(highest\-|highly|ill|lowly|over|poorly|post|p?re|under|un|well)?))paid(?=([ ,.]|$))/g,
+      /(?<=((^|[,.]|⠠{0,2})(highest\-|highly|ill|lowly|over|poorly|post|p?re|under|un|well)?))paid(?=([ ,.]|$))/g,
     ],
     ["name", "⠐⠝", /name/g],
     ["must", "⠍⠌", /must/g],
@@ -314,7 +334,7 @@ let brailleTable = {
     [
       "good",
       "⠛⠙",
-      /(?<=((^|[ ,.])(feel|super|scatter)?))good(?=((by|bye|byeing|day|er|est|evening|fellow|fellowship|hearted|heartedly|heartedness|humor|humored|humoredly|humoredness|humorednesses|ie|ish|li(er|est|ness)|look(er|ing)?|ly|nature|natured(ly|ness)|ness(es)?|night|sized|tempered|temperedly|time|willed|y)?([ ,.]|$)))/g,
+      /(?<=((^|[,.]|⠠{0,2})(feel|super|scatter)?))good(?=((by|bye|byeing|day|er|est|evening|fellow|fellowship|hearted|heartedly|heartedness|humor|humored|humoredly|humoredness|humorednesses|ie|ish|li(er|est|ness)|look(er|ing)?|ly|nature|natured(ly|ness)|ness(es)?|night|sized|tempered|temperedly|time|willed|y)?([ ,.]|$)))/g,
     ],
     ["also", "⠁⠇", /(?<=(^|[ ,.]))also(?=([ ,.]|$))/g],
 

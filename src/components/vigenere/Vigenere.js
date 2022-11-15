@@ -270,52 +270,6 @@ it also returns all the positions and required info of mentioned characters in a
           required
         />
       </div>
-      {/* <section>
-        <section className="info">
-          <h1>What is Vigenère Cipher?</h1>
-          <p>
-            The Vigenère cipher is a method of encodeing alphabetic text by
-            using a series of interwoven Caesar ciphers, based on the letters of
-            a keyword on a 26*26 table known as Vigenere Square (
-            <a href="https://en.wikipedia.org/wiki/Tabula_recta">
-              or Tabula Recta
-            </a>
-            ) . It employs a form of polyalphabetic substitution.
-          </p>
-          <p>
-            First described by Giovan Battista Bellaso in 1553, the cipher is
-            easy to understand and implement, but it resisted all attempts to
-            break it until 1863, three centuries later. This earned it the
-            description le chiffrage indéchiffrable (French for 'the
-            indecipherable cipher'). Many people have tried to implement
-            encodeion schemes that are essentially Vigenère ciphers. In 1863,
-            Friedrich Kasiski was the first to publish a general method of
-            deciphering Vigenère ciphers.
-          </p>
-          <a
-            href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher"
-            target="_blank"
-          >
-            read more
-          </a>
-        </section>
-        <section className="notes">
-          <h1>Notes:</h1>
-          <p>
-            1. The table consists of the alphabets written out 26 times in
-            different rows, each alphabet shifted cyclically to the left
-            compared to the previous alphabet, corresponding to the 26 possible
-            Caesar Ciphers.
-          </p>
-          <p>
-            2. At different points in the encodeion process, the cipher uses a
-            different alphabet from one of the rows.
-          </p>
-          <p>
-            3. The alphabet used at each point depends on a repeating keyword.
-          </p>
-        </section>
-      </section> */}
     </>
   );
 }

@@ -73,27 +73,5 @@ export default function Morse({
 
   useEffect(() => triggerFn());
 
-  return (
-    <>
-      <span>No advanced options</span>
-      {/* <section>
-        <section className="info">
-          <h1>What is Morse Code?</h1>
-          <p>
-            Morse code is a method used in telecommunication to encode text
-            characters as standardized sequences of two different signal
-            durations, called dots and dashes, or dits and dahs. Morse code is
-            named after Samuel Morse, one of the inventors of the telegraph.
-          </p>
-          <a href="https://en.wikipedia.org/wiki/Morse_code" target="_blank">
-            read more
-          </a>
-        </section>
-        <section className="notes">
-          <h1>Notes:</h1>
-          <p>none</p>
-        </section>
-      </section> */}
-    </>
-  );
+  return <span>No advanced options</span>;
 }

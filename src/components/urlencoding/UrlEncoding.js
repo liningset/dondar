@@ -101,29 +101,6 @@ export default function UrlEncoding({
         <option value="hex">encode space as %20</option>
         <option value="plus">encode space as +</option>
       </select>
-      {/* <section>
-        <section className="info">
-          <h3>What is URL encoding?</h3>
-          <p>
-            Percent-encoding, also known as URL encoding, is a method to encode
-            arbitrary data in a Uniform Resource Identifier (URI) using only the
-            limited US-ASCII characters legal within a URI. Although it is known
-            as URL encoding, it is also used more generally within the main
-            Uniform Resource Identifier (URI) set, which includes both Uniform
-            Resource Locator (URL) and Uniform Resource Name (URN). As such, it
-            is also used in the preparation of data of the
-            application/x-www-form-urlencoded media type, as is often used in
-            the submission of HTML form data in HTTP requests.{" "}
-          </p>
-          <a
-            href="https://en.wikipedia.org/wiki/Percent-encoding"
-            target="_blank"
-          >
-            read more
-          </a>
-        </section>
-        <section></section>
-      </section> */}
     </div>
   );
 }

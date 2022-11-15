@@ -77,27 +77,6 @@ export default function A1Z26({
         title="seperator"
         required
       />
-      {/* <section>
-        <section className="info">
-          <h1>What is A1Z26?</h1>
-          <p>
-            A1Z26 as it's name suggests, is a simple cipher that converts each
-            alphabetic character of plaintext to the number that represents it
-            in alphabete(from 1 to 26). a plaintext like <code>"hello"</code>{" "}
-            with a seperator of <code>"/"</code> would result to{" "}
-            <code>"8/5/12/12/15"</code>.
-          </p>
-        </section>
-        <section className="notes">
-          <h1>Notes:</h1>
-          <p>1. Make sure to always include seperator.</p>
-          <p>
-            2. Any non-alphabetic characters in plaintext will be excluded in
-            ciphertext as well as any character outside of value-seperation
-            boundary in ciphertext.
-          </p>
-        </section>
-      </section> */}
     </div>
   );
 }

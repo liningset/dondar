@@ -206,24 +206,6 @@ export default function UnicodePoints({
           title="seperator"
         />
       </div>
-      {/* <section className="info">
-        <h3>What is Unicode?</h3>
-        <p>
-          Unicode, formally The Unicode Standard is an information technology
-          standard for the consistent encoding, representation, and handling of
-          text expressed in most of the world's writing systems.
-        </p>
-        <p>
-          Unicode's success at unifying character sets has led to its widespread
-          and predominant use in the internationalization and localization of
-          computer software. The standard has been implemented in many recent
-          technologies, including modern operating systems, XML, and most modern
-          programming languages.{" "}
-        </p>
-        <a href="https://en.wikipedia.org/wiki/Unicode" target="_blank">
-          read more
-        </a>
-      </section> */}
     </>
   );
 }

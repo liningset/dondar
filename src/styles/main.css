@@ -265,7 +265,9 @@
 }
 .modal3 .info ul {
   margin-left: 1rem;
-  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .modal3 .info a {
   color: #1da1f2;

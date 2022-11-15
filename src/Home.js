@@ -123,9 +123,9 @@ export default function Home({ setService }) {
   ];
 
   const helpers = {
-    lengthen: function (input, padWith) {
+    lengthen: function (input, padWith, padLength = 8) {
       const arr = input.split("");
-      while (arr.length % 8 !== 0) {
+      while (arr.length % padLength !== 0) {
         arr.unshift(padWith);
       }
       return arr.join("");
@@ -153,19 +153,51 @@ export default function Home({ setService }) {
     },
   };
   helpers.charToBin = function (input) {
+    function unicodeToUTF8(char) {
+      let charBin = char.charCodeAt(0).toString(2);
+      let padded;
+      let arr = [];
+      switch (true) {
+        case /[\u0000-\u007f]/.test(char):
+          arr.push(helpers.lengthen(charBin, "0"));
+          break;
+
+        case /[\u0080-\u07ff]/.test(char):
+          padded = helpers.lengthen(charBin, "0", 11);
+          arr = padded
+            .match(/^[01]{5}|[01]{6}/g)
+            .map((p, i) => (!i ? `110${p}` : `10${p}`));
+          break;
+
+        case /[\u0800-\uffff]/.test(char):
+          padded = helpers.lengthen(charBin, "0", 16);
+          arr = padded
+            .match(/^[01]{4}|[01]{6}/g)
+            .map((p, i) => (!i ? `1110${p}` : `10${p}`));
+          break;
+
+        default:
+          padded = helpers.lengthen(charBin, "0", 16);
+          arr = padded
+            .match(/^[01]{3}|[01]{6}/g)
+            .map((p, i) => (!i ? `11110${p}` : `10${p}`));
+          break;
+      }
+      return arr.join("+");
+    }
     return typeof input === "string"
-      ? helpers.lengthen(input.charCodeAt(0).toString(2), "0")
-      : input.map((char) =>
-          helpers.lengthen(char.charCodeAt(0).toString(2), "0")
-        );
+      ? unicodeToUTF8(input)
+      : input.map((char) => unicodeToUTF8(char));
   };
   helpers.binToChar = function (input) {
+    function UTF8ToUnicode(elem) {
+      let extractedBin = elem.match(/(?<=((\+|^)1+?0))[01]+|0[01]{7}/g);
+      return String.fromCharCode(Number(`0b${extractedBin.join("")}`));
+    }
     return typeof input === "string"
-      ? String.fromCharCode(Number(`0b${input}`))
-      : input.map((octet) => String.fromCharCode(Number(`0b${octet}`)));
+      ? UTF8ToUnicode(input)
+      : input.map((octet) => UTF8ToUnicode(octet));
   };
-
-  helpers.toUTF8 = function () {};
 
   helpers.updateStorage({
     opsList: opsList,
@@ -241,7 +273,10 @@ export default function Home({ setService }) {
     let display;
     switch (value) {
       case "binary":
-        display = inputBinary.join(" ");
+        display = inputBinary
+          .join("")
+          .match(/[01]{8}/g)
+          .join(" ");
         break;
 
       case "text":
@@ -250,6 +285,8 @@ export default function Home({ setService }) {
 
       case "hex":
         display = inputBinary
+          .join("")
+          .match(/[01]{8}/g)
           .map((octet) => Number(`0b${octet}`).toString(16))
           .join(" ");
         break;
@@ -262,7 +299,10 @@ export default function Home({ setService }) {
     let display;
     switch (value) {
       case "binary":
-        display = outputBinary.join(" ");
+        display = outputBinary
+          .join("")
+          .match(/[01]{8}/g)
+          .join(" ");
         break;
 
       case "text":
@@ -271,6 +311,8 @@ export default function Home({ setService }) {
 
       case "hex":
         display = outputBinary
+          .join("")
+          .match(/[01]{8}/g)
           .map((octet) => Number(`0b${octet}`).toString(16))
           .join(" ");
         break;
@@ -294,9 +336,39 @@ export default function Home({ setService }) {
   }
 
   function inputChangeHandler() {
-    let extractedInputBins = helpers.charToBin(
-      inputFieldRef.current.value.split("")
-    );
+    let extractedInputBins = [];
+    switch (selectInFormatRef.current.value) {
+      case "text":
+        extractedInputBins = helpers.charToBin(
+          inputFieldRef.current.value.split("")
+        );
+        break;
+
+      case "binary":
+        if (/^([01]{8} ?)+$/.test(inputFieldRef.current.value))
+          extractedInputBins = inputFieldRef.current.value.match(/[01]{8}/g);
+        /*else {
+          outputFieldRef.current.value = "";
+          outputFieldRef.current.setAttribute(
+            "placeholder",
+            "0.Main: invalid binaries as direct input"
+          );
+        }*/
+        break;
+      case "hex":
+        if (/^([\dA-F]{2} ?)+$/i.test(inputFieldRef.current.value))
+          extractedInputBins =
+            inputFieldRef.current.value.match(/[\dA-F]{2}/gi);
+        /*else {
+          outputFieldRef.current.value = "";
+          outputFieldRef.current.setAttribute(
+            "placeholder",
+            "0.Main: invalid binaries as direct input"
+          );
+        }*/
+        break;
+    }
+
     helpers.updateStorage({
       inputBins: extractedInputBins,
       outputBins: extractedInputBins,
@@ -317,7 +389,10 @@ export default function Home({ setService }) {
       outputFieldRef.current.setAttribute("placeholder", "The output");
       switch (selectOutFormatRef.current.value) {
         case "binary":
-          outputFieldRef.current.value = outputBinary.join(" ");
+          outputFieldRef.current.value = outputBinary
+            .join("")
+            .match(/[01]{8}/g)
+            .join(" ");
           break;
 
         case "text":
@@ -328,6 +403,8 @@ export default function Home({ setService }) {
 
         case "hex":
           outputFieldRef.current.value = outputBinary
+            .join("")
+            .match(/[01]{8}/g)
             .map((x) => Number(`0b${x}`).toString(16))
             .join(" ");
           break;
@@ -428,7 +505,18 @@ export default function Home({ setService }) {
             <i className="fas fa-times"></i>
           </button>
 
-          <div className="info">{}</div>
+          <div className="info">None</div>
+        </div>
+
+        <div className="modal4" data-active="false">
+          <button
+            className="close-modal-btn"
+            onClick={() => modalAnim("close", 3)}
+          >
+            <i className="fas fa-times"></i>
+          </button>
+
+          <div className="notes">None</div>
         </div>
       </div>
 

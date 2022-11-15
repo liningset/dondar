@@ -272,30 +272,6 @@ export default function Ascii85({
         <option value="original">Original</option>
         <option value="z85">ZeroMQ (z85)</option>
       </select>
-
-      {/* <section>
-        <section className="info">
-          <h1>What is Ascii85(Base85)?</h1>
-          <p>
-            Ascii85, also called Base85, is a form of binary-to-text encoding
-            developed by Paul E. Rutter for the btoa utility. By using five
-            ASCII characters to represent four bytes of binary data (making the
-            encoded size 1/4 larger than the original, assuming eight bits per
-            ASCII character), it is more efficient than uuencode or Base64,
-            which use four characters to represent three bytes of data (1/3
-            increase, assuming eight bits per ASCII character).
-          </p>
-          <p>
-            Its main modern uses are in original's PostScript and Portable
-            Document Format file formats, as well as in the patch encoding for
-            binary files used by Git.
-          </p>
-
-          <a href="https://en.wikipedia.org/wiki/Ascii85" target="_blank">
-            read more
-          </a>
-        </section>
-      </section> */}
     </div>
   );
 }

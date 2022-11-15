@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-export default function Rot13({ setOutputBinary, helpers, setDescryption }) {
+export default function Rot13({ setOutputBinary, helpers }) {
   const selectRotRef = useRef(null);
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";

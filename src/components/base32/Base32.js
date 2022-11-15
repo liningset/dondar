@@ -256,8 +256,32 @@ export default function Base32({
           break;
       }
 
-      helpers.updateStorage({ outputBins: result });
+      helpers.updateStorage({
+        outputBins: result,
+        descryptionMain: `<section className="info">
+      <h1>What is Base32?</h1>
+      <p>
+        In computer programming, Base32 is a group of binary-to-text
+        encoding schemes that represent binary data (more specifically, a
+        sequence of 8-bit bytes) in sequences of 40 bits that can be
+        represented by eight 5-bit Base32 digits.
+      </p>
+      <p>
+        Base32 uses a set of 32 digits, each of which can be represented by
+        5 bits. One way to represent Base32 numbers in a human-readable way
+        is by using a standard 32-character set, such as the twenty-two
+        upper-case letters A-V and the digits 0-9. However, many other
+        variations are used in different contexts.
+      </p>
+
+      <a href="https://en.wikipedia.org/wiki/Base32" target="_blank">
+        read more
+      </a>
+    </section>`,
+      });
     } //else outputFieldRef.current.value = "";
+
+    //setDescryption(``);
   }
 
   useEffect(() => triggerFn());
@@ -298,7 +322,7 @@ export default function Base32({
         <section className="notes">
           <h1>Notes:</h1>
           <p>
-            1. Base32 is case-sensitive. in 3 first variants(original,
+            1. Base32 is case-sensitive. When decoding in 3 first variants(original,
             crockford, base32hex) the characters of encoded data are all
             uppercase unlike z-base-32 which requires all text be in lowercase.
             So bear that in mind.

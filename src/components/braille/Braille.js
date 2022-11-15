@@ -345,57 +345,6 @@ export default function Braille({
           grade 2
         </option>
       </select>
-      {/* <section>
-        <section className="info">
-          <h1>What is Braille?</h1>
-          <p>
-            Braille is a tactile writing system used by people who are visually
-            impaired, including people who are blind, deafblind or who have low
-            vision. It can be read either on embossed paper or by using
-            refreshable braille displays that connect to computers and
-            smartphone devices. Braille can be written using a slate and stylus,
-            a braille writer, an electronic braille notetaker or with the use of
-            a computer connected to a braille embosser.
-          </p>
-          <p>
-            Braille characters are formed using a combination of six raised dots
-            arranged in a 3*2 matrix, called the braille cell. The number and
-            arrangement of these dots distinguishes one character from another.
-            Since the various braille alphabets originated as transcription
-            codes for printed writing, the mappings (sets of character
-            designations) vary from language to language, and even within one;
-            in English Braille there are 3 types of braille:
-          </p>
-          <ul>
-            <li>
-              grade 1 – a letter-by-letter transcription used for basic
-              literacy;
-            </li>
-            <li>
-              grade 2 – an addition of abbreviations and contractions used as a
-              space-saving mechanism;
-            </li>
-            <li>
-              grade 3 – various non-standardized personal stenography that is
-              less commonly used.
-            </li>
-          </ul>
-          <a href="https://en.wikipedia.org/wiki/Braille" target="_blank">
-            read more
-          </a>
-        </section>
-        <section className="notes">
-          <h1>Notes:</h1>
-          <p>
-            1. Grade 2 contraction system is a work in progress. Some
-            translations in decode phase may not work as expected.
-          </p>
-          <p>
-            2. For more accurate translations, it is important for the text to
-            be as grammatically and punctually valid as possible.
-          </p>
-        </section>
-      </section> */}
     </div>
   );
 }

@@ -421,70 +421,48 @@ export default function NumeralSystem({
           </optgroup>
         </select>
       </div>
-      {/* <section>
-        <section className="info">
-          <h1>What is a numeral system?</h1>
-          <p>
-            A numeral system (or system of numeration) is a writing system for
-            expressing numbers; that is, a mathematical notation for
-            representing numbers of a given set, using digits or other symbols
-            in a consistent manner.
-          </p>
-          <p>
-            The same sequence of symbols may represent different numbers in
-            different numeral systems. For example, "11" represents the number
-            eleven in the decimal numeral system (used in common life), the
-            number three in the binary numeral system (used in computers), and
-            the number two in the unary numeral system (e.g. used in tallying
-            scores).
-          </p>
-
-          <a
-            href="https://en.wikipedia.org/wiki/Numeral_system"
-            target="_blank"
-          >
-            read more
-          </a>
-        </section>
+      <section>
         <section className="notes">
           <h1>Notes:</h1>
           <p>
-            this module provides support between conversion from/to base-2,
-            base-3, base-4,...,base-36 systems and Roman numerals. Some of the
-            popular ones are mentioned below.
+            1. this module provides support between conversion of numeral
+            systems categorized by both notation and historical significance.
+            Some of the popular ones are:
           </p>
+          <ol>
+            <p>
+              Binary: Binary or base 2 consists of 1s and 0s. It is the system
+              that computers understand at a core level.
+            </p>
+            <p>
+              Octal: Octal or base 8 is a counting system similar to binary,
+              except that digits vary from 0 to 7.
+            </p>
+            <p>
+              Decimal: Decimal or base 10, is the system that most humans in the
+              world are taught to use. the characters range from 0 to 9.
+            </p>
+            <p>
+              Hexadecimal: Hexadecimal (hex) or base 16 is a system that has
+              played a major role in computer science alongside binary. the
+              characters consist of 0 to 9 and A to F from alphabet.
+            </p>
+            <p>
+              Roman numerals: Roman numerals are a set of latin symbols that
+              represent a rather limited set of numbers. It was the prevalent
+              counting system in ancient Rome and most other parts of Europe.
+              The numbers on the Big Ben tower's clock in London are written in
+              Roman. the Numbers 0 through 12 are as follows: I, II, III, IV, V,
+              VI ,VII, VIII, IX, X, XI, XII.
+            </p>
+          </ol>
 
           <p>
-            1. Binary: Binary or base 2 consists of 1s and 0s. It is the system
-            that computers understand at a core level.
-          </p>
-          <p>
-            2. Octal: Octal or base 8 is a counting system similar to binary,
-            except that digits vary from 0 to 7.
-          </p>
-          <p>
-            3. Decimal: Decimal or base 10, is the system that most humans in
-            the world are taught to use. the characters range from 0 to 9.
-          </p>
-          <p>
-            4. Hexadecimal: Hexadecimal (hex) or base 16 is a system that has
-            played a major role in computer science alongside binary. the
-            characters consist of 0 to 9 and A to F from alphabet.
-          </p>
-          <p>
-            5. Roman numerals: Roman numerals are a set of latin symbols that
-            represent a rather limited set of numbers. It was the prevalent
-            counting system in ancient Rome and most other parts of Europe. The
-            numbers on the Big Ben tower's clock in London are written in Roman.
-            the Numbers 0 through 12 are as follows: I, II, III, IV, V, VI ,VII,
-            VIII, IX, X, XI, XII.
-          </p>
-          <p>
-            6. If you want to convert multiple numbers simultaneously, seperate
+            2. If you want to convert multiple numbers simultaneously, seperate
             them with a line break.
           </p>
         </section>
-      </section> */}
+      </section>
     </>
   );
 }
