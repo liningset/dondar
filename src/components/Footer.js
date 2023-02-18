@@ -1,8 +1,12 @@
+import React from "react";
+
 export default function Footer() {
   return (
     <footer>
+      <div className="footer-logo"></div>
+
       <div className="footer-inner">
-        <ul>
+        <ul className="social">
           <li>
             <a
               href="https://twitter.com/LiningSet"
@@ -22,7 +26,7 @@ export default function Footer() {
             ></a>
           </li>
         </ul>
-        <span>project developed by liningset</span>
+        <span>developed by liningset</span>
       </div>
     </footer>
   );

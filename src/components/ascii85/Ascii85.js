@@ -1,40 +1,45 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 export default function Ascii85({
   currentOp,
   opInfo,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
-  let inputFieldRef = useRef(null);
   let outputFieldRef = useRef(null);
-  let selectOpRef = useRef(null);
   let selectVariantRef = useRef(null);
-  let selectOutFormatRef = useRef(null);
-  let selectInFormatRef = useRef(null);
   let charsets = {
     original: [
       "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstu",
-      /^[\dA-Za-uz!"#$%&'()*+,\-./:;<=>?@[\\\]^_`]+$/,
+      /^[\dA-Za-uz!"#$%&'()*+,./:;<=>?@[\\\]^_`-]+$/
     ],
     z85: [
       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#",
-      /^[\dA-Z.\-:+=^!/*?&<>()[\]{}@%$#]+$/i,
+      /^[\dA-Z.:+=^!/*?&<>()[\]{}@%$#-]+$/i
     ],
+    ipv6: [
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~",
+      /^[\dA-Z!#$%&()*+;<=>?@^_`{|}~-]+$/i
+    ]
   };
 
   //---------------------------------------------------------------------------------
 
   //the function that evaluates input before proceeding with further operations
   function validate(input) {
-    //first off, input must not be empty
-    if (input !== []) {
-      //let textArr = helpers.binToChar(inputBinary);
+    let inputIsNotEmpty = input.length > 0;
+
+    if (inputIsNotEmpty) {
+      let inputString = helpers.binToChar(input).join("");
       let reg;
       switch (currentOp) {
         case "encode":
-          reg = /\n|./;
+          if (selectVariantRef.current.value === "ipv6") {
+            reg = /^([\dA-F]{1,4}:){7}([\dA-F]{1,4})$/i;
+          } else {
+            reg = /\n|./; //^[\dA-F]{1,4}((:([\dA-F]{1,4}:){6})|(:([\dA-F]{1,4}:){0,2}([\dA-F]{1,4})::([\dA-F]{1,4}:){0,2}([\dA-F]{1,4})?)|(([\dA-F]{1,4}:){0,2}([\dA-F]{1,4})?::([\dA-F]{1,4}:){0,2}([\dA-F]{1,4})?))[\dA-F]{1,4}$
+          }
           break;
 
         case "decode":
@@ -42,46 +47,31 @@ export default function Ascii85({
           break;
       }
 
-      if (input.every((o) => reg.test(helpers.binToChar(o)))) {
+      if (input.every(o => reg.test(helpers.binToChar(o)))) {
         return true;
       } else {
         //otherwise:
         let illegalChar = input.find(
-          (char) => !reg.test(helpers.binToChar(char))
+          char => !reg.test(helpers.binToChar(char))
         );
         helpers.updateStorage({
           haltedAt: [
             ...helpers.getFromStorage("haltedAt"),
             {
               at: `${opInfo.index + 1}.${opInfo.title}: `,
-              error: `Invalid character at index ${input.indexOf(illegalChar)}`,
-            },
-          ],
+              error: `Invalid character at index ${input.indexOf(illegalChar)}`
+            }
+          ]
         });
         return false;
       }
-    } else {
-      outputFieldRef.current.setAttribute("placeholder", `The output`);
-      return false;
-    }
+    } else return false;
   }
 
   //---------------------------------------------------------------------------------
 
   //recieves the string containing current input and outputs the array containing converted binaries
   function encode(input) {
-    //will set the inputBinary variable to an array of octets based on input
-    //**this variable will be used on encoding operations from now on
-    /*switch (selectInFormatRef.current.value) {
-      case "binary":
-        inputBinary = input.match(/[01]{8}/g);
-        break;
-
-      case "ascii":
-        inputBinary = asciiToBinary(input);
-        break;
-    }*/
-
     let paddedInputBinary = [...input] || [];
     let paddedBytesCount = 0;
 
@@ -98,7 +88,7 @@ export default function Ascii85({
       paddedInputBinary.join("").match(/[01]{32}|[01]{24}|[01]{16}|[01]{8}/g) ||
       [];
 
-    let output = _32bitSeperated.map((chunk) => {
+    let output = _32bitSeperated.map(chunk => {
       //the octet value in decimal format
       let inDecimal = Number(`0b${chunk}`);
       //-----------------------------------------------
@@ -130,7 +120,7 @@ export default function Ascii85({
      before splitting to an array of single characters, which gives us as shown below:
      ["abcde", ""] ===> ["a", "b", "c", "d", "e", "z"]*/
     output = output
-      .map((x) => (x === "" ? "z" : x))
+      .map(x => (x === "" ? "z" : x))
       .join("")
       .split("");
 
@@ -139,18 +129,6 @@ export default function Ascii85({
 
     //converts each byte to unicode character
     //outputBinary = output.map((x) => asciiToBinary(x));
-    //outputBinary = ;
-
-    //decides which format to return the output as based on user preference.
-    /*switch (selectOutFormatRef.current.value) {
-      case "binary":
-        return outputBinary.join(" ");
-
-      case "ascii":
-        return outputBinary
-          .map((x) => String.fromCharCode(Number(`0b${x}`)))
-          .join("");
-    }*/
     return helpers.charToBin(output);
   }
 
@@ -159,16 +137,6 @@ export default function Ascii85({
   function decode(input) {
     //will set the inputBinary variable to an array of octets based on input
     //**this variable will be used on encoding operations from now on
-    /*switch (selectInFormatRef.current.value) {
-      case "binary":
-        inputBinary = input.match(/[01]{8}/g);
-        break;
-
-      case "ascii":
-        inputBinary = asciiToBinary(input);
-        break;
-    }*/
-
     let paddedInputArr = [...input] || [];
     let paddedBytesCount = 0;
 
@@ -184,42 +152,31 @@ export default function Ascii85({
     let _8bitsArr = paddedInputArr
       .join("")
       .match(/[01]{40}/g)
-      .map((string) =>
-        string.match(/[01]{8}/g).map((x) => Number(`0b${x}`) - 33)
-      );
+      .map(string => string.match(/[01]{8}/g).map(x => Number(`0b${x}`) - 33));
 
-    let reverted32bitChunks = _8bitsArr.map((chunk) => {
+    let reverted32bitChunks = _8bitsArr.map(chunk => {
       let counter = 5;
-      let revertedChunk = chunk.map((x) => {
+      let revertedChunk = chunk.map(x => {
         counter -= 1;
         return x * 85 ** counter;
       });
       return revertedChunk.reduce((a, b) => a + b, 0);
     });
 
-    let temp = reverted32bitChunks.map((num) => {
+    let temp = reverted32bitChunks.map(num => {
       let out = num.toString(2).split("");
       while (out.length % 8 !== 0) out.unshift("0");
       return out.join("").match(/[01]{8}/g);
     });
 
     let output = [];
-    temp.forEach((array) => {
-      array.forEach((item) => {
+    temp.forEach(array => {
+      array.forEach(item => {
         output.push(item);
       });
     });
 
     for (let i = 0; i < paddedBytesCount; i++) output.pop();
-    /*switch (selectOutFormatRef.current.value) {
-      case "binary":
-        return outputBinary.join(" ");
-
-      case "ascii":
-        return outputBinary
-          .map((x) => String.fromCharCode(Number(`0b${x}`)))
-          .join("");
-    }*/
     return output;
   }
 
@@ -229,15 +186,6 @@ export default function Ascii85({
     let inputBinary = helpers.getFromStorage("outputBins");
 
     if (validate(inputBinary)) {
-      /*switch (selectInFormatRef.current.value) {
-        case "binary":
-          inputBinary = inputFieldRef.current.value.match(/[01]{8}/g);
-          break;
-
-        case "ascii":
-          inputBinary = asciiToBinary(inputFieldRef.current.value);
-          break;
-      }*/
       let result;
       switch (currentOp) {
         case "encode":
@@ -248,16 +196,15 @@ export default function Ascii85({
           break;
       }
       helpers.updateStorage({
-        outputBins: result,
+        outputBins: result
       });
-    } else {
     }
   }
 
   //---------------------------------------------------------------------------------
 
   useEffect(() => {
-    triggerFn();
+    if (!isDisabled) triggerFn();
   });
 
   //---------------------------------------------------------------------------------
@@ -271,9 +218,8 @@ export default function Ascii85({
       >
         <option value="original">Original</option>
         <option value="z85">ZeroMQ (z85)</option>
+        <option value="ipv6">IPv6 (RFC 1924)</option>
       </select>
     </div>
   );
 }
-
-//0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~    rfc 1924

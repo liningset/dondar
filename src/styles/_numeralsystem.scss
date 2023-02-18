@@ -1,5 +1,5 @@
 .numeralsystem {
-  .op-advanced-inner {
+  .pipe-advanced-inner {
     gap: 2rem;
 
     > .div select {
@@ -9,7 +9,7 @@
 }
 
 @media (max-width: 500px) {
-  .numeralsystem .op-advanced-inner {
+  .numeralsystem .pipe-advanced-inner {
     flex-direction: column;
     > .div {
       justify-content: center;

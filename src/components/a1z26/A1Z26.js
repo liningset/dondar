@@ -1,23 +1,20 @@
 import React, { useEffect, useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
 
 export default function A1Z26({
   currentOp,
+  isDisabled,
   helpers,
   opInfo,
-  setOutputBinary,
-  setHaltedAt,
-  outputField,
+  setOutputBinary
 }) {
   const seperatorInputRef = useRef(null);
-  const alphabete = "abcdefghijklmnopqrstuvwxyz";
+  const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
   function encode(text) {
     let indexes = [];
     for (let char of text) {
-      if (alphabete.includes(char.toLowerCase())) {
-        indexes.push(alphabete.indexOf(char.toLowerCase()) + 1);
+      if (alphabet.includes(char.toLowerCase())) {
+        indexes.push(alphabet.indexOf(char.toLowerCase()) + 1);
       }
     }
     return indexes.join(seperatorInputRef.current.value).split("");
@@ -26,14 +23,13 @@ export default function A1Z26({
     let sanitizedText = text.replace(/(^[^\d]+)|([^\d]+$)/g, "");
     let matches = sanitizedText.split(seperatorInputRef.current.value);
 
-    let convertedArr = matches.map((item) => alphabete[item - 1]);
+    let convertedArr = matches.map(item => alphabet[item - 1]);
 
     return convertedArr.join("").split("");
   }
 
   function triggerFn() {
     if (seperatorInputRef.current.validity.valid) {
-      //outputField.setAttribute("placeholder", "The output");
       let inputBinary = helpers.getFromStorage("outputBins");
       let result;
       switch (currentOp) {
@@ -46,7 +42,7 @@ export default function A1Z26({
           break;
       }
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result),
+        outputBins: helpers.charToBin(result)
       });
     } else {
       helpers.updateStorage({
@@ -54,15 +50,15 @@ export default function A1Z26({
           ...helpers.getFromStorage("haltedAt"),
           {
             at: `${opInfo.index + 1}.${opInfo.title}: `,
-            error: "seperator cannot be empty",
-          },
-        ],
+            error: "seperator cannot be empty"
+          }
+        ]
       });
     }
   }
 
   useEffect(() => {
-    triggerFn();
+    if (!isDisabled) triggerFn();
   });
   return (
     <div className="div">

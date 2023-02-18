@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-export default function Rot13({ setOutputBinary, helpers }) {
+export default function Rot13({ setOutputBinary, helpers, isDisabled }) {
   const selectRotRef = useRef(null);
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
@@ -77,7 +77,9 @@ export default function Rot13({ setOutputBinary, helpers }) {
     helpers.updateStorage({ outputBins: result });
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <div className="div">

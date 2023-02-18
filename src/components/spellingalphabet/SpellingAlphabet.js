@@ -1,13 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import CHARSETS from "./charsets";
-import Header from "../Header";
-import Footer from "../Footer";
 
 export default function SpellingAlphabet({
   currentOp,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   const selectAlphabetRef = useRef(null);
 
@@ -32,8 +30,8 @@ export default function SpellingAlphabet({
     let charset = CHARSETS[selectAlphabetRef.current.value];
     let arr = text.split(" ");
     let decodedArr = [];
-    arr.forEach((elem) => {
-      if (charset.words.some((word) => new RegExp(`${elem}`, "i").test(word))) {
+    arr.forEach(elem => {
+      if (charset.words.some(word => new RegExp(`${elem}`, "i").test(word))) {
         let transformed = elem
           .split("")
           .map((c, i) => (i === 0 ? c.toUpperCase() : c.toLowerCase()))
@@ -41,7 +39,7 @@ export default function SpellingAlphabet({
 
         decodedArr.push(charset.characters[charset.words.indexOf(transformed)]);
       } else if (
-        charset.numWords.some((word) => new RegExp(`${elem}`, "i").test(word))
+        charset.numWords.some(word => new RegExp(`${elem}`, "i").test(word))
       ) {
         let transformed = elem
           .split("")
@@ -72,11 +70,13 @@ export default function SpellingAlphabet({
     }
 
     helpers.updateStorage({
-      outputBins: helpers.charToBin(result),
+      outputBins: helpers.charToBin(result)
     });
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <div className="div">

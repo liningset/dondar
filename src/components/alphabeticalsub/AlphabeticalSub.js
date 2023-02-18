@@ -1,12 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
 
 export default function AlphabeticalSub({
   opInfo,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   const plainAlphaRef = useRef(null);
   const cipherAlphaRef = useRef(null);
@@ -21,7 +19,7 @@ export default function AlphabeticalSub({
         plainAlphaRef.current.value
           .split("")
           .some(
-            (char) =>
+            char =>
               plainAlphaRef.current.value.match(
                 new RegExp(`[\\\\${char}]`, "g")
               ).length > 1
@@ -34,7 +32,7 @@ export default function AlphabeticalSub({
         cipherAlphaRef.current.value
           .split("")
           .some(
-            (char) =>
+            char =>
               cipherAlphaRef.current.value.match(
                 new RegExp(`[\\\\${char}]`, "g")
               ).length > 1
@@ -56,9 +54,9 @@ export default function AlphabeticalSub({
             ...helpers.getFromStorage("haltedAt"),
             {
               at: `${opInfo.index + 1}.${opInfo.title}: `,
-              error: "duplicate characters are not allowed in plaintext field",
-            },
-          ],
+              error: "duplicate characters are not allowed in plaintext field"
+            }
+          ]
         });
       }
       if (!checkLackOfCipherDuplicate) {
@@ -67,9 +65,9 @@ export default function AlphabeticalSub({
             ...helpers.getFromStorage("haltedAt"),
             {
               at: `${opInfo.index + 1}.${opInfo.title}: `,
-              error: "duplicate characters are not allowed in ciphertext field",
-            },
-          ],
+              error: "duplicate characters are not allowed in ciphertext field"
+            }
+          ]
         });
       }
       return false;
@@ -98,12 +96,14 @@ export default function AlphabeticalSub({
         .join("");
       let result = substitude(InputInString);
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result),
+        outputBins: helpers.charToBin(result)
       });
     }
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <>

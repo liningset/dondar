@@ -1,19 +1,7 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import morseTable from "./morse-table";
-import Header from "../Header";
-import Footer from "../Footer";
 
-export default function Morse({
-  currentOp,
-  opInfo,
-  helpers,
-  setOutputBinary,
-  setDescryption,
-}) {
-  let inputFieldRef = useRef(null);
-  let outputFieldRef = useRef(null);
-  let selectRef = useRef(null);
-
+export default function Morse({ currentOp, helpers, isDisabled }) {
   function convert(userInput, typeOfOperation) {
     if (userInput !== "") {
       const arr = [];
@@ -21,7 +9,7 @@ export default function Morse({
       switch (typeOfOperation) {
         case "encode": {
           for (let char of userInput) {
-            morseTable.forEach((cell) => {
+            morseTable.forEach(cell => {
               let letter = cell[0];
               let symbol = cell[1];
               if (char.toUpperCase() === letter) arr.push(symbol);
@@ -30,8 +18,8 @@ export default function Morse({
           break;
         }
         case "decode": {
-          userInput.forEach((char) => {
-            morseTable.forEach((cell) => {
+          userInput.forEach(char => {
+            morseTable.forEach(cell => {
               let letter = cell[0];
               let symbol = cell[1];
               if (char === symbol) arr.push(letter);
@@ -67,11 +55,13 @@ export default function Morse({
         break;
     }
     helpers.updateStorage({
-      outputBins: helpers.charToBin(result.split("")),
+      outputBins: helpers.charToBin(result.split(""))
     });
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return <span>No advanced options</span>;
 }

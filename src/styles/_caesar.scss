@@ -1,17 +1,8 @@
-.op.caesar .op-advanced .op-advanced-inner {
-  display: flex;
-  justify-content: center;
-
-  .div {
-    flex: 5;
+.pipe.caesar .pipe-advanced .pipe-advanced-inner {
+  .input-wrapper {
+    flex: 3;
     position: relative;
-    box-shadow: var(--shadow2);
-    input {
-      text-align: center;
-      border-radius: 0;
-      box-shadow: none;
-      width: 100%;
-    }
+
     span {
       position: absolute;
       display: flex;
@@ -19,33 +10,16 @@
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
-      &:focus {
-        display: none;
-      }
-    }
-  }
-  .add,
-  .subtract {
-    z-index: 1;
-    cursor: pointer;
-    background: var(--nav-n-footer-bg);
-    color: var(--nav-n-footer-clr);
-    border: none;
-    width: 15%;
-
-    &:active {
-      transform: scale(0.95);
     }
   }
 }
 @media (max-width: 700px) {
-  .op.caesar .op-advanced .op-advanced-inner .div {
-    span {
-      right: 0.5rem;
-      pointer-events: none;
-    }
-    input {
-      text-align: left;
+  .pipe.caesar .pipe-advanced .pipe-advanced-inner {
+    .input-wrapper {
+      span {
+        right: 0.5rem;
+        pointer-events: none;
+      }
     }
   }
 }

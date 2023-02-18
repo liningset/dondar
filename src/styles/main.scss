@@ -1,19 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap");
-@import "./vigenere";
 @import "./caesar";
-@import "./base32";
 @import "./xor";
 @import "./numeralsystem";
-@import "./morse";
 @import "./home";
-@import "./alphabeticalsub.scss";
-@import "./url-encoding";
+@import "./alphabeticalsub";
+@import "./pipe";
 
 [data-theme="dark"] {
-  --inputs-bg: rgb(50, 53, 65);
-  --inputs-bg2: rgb(61, 66, 85);
-  --main-bg: rgb(24, 28, 39);
-  --nav-n-footer-bg: #10121a;
+  --inputs-bg: #202744;
+  --inputs-bg2: #39436f;
+  --main-bg: #0c152f;
+  --nav-n-footer-bg: #000620;
   --nav-n-footer-clr: #f3f3f3;
   --clr: #f3f3f3;
   --shadow: none;
@@ -23,9 +19,9 @@
 }
 
 [data-theme="light"] {
-  --inputs-bg: #ffffff;
+  --inputs-bg: #e3e3e3;
   --inputs-bg2: #ffffff;
-  --main-bg: #f2f4f6;
+  --main-bg: #b9b9b9;
   --nav-n-footer-bg: #2b2b2b;
   --nav-n-footer-clr: #f3f3f3;
   --clr: #414141;
@@ -85,26 +81,20 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Poppins", sans-serif;
   background: var(--main-bg);
 }
 
-main {
+.wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
   opacity: 0;
-  min-height: 100vh;
-}
-
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  //justify-content: flex-start;
-  align-items: center;
-  width: 90%;
+  padding: 4vw;
+  flex: 3;
+  width: 100%;
 }
 
 .chain {
@@ -128,7 +118,7 @@ main {
 select {
   width: 100%;
   font-family: inherit;
-  background: var(--inputs-bg);
+  background: var(--inputs-bg2);
   box-shadow: var(--shadow2);
   border: none;
   cursor: pointer;
@@ -160,11 +150,10 @@ textarea {
 }
 
 input {
-  //width: min(100%, 250px);
   width: 100%;
   border-radius: 5px;
   padding: 0.5rem 0.75rem;
-  background: var(--inputs-bg);
+  background: var(--inputs-bg2);
   transition: all 0.3s ease;
   font-family: "Source Code Pro", monospace;
   color: var(--clr);
@@ -177,17 +166,13 @@ input {
   }
 }
 
-.ops-container input,
-.ops-container textarea,
-.ops-container select {
+.pipeline input,
+.pipeline textarea,
+.pipeline select {
   background: var(--inputs-bg2);
 }
 
 #root {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
   min-height: 100vh;
   gap: 2rem;
   width: 100%;
@@ -202,31 +187,8 @@ input {
   }
 }
 
-/*.info,
-.notes {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2rem;
-  width: 100%;
-  padding: 1rem;
-  border-radius: 5px;
-  background: var(--inputs-bg);
-
-  p {
-    line-height: 1.5;
-  }
-  ul {
-    margin-left: 1rem;
-    list-style: none;
-  }
-  a {
-    color: #1da1f2;
-  }
-}*/
-
 .theme-toggle-btn,
-.home-btn {
+.search-btn {
   padding: 0.25rem;
   cursor: pointer;
   background: transparent;
@@ -257,13 +219,13 @@ input {
       }
     }
   }
-  &.home-btn:hover i {
+  &.search-btn:hover i {
     color: #8cff7d;
   }
 }
 
 header {
-  //position: sticky;
+  position: sticky;
   width: 100vw;
   top: 0;
   left: 0;
@@ -317,9 +279,8 @@ footer {
   align-items: center;
   flex-direction: column;
   width: 100%;
-  padding-block: 0.5rem;
+  padding-block: 1rem;
   background: var(--nav-n-footer-bg);
-  //box-shadow: var(--shadow);
   border-top: 1px solid var(--inputs-bg);
   color: var(--nav-n-footer-clr);
   opacity: 0;
@@ -342,20 +303,17 @@ footer {
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin: 1rem;
 
-      a {
+      .fab {
         cursor: pointer;
         text-decoration: none;
         font-size: 1.5rem;
         &.twitter:hover {
           color: #1da1f2;
         }
-
         &.instagram:hover {
           color: #e1306c;
         }
-
         &.github:hover {
           color: #666666;
         }
@@ -365,12 +323,11 @@ footer {
 }
 
 @media (max-width: 500px) {
-  #root > section {
-    flex-direction: column;
-    gap: 4rem;
+  .wrapper {
+    padding: 1rem;
   }
   .info,
-  .notes {
+  .guide {
     gap: 1rem;
   }
   .container {
@@ -383,9 +340,6 @@ footer {
       align-items: center;
       gap: 1rem;
     }
-  }
-  .wrapper {
-    gap: 2rem;
   }
   .selects-flex {
     flex-direction: column-reverse;

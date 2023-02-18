@@ -5,7 +5,7 @@ export default function Vigenere({
   opInfo,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   const askKeyFromUser = useRef(null);
 
@@ -14,21 +14,16 @@ export default function Vigenere({
     let keyIsValid = askKeyFromUser.current.validity.valid;
     let inputIsValid = helpers
       .binToChar(input)
-      .every((x) => /[\x00-\xff]/.test(x));
+      .every(x => /[\x00-\xff]/.test(x));
 
     if (isNotEmpty && inputIsValid) {
       if (keyIsValid) {
         return true;
       } else {
-        helpers.updateStorage({
-          haltedAt: [
-            ...helpers.getFromStorage("haltedAt"),
-            {
-              at: `${opInfo.index + 1}.${opInfo.title}: `,
-              error: "key cannot be empty and must only contain letters.",
-            },
-          ],
-        });
+        helpers.haltMessage(
+          opInfo,
+          "key cannot be empty and must only contain letters."
+        );
         return false;
       }
     } else return false;
@@ -68,17 +63,17 @@ it also returns all the positions and required info of mentioned characters in a
     let allMatches3 = [...subject.matchAll(reg3)];
 
     //update uppercase positions
-    allMatches2.forEach((match) => arr2.push(match.index));
+    allMatches2.forEach(match => arr2.push(match.index));
 
     //update number positions
-    allMatches3.forEach((match) => {
+    allMatches3.forEach(match => {
       obj1.indexes.push(match.index);
       obj1.values.push(match.join(""));
     });
 
     //removing uppercases..........
     let subjectWithoutUppercase = subject.split("");
-    arr2.forEach((i) => {
+    arr2.forEach(i => {
       subjectWithoutUppercase.splice(
         i,
         1,
@@ -88,7 +83,7 @@ it also returns all the positions and required info of mentioned characters in a
 
     //removing numbers.............
     let subjectWithoutNums = subjectWithoutUppercase;
-    obj1.indexes.forEach((i) => {
+    obj1.indexes.forEach(i => {
       subjectWithoutNums.splice(i, 1, "");
     });
 
@@ -96,7 +91,7 @@ it also returns all the positions and required info of mentioned characters in a
    we rely on the positions of spaces after numbers are removed*/
     let allMatches1 = [...subjectWithoutNums.join("").matchAll(reg1)];
     //update space positions
-    allMatches1.forEach((match) => arr1.push(match.index));
+    allMatches1.forEach(match => arr1.push(match.index));
     //removing spaces..............
     let subjectWithoutSpaces = subjectWithoutNums.join("");
     let subjectWithoutAll = subjectWithoutSpaces.replaceAll(reg1, "");
@@ -105,7 +100,7 @@ it also returns all the positions and required info of mentioned characters in a
       text: subjectWithoutAll,
       sindexes: arr1,
       cindexes: arr2,
-      nindexes: obj1,
+      nindexes: obj1
     };
   }
 
@@ -119,12 +114,12 @@ it also returns all the positions and required info of mentioned characters in a
     const [sIndexes, cIndexes, nIndexes] = [
       obj.sindexes,
       obj.cindexes,
-      obj.nindexes,
+      obj.nindexes
     ];
 
     //adding spaces.................
     let textWithSpaces = textToDeformat.split("");
-    sIndexes.forEach((i) => {
+    sIndexes.forEach(i => {
       textWithSpaces.splice(i, 0, " ");
     });
 
@@ -136,7 +131,7 @@ it also returns all the positions and required info of mentioned characters in a
 
     //adding uppercase...............
     let textWithUppercase = textWithNums;
-    cIndexes.forEach((i) => {
+    cIndexes.forEach(i => {
       textWithUppercase.splice(i, 1, textWithUppercase[i].toUpperCase());
     });
 
@@ -168,7 +163,7 @@ it also returns all the positions and required info of mentioned characters in a
     const [formatDetails1, formatDetails2] = [format(text), format(key)];
     const [formattedText, formattedKey] = [
       formatDetails1.text.split(""),
-      formatDetails2.text.split(""),
+      formatDetails2.text.split("")
     ];
 
     let extendedKeyword = extendKey(formattedKey, formatDetails1.text);
@@ -195,7 +190,7 @@ it also returns all the positions and required info of mentioned characters in a
     const [formatDetails1, formatDetails2] = [format(cipher), format(key)];
     const [formattedCipher, formattedKey] = [
       formatDetails1.text.split(""),
-      formatDetails2.text.split(""),
+      formatDetails2.text.split("")
     ];
     //console.log(formatDetails1, formatDetails2);
     let extendedKeyword = extendKey(formattedKey, formatDetails1.text);
@@ -245,13 +240,16 @@ it also returns all the positions and required info of mentioned characters in a
           );
           break;
       }
+      console.log(result);
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split("")),
+        outputBins: helpers.charToBin(result.split(""))
       });
     }
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <>
@@ -265,6 +263,7 @@ it also returns all the positions and required info of mentioned characters in a
           title="Key cannot be empty or contain non-alphabetic
         characters"
           pattern="[A-Za-z\s]+"
+          defaultValue="dondar"
           ref={askKeyFromUser}
           onInput={() => setOutputBinary(helpers.getFromStorage("inputBins"))}
           required

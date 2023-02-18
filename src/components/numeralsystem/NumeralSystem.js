@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from "react";
 
 export default function NumeralSystem({
+  isDisabled,
   opInfo,
   helpers,
-  setOutputBinary,
-  setDescryption,
+  setOutputBinary
 }) {
   const selectFromRef = useRef(null);
   const selectToRef = useRef(null);
@@ -54,9 +54,9 @@ export default function NumeralSystem({
                   : document.querySelector(
                       `[value="${selectFromRef.current.value}"]`
                     ).innerText
-              }`,
-            },
-          ],
+              }`
+            }
+          ]
         });
         return false;
       }
@@ -78,9 +78,7 @@ export default function NumeralSystem({
           numberInput
             .replace(/,/g, "")
             .split("")
-            .map((letter) =>
-              sanskrit.indexOf(sanskrit.find((d) => d === letter))
-            )
+            .map(letter => sanskrit.indexOf(sanskrit.find(d => d === letter)))
             .join("")
         );
       case "a":
@@ -88,14 +86,17 @@ export default function NumeralSystem({
           numberInput
             .replace(/,/g, "")
             .split("")
-            .map((letter) => arabic.indexOf(arabic.find((d) => d === letter)))
+            .map(letter => arabic.indexOf(arabic.find(d => d === letter)))
             .join("")
         );
 
       default:
         let arr = [];
         //a reversed array of input number's digits Uppercased
-        let digits = `${numberInput}`.toUpperCase("").split("").reverse("");
+        let digits = `${numberInput}`
+          .toUpperCase("")
+          .split("")
+          .reverse("");
         digits.forEach((digit, index) => {
           /*each digit is run through a test. 
         if the digit is alphabetic it's index in alphabete is added by 10 
@@ -129,7 +130,7 @@ export default function NumeralSystem({
       }
 
       if (baseToConvert > 10) {
-        remainderArr = remainderArr.map((remainder) => {
+        remainderArr = remainderArr.map(remainder => {
           return remainder < 10 ? remainder : alphabet[remainder - 10];
         });
       }
@@ -192,7 +193,7 @@ export default function NumeralSystem({
       IX: 9,
       V: 5,
       IV: 4,
-      I: 1,
+      I: 1
     };
 
     switch (type) {
@@ -245,9 +246,9 @@ export default function NumeralSystem({
               ...helpers.getFromStorage("haltedAt"),
               {
                 at: `${opInfo.index + 1}.${opInfo.title}: `,
-                error: "Input cannot exceed 3999₁₀",
-              },
-            ],
+                error: "Input cannot exceed 3999₁₀"
+              }
+            ]
           });
           return "";
         }
@@ -260,7 +261,7 @@ export default function NumeralSystem({
         const seperatorReg = /M|CM|D|CD|C|XC|L|XL|X|IX|V|IV|I/gi;
         const numbers = input.match(seperatorReg);
         //gives an array of decimal numbers that correspond to each symbol of the numbers array
-        let convertedNumbers = numbers.map((number) => {
+        let convertedNumbers = numbers.map(number => {
           return romanDigits[number];
         });
 
@@ -278,45 +279,21 @@ export default function NumeralSystem({
       result = helpers
         .binToChar(inputBinary)
         .join("")
-        .match(/^.+$/gm)
-        .map((val) =>
+        .split(/^.+$/gm)
+        .map(val =>
           convert(val, selectFromRef.current.value, selectToRef.current.value)
         )
         .join("\n");
 
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split("")),
+        outputBins: helpers.charToBin(result.split(""))
       });
     }
-
-    let info = `<h1>What is a numeral system?</h1>
-    <p>
-      A numeral system (or system of numeration) is a writing system for
-      expressing numbers; that is, a mathematical notation for
-      representing numbers of a given set, using digits or other symbols
-      in a consistent manner.
-    </p>
-    <p>
-      The same sequence of symbols may represent different numbers in
-      different numeral systems. For example, "11" represents the number
-      eleven in the decimal numeral system (used in common life), the
-      number three in the binary numeral system (used in computers), and
-      the number two in the unary numeral system (e.g. used in tallying
-      scores).
-    </p>
-
-    <a
-      href="https://en.wikipedia.org/wiki/Numeral_system"
-      target="_blank"
-    >
-      read more
-    </a>
-  `;
-
-    //helpers.updateStorage({descryption});
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <>
@@ -421,48 +398,6 @@ export default function NumeralSystem({
           </optgroup>
         </select>
       </div>
-      <section>
-        <section className="notes">
-          <h1>Notes:</h1>
-          <p>
-            1. this module provides support between conversion of numeral
-            systems categorized by both notation and historical significance.
-            Some of the popular ones are:
-          </p>
-          <ol>
-            <p>
-              Binary: Binary or base 2 consists of 1s and 0s. It is the system
-              that computers understand at a core level.
-            </p>
-            <p>
-              Octal: Octal or base 8 is a counting system similar to binary,
-              except that digits vary from 0 to 7.
-            </p>
-            <p>
-              Decimal: Decimal or base 10, is the system that most humans in the
-              world are taught to use. the characters range from 0 to 9.
-            </p>
-            <p>
-              Hexadecimal: Hexadecimal (hex) or base 16 is a system that has
-              played a major role in computer science alongside binary. the
-              characters consist of 0 to 9 and A to F from alphabet.
-            </p>
-            <p>
-              Roman numerals: Roman numerals are a set of latin symbols that
-              represent a rather limited set of numbers. It was the prevalent
-              counting system in ancient Rome and most other parts of Europe.
-              The numbers on the Big Ben tower's clock in London are written in
-              Roman. the Numbers 0 through 12 are as follows: I, II, III, IV, V,
-              VI ,VII, VIII, IX, X, XI, XII.
-            </p>
-          </ol>
-
-          <p>
-            2. If you want to convert multiple numbers simultaneously, seperate
-            them with a line break.
-          </p>
-        </section>
-      </section>
     </>
   );
 }

@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function Button({ info, functions }) {
   const title = info.title;
   const { clickEvent, closeModal } = functions;

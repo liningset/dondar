@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Source+Code+Pro&family=Dancing+Script:wght@700&family=Silkscreen:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&family=Source+Code+Pro&family=Dancing+Script:wght@700&family=Silkscreen:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -19,7 +19,7 @@
       referrerpolicy="no-referrer"
     />
 
-    <title>Dondar</title>
+    <title>Dondar - The Swiss army knife for textual conversions</title>
   </head>
   <body data-theme="light">
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -27,6 +27,12 @@
 
     <script>
       document.body.dataset.theme = sessionStorage.getItem("theme") || "light";
+      window.addEventListener("scroll", () => {
+        if (scrollMaxY === scrollY)
+          document.querySelector("#scroll-btn").dataset.scrollto = "down";
+        if (scrollY === 0)
+          document.querySelector("#scroll-btn").dataset.scrollto = "up";
+      });
     </script>
   </body>
 </html>

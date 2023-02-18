@@ -1,6 +1,11 @@
 import React, { useEffect, useRef } from "react";
 
-export default function Replace({ helpers, setOutputBinary, setDescryption }) {
+export default function Replace({
+  opInfo,
+  helpers,
+  setOutputBinary,
+  isDisabled
+}) {
   const selectOpRef = useRef(null);
   const patternInputRef = useRef(null);
   const replacementInputRef = useRef(null);
@@ -14,20 +19,43 @@ export default function Replace({ helpers, setOutputBinary, setDescryption }) {
     ) {
       let regMatch = pattern.match(/(?<=^(\/)).*(?=(\/g?i?m?s?u?)$)/g);
       let flags = pattern.match(/(?<=(\/.+\/))(g?i?m?s?u?)$/g);
-      if (new RegExp(regMatch, flags[0]).test(text)) {
-        let modifiedText = text;
-        modifiedText = modifiedText.replace(
-          new RegExp(regMatch, flags[0]),
-          replacement
-        );
-        return modifiedText;
-      } else return text;
+      try {
+        if (new RegExp(regMatch, flags[0]).test(text)) {
+          let modifiedText = text;
+          modifiedText = modifiedText.replace(
+            new RegExp(regMatch, flags[0]),
+            replacement
+          );
+          return modifiedText;
+        } else return text;
+      } catch {
+        helpers.updateStorage({
+          haltedAt: [
+            ...helpers.getFromStorage("haltedAt"),
+            {
+              at: `${opInfo.index + 1}.${opInfo.title}: `,
+              error: "Invalid regular expression."
+            }
+          ]
+        });
+        return text;
+      }
     } else {
+      helpers.updateStorage({
+        haltedAt: [
+          ...helpers.getFromStorage("haltedAt"),
+          {
+            at: `${opInfo.index + 1}.${opInfo.title}: `,
+            error: "Invalid regular expression."
+          }
+        ]
+      });
       return text;
     }
   }
 
   function normalSearch(text, pattern, replacement) {
+    patternInputRef.current.setAttribute("pattern", ".+");
     patternInputRef.current.setAttribute("placeholder", "foo");
     if (
       patternInputRef.current.validity.valid &&
@@ -42,32 +70,36 @@ export default function Replace({ helpers, setOutputBinary, setDescryption }) {
   }
 
   function triggerFn() {
-    let inputBinary = helpers.getFromStorage("outputBins");
-    let result;
-    switch (selectOpRef.current.value) {
-      case "regex":
-        result = regSearch(
-          helpers.binToChar(inputBinary).join(""),
-          patternInputRef.current.value,
-          replacementInputRef.current.value
-        );
-        break;
+    if (patternInputRef.current.validity.valid) {
+      let inputBinary = helpers.getFromStorage("outputBins");
+      let result;
+      switch (selectOpRef.current.value) {
+        case "normal":
+          result = normalSearch(
+            helpers.binToChar(inputBinary).join(""),
+            patternInputRef.current.value,
+            replacementInputRef.current.value
+          );
+          break;
 
-      case "normal":
-        result = normalSearch(
-          helpers.binToChar(inputBinary).join(""),
-          patternInputRef.current.value,
-          replacementInputRef.current.value
-        );
-        break;
+        case "regex":
+          result = regSearch(
+            helpers.binToChar(inputBinary).join(""),
+            patternInputRef.current.value,
+            replacementInputRef.current.value
+          );
+          break;
+      }
+
+      helpers.updateStorage({
+        outputBins: helpers.charToBin(result.split(""))
+      });
     }
-
-    helpers.updateStorage({
-      outputBins: helpers.charToBin(result.split("")),
-    });
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <>

@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import brailleTable from "./braille-table";
 
 export default function Braille({
   currentOp,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   let selectGradeRef = useRef(null);
 
@@ -30,7 +30,7 @@ export default function Braille({
         let matches = [...new Set(modifiedText.match(pattern))];
 
         if (matches) {
-          matches.forEach((match) => {
+          matches.forEach(match => {
             if (index === 4 || index === 5) {
               /*while (pattern.test(modifiedText)) {
                 console.log(modifiedText);
@@ -78,22 +78,22 @@ export default function Braille({
         const arr = [];
         let newText = addPunctuation().toLowerCase();
         for (let char of newText) {
-          if (brailleTable.punctuation.some((c) => c[0] === char)) {
-            brailleTable.punctuation.forEach((cell) => {
+          if (brailleTable.punctuation.some(c => c[0] === char)) {
+            brailleTable.punctuation.forEach(cell => {
               if (cell[0] === char) arr.push(char);
             });
           } else {
             if (/[=\+\*\d]/.test(char)) {
               //(/\d/.test(char) && char !== " ") || /[=\+\*]/.test(char)
-              brailleTable.numbers.forEach((cell) => {
+              brailleTable.numbers.forEach(cell => {
                 let letter = cell[0];
                 let symbol = cell[1];
                 if (letter === char) arr.push(symbol);
               });
-            } else if (brailleTable.alphabete.every((c) => c[0] !== char)) {
+            } else if (brailleTable.alphabete.every(c => c[0] !== char)) {
               arr.push(char);
             } else {
-              brailleTable.alphabete.forEach((cell) => {
+              brailleTable.alphabete.forEach(cell => {
                 let letter = cell[0];
                 let symbol = cell[1];
                 if (char === letter) arr.push(symbol);
@@ -110,7 +110,7 @@ export default function Braille({
         3.iterates through the text and replaces the remaining characters as described in g1*/
       case "g2": {
         let newText = addPunctuation().toLowerCase();
-        brailleTable.grade2.forEach((cell) => {
+        brailleTable.grade2.forEach(cell => {
           let pattern = cell[2];
           let symbol = cell[1];
 
@@ -121,13 +121,13 @@ export default function Braille({
 
         for (let char of newText) {
           if (/[=\+\*\d]/.test(char)) {
-            brailleTable.numbers.forEach((cell) => {
+            brailleTable.numbers.forEach(cell => {
               let letter = cell[0];
               let symbol = cell[1];
               if (letter === char) newText = newText.replace(letter, symbol);
             });
           } else {
-            brailleTable.alphabete.forEach((cell) => {
+            brailleTable.alphabete.forEach(cell => {
               let letter = cell[0];
               let symbol = cell[1];
 
@@ -149,7 +149,7 @@ export default function Braille({
     /*runs through the punctuation rules and removes the matching symbols */
     function removePunctuation(text) {
       let modifiedText = text;
-      brailleTable.punctuation.forEach((punc) => {
+      brailleTable.punctuation.forEach(punc => {
         let symbol = punc[0];
         let pattern = punc[2];
         modifiedText = modifiedText.replaceAll(pattern, "");
@@ -162,10 +162,10 @@ export default function Braille({
       let reg = /(?<=⠼)([⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚]+[⠂⠲]?[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚]*)/g;
       if (reg.test(modifiedText)) {
         let matches = modifiedText.match(reg);
-        matches.forEach((match) => {
+        matches.forEach(match => {
           let matchNum = match.split("");
-          matchNum.forEach((char) => {
-            brailleTable.numbers.forEach((num) => {
+          matchNum.forEach(char => {
+            brailleTable.numbers.forEach(num => {
               if (num[1] === char)
                 matchNum.splice(matchNum.indexOf(char), 1, num[0]);
             });
@@ -183,12 +183,12 @@ export default function Braille({
       let modifiedText = text;
       let regs = [
         /(?<=((?<!⠠)⠠(?![⠤⠠])))[a-z]/g,
-        /(?<=((⠠{2})(?![⠤⠠])))[a-z]+/g,
+        /(?<=((⠠{2})(?![⠤⠠])))[a-z]+/g
       ];
-      regs.forEach((reg) => {
+      regs.forEach(reg => {
         let matches = modifiedText.match(reg);
         if (matches) {
-          matches.forEach((match) => {
+          matches.forEach(match => {
             let regToReplace = new RegExp(
               String(reg)
                 .slice(1, String(reg).length - 2)
@@ -211,7 +211,7 @@ export default function Braille({
 
         newText = convertNumbers(newText);
 
-        brailleTable.alphabete.forEach((cell) => {
+        brailleTable.alphabete.forEach(cell => {
           let letter = cell[0];
           let symbol = cell[1];
           let reg = new RegExp(symbol, "g");
@@ -232,23 +232,23 @@ export default function Braille({
             reg = reg.replace(/\(\^\|\[ ,\.\]\)/g, "(^|⠀|([⠂⠲]⠀))");
             reg = reg.replace(/ /g, "⠀");
             let regT = reg.slice(1, reg.length - 2).replace(phrase, symbol);
-            brailleTable.grade2.forEach((c) => {
+            brailleTable.grade2.forEach(c => {
               if (c[2].test(regT)) regT = regT.replace(c[2], c[1]);
             });
 
             regT = regT
               .replace(
                 /\\\(/g,
-                brailleTable.alphabete.find((c) => c[0] === "(")[1]
+                brailleTable.alphabete.find(c => c[0] === "(")[1]
               )
               .replace(
                 /\\\)/g,
-                brailleTable.alphabete.find((c) => c[0] === ")")[1]
+                brailleTable.alphabete.find(c => c[0] === ")")[1]
               );
 
             for (let char of regT) {
               if (/[a-z]/gi.test(char)) {
-                brailleTable.alphabete.forEach((c) => {
+                brailleTable.alphabete.forEach(c => {
                   if (char === c[0]) regT = regT.replaceAll(c[0], c[1]);
                 });
               }
@@ -265,11 +265,11 @@ export default function Braille({
         let braillifiedTable = engRegToBrailleReg();
         console.log(braillifiedTable);
 
-        braillifiedTable.forEach((cell) => {
+        braillifiedTable.forEach(cell => {
           newText = newText.replace(cell[2], cell[0]);
         });
 
-        brailleTable.alphabete.forEach((cell) => {
+        brailleTable.alphabete.forEach(cell => {
           let letter = cell[0];
           let symbol = cell[1];
           if (newText.includes(symbol)) {
@@ -310,23 +310,13 @@ export default function Braille({
         break;
     }
     helpers.updateStorage({
-      outputBins: helpers.charToBin(result.split("")),
+      outputBins: helpers.charToBin(result.split(""))
     });
-
-    /*if (selectOpRef.current.value === "encode") {
-      outputFieldRef.current.value = encode(
-        inputFieldRef.current.value,
-        selectGradeRef.current.value
-      );
-    } else if (selectOpRef.current.value === "decode") {
-      outputFieldRef.current.value = decode(
-        inputFieldRef.current.value,
-        selectGradeRef.current.value
-      );
-    }*/
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <div className="div">

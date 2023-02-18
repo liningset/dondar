@@ -1,13 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
 
 export default function UrlEncoding({
   currentOp,
   opInfo,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   const selectSpaceRef = useRef(null);
 
@@ -23,10 +21,10 @@ export default function UrlEncoding({
             ? /[^!#$&'()*,/:;=?@[\]]/
             : /[^!#$&'()*,/+:;=?@[\]]/;
 
-        if (textArr.every((char) => allowedCharsReg.test(char))) {
+        if (textArr.every(char => allowedCharsReg.test(char))) {
           return true;
         } else {
-          let errorChar = textArr.find((x) => !allowedCharsReg.test(x));
+          let errorChar = textArr.find(x => !allowedCharsReg.test(x));
 
           helpers.updateStorage({
             haltedAt: [
@@ -35,9 +33,9 @@ export default function UrlEncoding({
                 at: `${opInfo.index + 1}.${opInfo.title}: `,
                 error: `Invalid character at index ${textArr.indexOf(
                   errorChar
-                )}`,
-              },
-            ],
+                )}`
+              }
+            ]
           });
           return false;
         }
@@ -50,17 +48,24 @@ export default function UrlEncoding({
     switch (selectSpaceRef.current.value) {
       case "plus":
         return encodeURIComponent(text)
-          .replace(/[!()*']|%20/g, (x) => {
+          .replace(/[!()*']|%20/g, x => {
             return x === "%20"
               ? "+"
-              : `%${x.charCodeAt(0).toString(16).toUpperCase()}`;
+              : `%${x
+                  .charCodeAt(0)
+                  .toString(16)
+                  .toUpperCase()}`;
           })
           .replace(/%20/g, "+");
 
       case "hex":
         return encodeURIComponent(text).replace(
           /[!()*']/g,
-          (x) => `%${x.charCodeAt(0).toString(16).toUpperCase()}`
+          x =>
+            `%${x
+              .charCodeAt(0)
+              .toString(16)
+              .toUpperCase()}`
         );
     }
   }
@@ -83,12 +88,14 @@ export default function UrlEncoding({
       }
 
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split("")),
+        outputBins: helpers.charToBin(result.split(""))
       });
     }
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <div className="div">

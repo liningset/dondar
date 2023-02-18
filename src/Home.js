@@ -1,30 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import gsap from "gsap";
 import Button from "./components/Button";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import OpGenerate from "./OpGenerate";
-import Ascii85 from "./components/ascii85/Ascii85";
-import Base64 from "./components/base64/Base64";
-import Base32 from "./components/base32/Base32";
-import Vigenere from "./components/vigenere/Vigenere";
-import Reverse from "./components/reverse/Reverse";
-import A1Z26 from "./components/a1z26/A1Z26";
-import Caesar from "./components/caesar/Caesar";
-import Rot13 from "./components/rot/Rot13";
-import Morse from "./components/morse/Morse";
-import Braille from "./components/braille/Braille";
-import Xor from "./components/xor/Xor";
-import Replace from "./components/replace/Replace";
-import SpellingAlphabet from "./components/spellingalphabet/SpellingAlphabet";
-import CaseTransform from "./components/casetransform/CaseTransform";
-import BitwiseOperation from "./components/bitwiseoperation/BitwiseOperation";
-import NumeralSystem from "./components/numeralsystem/NumeralSystem";
-import AlphabeticalSub from "./components/alphabeticalsub/AlphabeticalSub";
-import UnicodePoints from "./components/unicodepoints/UnicodePoints";
-import UrlEncoding from "./components/urlencoding/UrlEncoding";
+import Pipe from "./Pipe";
+import Modules from "./modules";
 
-export default function Home({ setService }) {
+export default function Home() {
   const [selectInFormatRef, selectOutFormatRef] = [useRef(null), useRef(null)];
   const [inputFieldRef, outputFieldRef] = [useRef(null), useRef(null)];
   const opsContainer = useRef(null);
@@ -32,114 +15,49 @@ export default function Home({ setService }) {
   const [opsList, setOpsList] = useState([]);
   const [inputBinary, setInputBinary] = useState([]);
   const [outputBinary, setOutputBinary] = useState([]);
-  const [haltedAt, setHaltedAt] = useState([]);
-  const [descryptionMain, setDescryptionMain] = useState("");
+  const [inputGroupByRef, outputGroupByRef] = [useRef(null), useRef(null)];
+  const [currentInputFormat, setCurrentInputFormat] = useState("");
+  const [currentOutputFormat, setCurrentOutputFormat] = useState("");
 
-  const importsArr = [
-    { comp: Ascii85, category: "encoding", title: "Ascii85", asymmetric: true },
-    { comp: Base64, category: "encoding", title: "Base64", asymmetric: true },
-    { comp: Base32, category: "encoding", title: "Base32", asymmetric: true },
-    {
-      comp: Vigenere,
-      category: "encryption",
-      title: "Vigenère cipher",
-      asymmetric: true,
-    },
-    {
-      comp: Reverse,
-      category: "transform",
-      title: "Reverse",
-      asymmetric: false,
-    },
-    { comp: A1Z26, category: "encryption", title: "A1Z26", asymmetric: true },
-    {
-      comp: Caesar,
-      category: "encryption",
-      title: "Caesar cipher",
-      asymmetric: true,
-    },
-    { comp: Rot13, category: "encryption", title: "ROT-13", asymmetric: false },
-    {
-      comp: Morse,
-      category: "encoding",
-      title: "Morse code",
-      asymmetric: true,
-    },
-    { comp: Braille, category: "alphabet", title: "Braille", asymmetric: true },
-    {
-      comp: Xor,
-      category: "encryption",
-      title: "XOR cipher",
-      asymmetric: false,
-    },
-    {
-      comp: Replace,
-      category: "transform",
-      title: "Replace",
-      asymmetric: false,
-    },
-    {
-      comp: SpellingAlphabet,
-      category: "alphabet",
-      title: "Spelling alphabet",
-      asymmetric: true,
-    },
-    {
-      comp: CaseTransform,
-      category: "transform",
-      title: "Case transform",
-      asymmetric: false,
-    },
-    {
-      comp: BitwiseOperation,
-      category: "transform",
-      title: "Bitwise operation",
-      asymmetric: false,
-    },
-    {
-      comp: NumeralSystem,
-      category: "transform",
-      title: "Numeral system",
-      asymmetric: false,
-    },
-    {
-      comp: AlphabeticalSub,
-      category: "encryption",
-      title: "Substitution cipher",
-      asymmetric: false,
-    },
-    {
-      comp: UnicodePoints,
-      category: "encoding",
-      title: "Unicode code points",
-      asymmetric: true,
-    },
-    {
-      comp: UrlEncoding,
-      category: "encoding",
-      title: "URL encoding",
-      asymmetric: true,
-    },
-  ];
-
+  function filteredFormatOptionsJSX(format) {
+    switch (format) {
+      case "binary":
+        return (
+          <>
+            <option value="4">4 bits</option>
+            <option value="5">5 bits</option>
+            <option value="6">6 bits</option>
+            <option value="7">7 bits</option>
+            <option value="8" selected>
+              byte
+            </option>
+            <option value="16">2 bytes</option>
+            <option value="24">3 bytes</option>
+            <option value="32">4 bytes</option>
+          </>
+        );
+      case "hex":
+        return (
+          <>
+            <option value="4">4 bits</option>
+            <option value="8" selected>
+              byte
+            </option>
+            <option value="16">2 bytes</option>
+            <option value="24">3 bytes</option>
+            <option value="32">4 bytes</option>
+          </>
+        );
+    }
+  }
+  /*a utility object that contains repetitive functions used throughout codebase*/
   const helpers = {
-    lengthen: function (input, padWith, padLength = 8) {
+    lengthen: function (input, padWith, padLength = 8, dir = "start") {
       const arr = input.split("");
       while (arr.length % padLength !== 0) {
-        arr.unshift(padWith);
+        dir === "start" ? arr.unshift(padWith) : arr.push(padWith);
       }
       return arr.join("");
-    },
-    uuid: function () {
-      const hashTable = "abcdef0123456789";
-      let uuid = [];
-      for (let i = 0; i < 35; i++) {
-        i === 7 || i === 12 || i === 17 || i === 22
-          ? (uuid[i] = "-")
-          : (uuid[i] =
-              hashTable[Math.floor(Math.random() * hashTable.length - 1)]);
-      }
-      return uuid.join("");
     },
     updateStorage: function (slots) {
       Object.entries(slots).forEach(([key, value]) => {
@@ -151,77 +69,71 @@ export default function Home({ setService }) {
         ? JSON.parse(sessionStorage.getItem(input))
         : input.map((slot) => JSON.parse(sessionStorage.getItem(slot)));
     },
-  };
-  helpers.charToBin = function (input) {
-    function unicodeToUTF8(char) {
-      let charBin = char.charCodeAt(0).toString(2);
-      let padded;
-      let arr = [];
-      switch (true) {
-        case /[\u0000-\u007f]/.test(char):
-          arr.push(helpers.lengthen(charBin, "0"));
-          break;
+    charToBin(input) {
+      function unicodeToUTF8(char) {
+        let charBin = char.charCodeAt(0).toString(2);
+        let padded;
+        let arr = [];
+        switch (true) {
+          case /[\u0000-\u007f]/.test(char):
+            arr.push(helpers.lengthen(charBin, "0"));
+            break;
 
-        case /[\u0080-\u07ff]/.test(char):
-          padded = helpers.lengthen(charBin, "0", 11);
-          arr = padded
-            .match(/^[01]{5}|[01]{6}/g)
-            .map((p, i) => (!i ? `110${p}` : `10${p}`));
-          break;
+          case /[\u0080-\u07ff]/.test(char):
+            padded = helpers.lengthen(charBin, "0", 11);
+            arr = padded
+              .match(/^[01]{5}|[01]{6}/g)
+              .map((p, i) => (!i ? `110${p}` : `10${p}`));
+            break;
 
-        case /[\u0800-\uffff]/.test(char):
-          padded = helpers.lengthen(charBin, "0", 16);
-          arr = padded
-            .match(/^[01]{4}|[01]{6}/g)
-            .map((p, i) => (!i ? `1110${p}` : `10${p}`));
-          break;
+          case /[\u0800-\uffff]/.test(char):
+            padded = helpers.lengthen(charBin, "0", 16);
+            arr = padded
+              .match(/^[01]{4}|[01]{6}/g)
+              .map((p, i) => (!i ? `1110${p}` : `10${p}`));
+            break;
 
-        default:
-          padded = helpers.lengthen(charBin, "0", 16);
-          arr = padded
-            .match(/^[01]{3}|[01]{6}/g)
-            .map((p, i) => (!i ? `11110${p}` : `10${p}`));
-          break;
+          default:
+            padded = helpers.lengthen(charBin, "0", 16);
+            arr = padded
+              .match(/^[01]{3}|[01]{6}/g)
+              .map((p, i) => (!i ? `11110${p}` : `10${p}`));
+            break;
+        }
+        return arr.join("+");
       }
-      return arr.join("+");
-    }
-    return typeof input === "string"
-      ? unicodeToUTF8(input)
-      : input.map((char) => unicodeToUTF8(char));
+      return typeof input === "string"
+        ? this.lengthen(input.charCodeAt().toString(2), "0")
+        : input.map((char) =>
+            this.lengthen(char.charCodeAt().toString(2), "0")
+          );
+    },
+    binToChar(input) {
+      return typeof input === "string"
+        ? String.fromCharCode(Number(`0b${input}`))
+        : input.map((octet) => String.fromCharCode(Number(`0b${octet}`)));
+    },
+    haltMessage: function (opInfo = null, text) {
+      helpers.updateStorage({
+        haltedAt: [
+          ...helpers.getFromStorage("haltedAt"),
+          {
+            at: opInfo != null ? `${opInfo.index + 1}.${opInfo.title}: ` : "",
+            error: text,
+          },
+        ],
+      });
+    },
   };
-  helpers.binToChar = function (input) {
-    function UTF8ToUnicode(elem) {
-      let extractedBin = elem.match(/(?<=((\+|^)1+?0))[01]+|0[01]{7}/g);
-      return String.fromCharCode(Number(`0b${extractedBin.join("")}`));
-    }
-    return typeof input === "string"
-      ? UTF8ToUnicode(input)
-      : input.map((octet) => UTF8ToUnicode(octet));
-  };
+
+  //--------------------------------------------------------------------------------
 
   helpers.updateStorage({
     opsList: opsList,
     inputBins: inputBinary,
     outputBins: outputBinary,
     haltedAt: [],
-    descryptionMain: "",
   });
-
-  function introAnim() {
-    try {
-      let tl = gsap.timeline();
-      tl.fromTo(
-        "h3",
-        0.5,
-        { opacity: 0, y: -20 },
-        { opacity: 1, y: 0, stagger: 0.25 }
-      );
-    } catch {
-      document
-        .querySelectorAll("#root > *")
-        .forEach((el) => (el.style.opacity = "1"));
-    }
-  }
 
   function modalAnim(type, indexOfChild) {
     if (type === "open")
@@ -268,71 +180,136 @@ export default function Home({ setService }) {
     }
   }
 
-  function handleInFormatSwap(value) {
-    let inputBinary = helpers.getFromStorage("inputBins");
-    let display;
-    switch (value) {
-      case "binary":
-        display = inputBinary
-          .join("")
-          .match(/[01]{8}/g)
-          .join(" ");
-        break;
+  function groupBytes(node, input, type) {
+    let bitsToGroupBy = Number(node.current.value) || 8;
 
-      case "text":
-        display = helpers.binToChar(inputBinary).join("");
-        break;
+    if (type === "hex") {
+      let reg = new RegExp(
+        `[\\da-f]{${bitsToGroupBy / 4}}|(?<=[\\da-f]{${
+          bitsToGroupBy / 4
+        }})[01]+|[\\da-f]+`,
+        "gi"
+      );
+      console.log(
+        input.map((octet) =>
+          helpers.lengthen(Number(`0b${octet}`).toString(16), "0", 2, "start")
+        )
+      );
 
-      case "hex":
-        display = inputBinary
-          .join("")
-          .match(/[01]{8}/g)
-          .map((octet) => Number(`0b${octet}`).toString(16))
-          .join(" ");
-        break;
+      return input
+        .map((octet) =>
+          helpers.lengthen(Number(`0b${octet}`).toString(16), "0", 2, "start")
+        )
+        .join("")
+        .match(reg)
+        .join(" ");
+    } else if (type === "binary") {
+      let reg = new RegExp(
+        `[01]{${bitsToGroupBy}}|(?<=[01]{${bitsToGroupBy}})[01]+`,
+        "g"
+      );
+
+      return input.join("").match(reg).join(" ");
     }
-    inputFieldRef.current.value = display;
   }
 
-  function handleOutFormatSwap(value) {
+  function handleInFormatSwap() {
+    let inputBinary = helpers.getFromStorage("inputBins");
+    let format = selectInFormatRef.current.value;
+    setCurrentInputFormat(selectInFormatRef.current.value);
+
+    inputGroupByRef.current.parentElement.className = `groupby-select${
+      format !== "text" ? " enabled" : ""
+    }`;
+    if (inputBinary.length === 0) return;
+
+    setTimeout(() => {
+      let display = "";
+      switch (format) {
+        case "binary":
+          console.log(inputGroupByRef.current.value);
+          if (inputGroupByRef.current.value === "n") {
+            display = inputBinary.join("");
+          } else display = groupBytes(inputGroupByRef, inputBinary, "binary");
+          break;
+
+        case "text":
+          display = helpers.binToChar(inputBinary).join("");
+          break;
+
+        case "hex":
+          if (inputGroupByRef.current.value === "n") {
+            display = inputBinary
+              .map((octet) =>
+                helpers.lengthen(Number(`0b${octet}`).toString(16), "0", 2)
+              )
+              .join("");
+          } else {
+            display = groupBytes(inputGroupByRef, inputBinary, "hex");
+          }
+      }
+      inputFieldRef.current.value = display;
+    }, 0);
+  }
+
+  function handleOutFormatSwap() {
     let outputBinary = helpers.getFromStorage("outputBins");
-    let display;
-    switch (value) {
-      case "binary":
-        display = outputBinary
-          .join("")
-          .match(/[01]{8}/g)
-          .join(" ");
-        break;
+    let format = selectOutFormatRef.current.value;
+    setCurrentOutputFormat(selectOutFormatRef.current.value);
 
-      case "text":
-        display = display = helpers.binToChar(outputBinary).join("");
-        break;
+    outputGroupByRef.current.parentElement.className = `groupby-select${
+      format !== "text" ? " enabled" : ""
+    }`;
+    if (outputBinary.length === 0) return;
 
-      case "hex":
-        display = outputBinary
-          .join("")
-          .match(/[01]{8}/g)
-          .map((octet) => Number(`0b${octet}`).toString(16))
-          .join(" ");
-        break;
-    }
-    outputFieldRef.current.value = display;
+    setTimeout(() => {
+      let display = "";
+      switch (format) {
+        case "binary":
+          switch (outputGroupByRef.current.value === "n") {
+            case true:
+              display = outputBinary.join("");
+              break;
+
+            case false:
+              display = groupBytes(outputGroupByRef, outputBinary, "binary");
+              break;
+          }
+          break;
+
+        case "text":
+          display = helpers.binToChar(outputBinary).join("");
+          break;
+
+        case "hex":
+          switch (outputGroupByRef.current.value === "n") {
+            case true:
+              display = outputBinary
+                .map((octet) =>
+                  helpers.lengthen(Number(`0b${octet}`).toString(16), "0", 2)
+                )
+                .join("");
+              break;
+
+            case false:
+              display = groupBytes(outputGroupByRef, outputBinary, "hex");
+              break;
+          }
+          break;
+      }
+      outputFieldRef.current.value = display;
+    }, 0);
   }
 
   function menuBtnHandler(info) {
-    //let arr = helpers.getFromStorage(["opsList", "inputBins"]);
+    //uuid exists because there could be more than one instance of the same module in a chain
     let newOp = {
       ...info,
-      id: helpers.uuid(),
+      id: uuidv4(),
     };
-    newOp.asymmetric = importsArr.find(
-      (x) => x.comp.name === newOp.dataAttr
-    ).asymmetric;
+
     let newOpsList = opsList.concat(newOp);
-    //helpers.updateStorage({ outputBins: arr[1], opsList: newOpsList });
     setOpsList(newOpsList);
-    //setRender(render + 1);
   }
 
   function inputChangeHandler() {
@@ -345,30 +322,25 @@ export default function Home({ setService }) {
         break;
 
       case "binary":
-        if (/^([01]{8} ?)+$/.test(inputFieldRef.current.value))
+        if (/^([01]{8} ?)+$/.test(inputFieldRef.current.value)) {
           extractedInputBins = inputFieldRef.current.value.match(/[01]{8}/g);
-        /*else {
-          outputFieldRef.current.value = "";
-          outputFieldRef.current.setAttribute(
-            "placeholder",
-            "0.Main: invalid binaries as direct input"
-          );
-        }*/
+        } else {
+          console.log("no");
+          helpers.haltMessage("Invalid binary");
+        }
         break;
       case "hex":
         if (/^([\dA-F]{2} ?)+$/i.test(inputFieldRef.current.value))
-          extractedInputBins =
-            inputFieldRef.current.value.match(/[\dA-F]{2}/gi);
-        /*else {
-          outputFieldRef.current.value = "";
-          outputFieldRef.current.setAttribute(
-            "placeholder",
-            "0.Main: invalid binaries as direct input"
-          );
-        }*/
+          extractedInputBins = inputFieldRef.current.value
+            .match(/[\dA-F]{2}/gi)
+            .map((byte) =>
+              helpers.lengthen(Number(`0x${byte}`).toString(2), "0")
+            );
+        else {
+          helpers.haltMessage("Invalid hexadecimal");
+        }
         break;
     }
-
     helpers.updateStorage({
       inputBins: extractedInputBins,
       outputBins: extractedInputBins,
@@ -377,9 +349,8 @@ export default function Home({ setService }) {
   }
 
   useEffect(() => {
-    let outputBinary = helpers.getFromStorage("outputBins");
+    let outputBinary = helpers.getFromStorage("outputBins") || [];
     let haltedAt = helpers.getFromStorage("haltedAt");
-    introAnim();
 
     if (opsContainer.current.children.length === 0)
       opsContainer.current.parentElement.style.gap = "0";
@@ -389,10 +360,7 @@ export default function Home({ setService }) {
       outputFieldRef.current.setAttribute("placeholder", "The output");
       switch (selectOutFormatRef.current.value) {
         case "binary":
-          outputFieldRef.current.value = outputBinary
-            .join("")
-            .match(/[01]{8}/g)
-            .join(" ");
+          outputFieldRef.current.value = outputBinary.join(" ");
           break;
 
         case "text":
@@ -403,9 +371,7 @@ export default function Home({ setService }) {
 
         case "hex":
           outputFieldRef.current.value = outputBinary
-            .join("")
-            .match(/[01]{8}/g)
-            .map((x) => Number(`0b${x}`).toString(16))
+            .map((x) => helpers.lengthen(Number(`0b${x}`).toString(16), "0", 2))
             .join(" ");
           break;
       }
@@ -443,34 +409,38 @@ export default function Home({ setService }) {
             <i className="fas fa-times"></i>
           </button>
 
-          {["encryption", "encoding", "transform", "alphabet"].map(
-            (category, index) => {
-              return (
-                <div className={`category ${category}`} key={index}>
-                  <h3>{category[0].toUpperCase() + category.substring(1)}</h3>
-                  <div className={`buttons-grid ${category}-grid`}>
-                    {importsArr
-                      .filter((x) => x.category === category)
-                      .map((object, i) => {
-                        return (
-                          <Button
-                            key={i}
-                            info={{
-                              dataAttr: object.comp.name,
-                              title: object.title,
-                            }}
-                            functions={{
-                              clickEvent: menuBtnHandler,
-                              closeModal: modalAnim,
-                            }}
-                          />
-                        );
-                      })}
-                  </div>
+          {[
+            "alphabet",
+            "ciphers",
+            "encoding",
+            "mathematics",
+            "modern cryptography",
+            "transform",
+          ].map((category, index) => {
+            return (
+              <div className={`category ${category}`} key={index}>
+                <h3>{category[0].toUpperCase() + category.substring(1)}</h3>
+                <div className={`buttons-grid ${category}-grid`}>
+                  {Modules.filter((x) => x.category === category)
+                    .sort(
+                      (a, b) => a.title.toUpperCase() > b.title.toUpperCase()
+                    )
+                    .map((object, i) => {
+                      return (
+                        <Button
+                          key={i}
+                          info={{ ...object }}
+                          functions={{
+                            clickEvent: menuBtnHandler,
+                            closeModal: modalAnim,
+                          }}
+                        />
+                      );
+                    })}
                 </div>
-              );
-            }
-          )}
+              </div>
+            );
+          })}
         </div>
         <div className="modal2" ref={modal2} data-active="false">
           <span>
@@ -516,20 +486,24 @@ export default function Home({ setService }) {
             <i className="fas fa-times"></i>
           </button>
 
-          <div className="notes">None</div>
+          <div className="guide">None</div>
         </div>
       </div>
 
       <button
         data-scrollto="up"
         id="scroll-btn"
+        title="Scroll down"
         onClick={(e) => {
           let target = e.target;
+          target.title = `Scroll ${target.dataset.scrollto}`;
           if (target.dataset.scrollto === "up") {
             target.dataset.scrollto = "down";
+            target.title = "scroll up";
             window.scrollTo(0, document.body.scrollHeight);
           } else {
             target.dataset.scrollto = "up";
+            target.title = "scroll down";
             window.scrollTo(0, 0);
           }
         }}
@@ -537,58 +511,55 @@ export default function Home({ setService }) {
         <i className="fas fa-arrow-down"></i>{" "}
       </button>
 
-      <Header setService={setService} />
+      <Header />
       <main className="wrapper">
-        <div className="adjustments">
-          <div className="adjustment">
-            <span>Input view: </span>
-            <select
-              ref={selectInFormatRef}
-              onInput={(e) => handleInFormatSwap(e.target.value)}
-            >
-              <optgroup label="UTF-8">
-                <option value="text">Text</option>
-                <option value="binary">Binary</option>
-                <option value="hex">Hexadecimal</option>
-              </optgroup>
-            </select>
+        <div className="input-field field">
+          <div className="formatting">
+            <h3>Input</h3>
+            <div className="formatting__inner">
+              <div className="format-select">
+                <span>Format</span>
+                <select
+                  ref={selectInFormatRef}
+                  onInput={() => handleInFormatSwap()}
+                >
+                  <option value="text">Text</option>
+                  <option value="binary">Binary</option>
+                  <option value="hex">Hexadecimal</option>
+                </select>
+              </div>
+              <div className="groupby-select">
+                <span>Group by</span>
+                <select
+                  ref={inputGroupByRef}
+                  onInput={() => handleInFormatSwap()}
+                >
+                  <option value="n">none</option>
+                  {filteredFormatOptionsJSX(currentInputFormat)}
+                </select>
+              </div>
+            </div>
           </div>
-          <div className="adjustment">
-            <span>Output view: </span>
-            <select
-              ref={selectOutFormatRef}
-              onInput={(e) => handleOutFormatSwap(e.target.value)}
-            >
-              <optgroup label="UTF-8">
-                <option value="text">Text</option>
-                <option value="binary">Binary</option>
-                <option value="hex">Hexadecimal</option>
-              </optgroup>
-            </select>
-          </div>
+          <textarea
+            id="input-area"
+            cols="30"
+            rows="10"
+            spellCheck="false"
+            placeholder="Your input"
+            ref={inputFieldRef}
+            onInput={() => inputChangeHandler()}
+          ></textarea>
         </div>
-        <textarea
-          id="input-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="Your input"
-          ref={inputFieldRef}
-          onInput={() => inputChangeHandler()}
-        ></textarea>
-        <div className="conversion-details">
-          <div className="ops-container" ref={opsContainer}>
-            {opsList.map((op, index) => {
+
+        <div className="pipeline-wrapper">
+          <div className="pipeline" ref={opsContainer}>
+            {opsList.map((pipe, index) => {
               return (
                 <>
-                  <OpGenerate
+                  <Pipe
                     key={index}
-                    Component={
-                      importsArr.find((x) => x.comp.name === op.dataAttr).comp
-                    }
                     setOutputBinary={setOutputBinary}
-                    setHaltedAt={setHaltedAt}
-                    opInfo={{ ...op, index }}
+                    opInfo={{ ...pipe, index }}
                     helpers={helpers}
                     modals={{ main: modalAnim, side1: modal2 }}
                     outputFieldRef={outputFieldRef}
@@ -604,21 +575,50 @@ export default function Home({ setService }) {
             })}
           </div>
           <button
-            id="add-op"
+            id="add-pipe"
             onClick={() => modalAnim("open", 0)}
             title="add tool to the chain."
           >
             <i className="fas fa-plus"></i>
           </button>
         </div>
-        <textarea
-          id="output-area"
-          cols="30"
-          rows="10"
-          spellCheck="false"
-          placeholder="The output"
-          ref={outputFieldRef}
-        ></textarea>
+
+        <div className="output-field field">
+          <div className="formatting">
+            <h3>Output</h3>
+            <div className="formatting__inner">
+              <div className="format-select">
+                <span>Format</span>
+                <select
+                  ref={selectOutFormatRef}
+                  onInput={(e) => handleOutFormatSwap()}
+                >
+                  <option value="text">Text</option>
+                  <option value="binary">Binary</option>
+                  <option value="hex">Hexadecimal</option>
+                </select>
+              </div>
+              <div className="groupby-select">
+                <span>Group by</span>
+                <select
+                  ref={outputGroupByRef}
+                  onInput={(e) => handleOutFormatSwap()}
+                >
+                  <option value="n">none</option>
+                  {filteredFormatOptionsJSX(currentOutputFormat)}
+                </select>
+              </div>
+            </div>
+          </div>
+          <textarea
+            id="output-area"
+            cols="30"
+            rows="10"
+            spellCheck="false"
+            placeholder="Your input"
+            ref={outputFieldRef}
+          ></textarea>
+        </div>
       </main>
       <Footer />
     </>

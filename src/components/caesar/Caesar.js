@@ -1,13 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import Header from "../Header";
-import Footer from "../Footer";
 
 export default function Caesar({
   currentOp,
   opInfo,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   let subtractionRef = useRef(null);
   let additionRef = useRef(null);
@@ -40,7 +38,7 @@ export default function Caesar({
 
   function validate(input) {
     let isNotEmpty = input.length !== 0;
-    let shiftNumIsValid = shiftInputRef.current.validity.valid;
+    let shiftNumIsValid = /^-?[0-9]{1,7}|0+$/.test(shiftInputRef.current.value);
     if (isNotEmpty) {
       if (shiftNumIsValid) {
         return true;
@@ -51,9 +49,9 @@ export default function Caesar({
             {
               at: `${opInfo.index + 1}.${opInfo.title}: `,
               error:
-                "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long",
-            },
-          ],
+                "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long"
+            }
+          ]
         });
         return false;
       }
@@ -95,7 +93,7 @@ export default function Caesar({
   }
 
   function overwriteRangeReg() {
-    if (shiftInputRef.current.validity.valid) {
+    if (/^-?[0-9]{1,7}|0+$/.test(shiftInputRef.current.value)) {
       rangeRef.current.innerText = `a → ${iterator(
         "a",
         Math.abs(shiftInputRef.current.value),
@@ -125,69 +123,71 @@ export default function Caesar({
           break;
       }
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split("")),
+        outputBins: helpers.charToBin(result.split(""))
       });
     }
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
-    <>
-      <button
-        className="subtract"
-        ref={subtractionRef}
-        onClick={() => {
-          if (shiftInputRef.current.validity.valid)
-            shiftInputRef.current.value--;
-          else shiftInputRef.current.value = "0";
-          overwriteRangeReg();
-          setOutputBinary(helpers.getFromStorage("inputBins"));
-        }}
-      >
-        <i className="fas fa-minus"></i>
-      </button>
-      <div className="div">
-        <span ref={rangeRef}>a → a</span>
-        <input
-          type="text"
-          pattern="-?[0-9]{1,7}|0+"
-          ref={shiftInputRef}
-          onInput={(e) => {
+    <div className="div">
+      <span>Shift by</span>
+      <div className="range">
+        <button
+          className="subtract"
+          ref={subtractionRef}
+          onClick={() => {
+            if (/^-?[0-9]{1,7}|0+$/.test(shiftInputRef.current.value))
+              shiftInputRef.current.value--;
+            else shiftInputRef.current.value = "0";
             overwriteRangeReg();
-            if (!e.target.validity.valid) {
-              helpers.updateStorage({
-                haltedAt: [
-                  ...helpers.getFromStorage("haltedAt"),
-                  {
-                    at: `${opInfo.index + 1}.${opInfo.title}: `,
-                    error:
-                      "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long",
-                  },
-                ],
-              });
-            }
             setOutputBinary(helpers.getFromStorage("inputBins"));
           }}
-          defaultValue="0"
-          placeholder="shift by"
-          required
-        />
-      </div>
-      <button
-        className="add"
-        ref={additionRef}
-        onClick={() => {
-          if (shiftInputRef.current.validity.valid)
-            shiftInputRef.current.value++;
-          else shiftInputRef.current.value = "0";
+        >
+          <i className="fas fa-minus"></i>
+        </button>
+        <div className="input-wrapper">
+          <span ref={rangeRef}>a → d</span>
+          <input
+            type="text"
+            ref={shiftInputRef}
+            onInput={e => {
+              overwriteRangeReg();
+              if (/^-?[0-9]{1,7}|0+$/.test(e.target.value)) {
+                helpers.updateStorage({
+                  haltedAt: [
+                    ...helpers.getFromStorage("haltedAt"),
+                    {
+                      at: `${opInfo.index + 1}.${opInfo.title}: `,
+                      error:
+                        "Shift value cannot be empty or non-numeric and more than 7 digits long"
+                    }
+                  ]
+                });
+              }
+              setOutputBinary(helpers.getFromStorage("inputBins"));
+            }}
+            defaultValue="3"
+          />
+        </div>
+        <button
+          className="add"
+          ref={additionRef}
+          onClick={() => {
+            if (/^-?[0-9]{1,7}|0+$/.test(shiftInputRef.current.value))
+              shiftInputRef.current.value++;
+            else shiftInputRef.current.value = "0";
 
-          overwriteRangeReg();
-          setOutputBinary(helpers.getFromStorage("inputBins"));
-        }}
-      >
-        <i className="fas fa-plus"></i>
-      </button>
-    </>
+            overwriteRangeReg();
+            setOutputBinary(helpers.getFromStorage("inputBins"));
+          }}
+        >
+          <i className="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
   );
 }

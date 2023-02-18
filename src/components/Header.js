@@ -1,13 +1,14 @@
-import { useRef } from "react";
+import React, { useRef, useState } from "react";
 import gsap from "gsap";
 
-export default function Header({ setService }) {
+export default function Header() {
   let themeBtn = useRef(null);
-  let homeBtn = useRef(null);
+  let searchBtn = useRef(null);
   let navContainer = useRef(null);
   let sunIcon = useRef(null);
   let moonIcon = useRef(null);
   let activeTheme = sessionStorage.getItem("theme");
+  let [service, setService] = useState("");
 
   function applyThemeAnimation(sunFrom, sunTo, moonFrom, moonTo) {
     try {
@@ -92,7 +93,7 @@ export default function Header({ setService }) {
     } catch {
       document
         .querySelectorAll("#root > *")
-        .forEach((el) => (el.style.opacity = "1"));
+        .forEach(el => (el.style.opacity = "1"));
     }
 
     setTimeout(() => {
@@ -117,7 +118,7 @@ export default function Header({ setService }) {
               <i
                 className="fas fa-sun"
                 style={{
-                  opacity: activeTheme === "light" || !activeTheme ? 1 : 0,
+                  opacity: activeTheme === "light" || !activeTheme ? 1 : 0
                 }}
                 ref={sunIcon}
               ></i>
@@ -128,11 +129,15 @@ export default function Header({ setService }) {
               ></i>
             </button>
           </li>
-          <li title="go home">
-            <button className="home-btn" ref={homeBtn} onClick={() => goHome()}>
-              <i className="fas fa-home"></i>
+          {/* <li title="search">
+            <button
+              className="search-btn"
+              ref={searchBtn}
+              onClick={() => goHome()}
+            >
+              <i className="fas fa-search"></i>
             </button>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </header>

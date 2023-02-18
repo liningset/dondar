@@ -5,7 +5,7 @@ export default function UnicodePoints({
   opInfo,
   helpers,
   setOutputBinary,
-  setDescryption,
+  isDisabled
 }) {
   const selectFormatRef = useRef(null);
   const seperatorRef = useRef(null);
@@ -23,29 +23,13 @@ export default function UnicodePoints({
             ...helpers.getFromStorage("haltedAt"),
             {
               at: `${opInfo.index + 1}.${opInfo.title}: `,
-              error: "Seperator cannot be empty",
-            },
-          ],
+              error: "Seperator cannot be empty"
+            }
+          ]
         });
         return false;
       }
     } else return false;
-
-    /*if (inputFieldRef.current.value !== "") {
-      if (seperatorRef.current.value === "") {
-        outputFieldRef.current.placeholder = "Seperator cannot be empty";
-        outputFieldRef.current.value = "";
-      } else {
-        outputFieldRef.current.placeholder = "The output";
-      }
-    } else {
-      outputFieldRef.current.placeholder = "The output";
-      outputFieldRef.current.value = "";
-    }
-
-    return (
-      inputFieldRef.current.value !== "" && seperatorRef.current.value !== ""
-    );*/
   }
 
   function encode(text) {
@@ -54,7 +38,7 @@ export default function UnicodePoints({
       arr.push(char.charCodeAt());
     }
     return arr
-      .map((num) => {
+      .map(num => {
         switch (selectFormatRef.current.value) {
           case "unicode": {
             return `U+${num.toString(16)}`;
@@ -116,7 +100,7 @@ export default function UnicodePoints({
         reg = /(?<=(^&#x))[\dA-F]+(?=;$)/i;
         break;
     }
-    splittedText.forEach((chunk) => {
+    splittedText.forEach(chunk => {
       if (reg.test(chunk)) {
         let matchNum = chunk.match(reg)[0];
         switch (selectFormatRef.current.value) {
@@ -142,7 +126,7 @@ export default function UnicodePoints({
       }
     });
     return arr
-      .map((num) => {
+      .map(num => {
         let number = `${num}`.split("");
         while (number.length % 2 !== 0) {
           number.unshift("0");
@@ -170,12 +154,14 @@ export default function UnicodePoints({
         }
       }
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split("")),
+        outputBins: helpers.charToBin(result.split(""))
       });
     }
   }
 
-  useEffect(() => triggerFn());
+  useEffect(() => {
+    if (!isDisabled) triggerFn();
+  });
 
   return (
     <>
