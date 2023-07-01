@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import gsap from "gsap";
-import Button from "./components/Button";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Pipe from "./Pipe";
+import Button from "./common/Button";
+import Header from "./common/Header";
+import Footer from "./common/Footer";
+import Pipe from "./common/Pipe";
 import Modules from "./modules";
+import FieldConfigBox from "./common/FieldConfigBox";
 
 export default function Home() {
   const [selectInFormatRef, selectOutFormatRef] = [useRef(null), useRef(null)];
@@ -18,7 +19,10 @@ export default function Home() {
   const [inputGroupByRef, outputGroupByRef] = [useRef(null), useRef(null)];
   const [currentInputFormat, setCurrentInputFormat] = useState("");
   const [currentOutputFormat, setCurrentOutputFormat] = useState("");
+  const [mainHalted, setMainHalted] = useState(false);
 
+  //filers what bit-grouping options to show depending on format
+  //recieves string - outputs JSX elements
   function filteredFormatOptionsJSX(format) {
     switch (format) {
       case "binary":
@@ -34,6 +38,7 @@ export default function Home() {
             <option value="16">2 bytes</option>
             <option value="24">3 bytes</option>
             <option value="32">4 bytes</option>
+            <option value="64">8 bytes</option>
           </>
         );
       case "hex":
@@ -46,74 +51,75 @@ export default function Home() {
             <option value="16">2 bytes</option>
             <option value="24">3 bytes</option>
             <option value="32">4 bytes</option>
+            <option value="64">8 bytes</option>
           </>
         );
     }
   }
   /*a utility object that contains repetitive functions used throughout codebase*/
   const helpers = {
-    lengthen: function (input, padWith, padLength = 8, dir = "start") {
+    //args: lengthen(<string>, <string>, <number> || 8, <string> || start)
+    lengthen: function (input, padWith = "0", padLength = 8, dir = "start") {
       const arr = input.split("");
-      while (arr.length % padLength !== 0) {
+      while (arr.length % padLength > 0) {
         dir === "start" ? arr.unshift(padWith) : arr.push(padWith);
       }
       return arr.join("");
     },
+    //args: updateStorage(<object>)
     updateStorage: function (slots) {
       Object.entries(slots).forEach(([key, value]) => {
         sessionStorage.setItem(key, JSON.stringify(value));
       });
     },
+    //args: getFromStorage(<string> || <array>)
     getFromStorage: function (input) {
       return typeof input === "string"
         ? JSON.parse(sessionStorage.getItem(input))
         : input.map((slot) => JSON.parse(sessionStorage.getItem(slot)));
     },
+    //args: charToBin(<array>)
     charToBin(input) {
-      function unicodeToUTF8(char) {
-        let charBin = char.charCodeAt(0).toString(2);
-        let padded;
-        let arr = [];
-        switch (true) {
-          case /[\u0000-\u007f]/.test(char):
-            arr.push(helpers.lengthen(charBin, "0"));
-            break;
-
-          case /[\u0080-\u07ff]/.test(char):
-            padded = helpers.lengthen(charBin, "0", 11);
-            arr = padded
-              .match(/^[01]{5}|[01]{6}/g)
-              .map((p, i) => (!i ? `110${p}` : `10${p}`));
-            break;
-
-          case /[\u0800-\uffff]/.test(char):
-            padded = helpers.lengthen(charBin, "0", 16);
-            arr = padded
-              .match(/^[01]{4}|[01]{6}/g)
-              .map((p, i) => (!i ? `1110${p}` : `10${p}`));
-            break;
-
-          default:
-            padded = helpers.lengthen(charBin, "0", 16);
-            arr = padded
-              .match(/^[01]{3}|[01]{6}/g)
-              .map((p, i) => (!i ? `11110${p}` : `10${p}`));
-            break;
-        }
-        return arr.join("+");
-      }
-      return typeof input === "string"
+      let encoder = new TextEncoder("utf-8");
+      /*return typeof input === "string"
         ? this.lengthen(input.charCodeAt().toString(2), "0")
         : input.map((char) =>
             this.lengthen(char.charCodeAt().toString(2), "0")
-          );
+          );*/
+      return [...encoder.encode(input.join(""))].map((octet) =>
+        this.lengthen(octet.toString(2), "0")
+      );
     },
+    //args: binToChar(<array>)
     binToChar(input) {
-      return typeof input === "string"
-        ? String.fromCharCode(Number(`0b${input}`))
-        : input.map((octet) => String.fromCharCode(Number(`0b${octet}`)));
+      if (typeof input === "string") input = [input];
+      // return typeof input === "string"
+      //   ? String.fromCharCode(Number(`0b${input}`))
+      //   : input.map((octet) => String.fromCharCode(Number(`0b${octet}`)));
+      let decoder = new TextDecoder("utf-8");
+      let result = decoder.decode(
+        new Uint8Array(input.map((x) => Number(`0b${x}`)))
+      );
+      /*if (/\ufffd/.test(result)) {
+        this.haltMessage(
+          null,
+          `invalid UTF-8 encoded text at 0x${result
+            .indexOf("\ufffd")
+            .toString(16)
+            .padStart(
+              2,
+              "0"
+            )}, switch to binary/hexadecimal format to view the output`
+        );
+        setMainHalted(true);
+        return [""];
+      } else {
+        setMainHalted(false);*/
+      return result.split("");
+      //}
     },
-    haltMessage: function (opInfo = null, text) {
+    //args: charToBin(<object> || null, <string>)
+    haltMessage: function (opInfo, text) {
       helpers.updateStorage({
         haltedAt: [
           ...helpers.getFromStorage("haltedAt"),
@@ -126,8 +132,7 @@ export default function Home() {
     },
   };
 
-  //--------------------------------------------------------------------------------
-
+  //initialize entries in session storage
   helpers.updateStorage({
     opsList: opsList,
     inputBins: inputBinary,
@@ -213,7 +218,7 @@ export default function Home() {
     }
   }
 
-  function handleInFormatSwap() {
+  function inputFormatSwapHandler() {
     let inputBinary = helpers.getFromStorage("inputBins");
     let format = selectInFormatRef.current.value;
     setCurrentInputFormat(selectInFormatRef.current.value);
@@ -252,7 +257,7 @@ export default function Home() {
     }, 0);
   }
 
-  function handleOutFormatSwap() {
+  function outputFormatSwapHandler() {
     let outputBinary = helpers.getFromStorage("outputBins");
     let format = selectOutFormatRef.current.value;
     setCurrentOutputFormat(selectOutFormatRef.current.value);
@@ -301,7 +306,7 @@ export default function Home() {
     }, 0);
   }
 
-  function menuBtnHandler(info) {
+  function addPipeHandler(info) {
     //uuid exists because there could be more than one instance of the same module in a chain
     let newOp = {
       ...info,
@@ -325,7 +330,6 @@ export default function Home() {
         if (/^([01]{8} ?)+$/.test(inputFieldRef.current.value)) {
           extractedInputBins = inputFieldRef.current.value.match(/[01]{8}/g);
         } else {
-          console.log("no");
           helpers.haltMessage("Invalid binary");
         }
         break;
@@ -364,6 +368,14 @@ export default function Home() {
           break;
 
         case "text":
+          if (/\ufffd/.test(helpers.binToChar(outputBinary).join(""))) {
+            outputFieldRef.current.value = "";
+            outputFieldRef.current.setAttribute(
+              "placeholder",
+              "invalid UTF-8 encoded data, switch to binary or hexadecimal mode to view the output."
+            );
+            break;
+          }
           outputFieldRef.current.value = helpers
             .binToChar(outputBinary)
             .join("");
@@ -431,7 +443,7 @@ export default function Home() {
                           key={i}
                           info={{ ...object }}
                           functions={{
-                            clickEvent: menuBtnHandler,
+                            clickEvent: addPipeHandler,
                             closeModal: modalAnim,
                           }}
                         />
@@ -514,14 +526,14 @@ export default function Home() {
       <Header />
       <main className="wrapper">
         <div className="input-field field">
-          <div className="formatting">
+          {/* <div className="formatting">
             <h3>Input</h3>
             <div className="formatting__inner">
               <div className="format-select">
                 <span>Format</span>
                 <select
                   ref={selectInFormatRef}
-                  onInput={() => handleInFormatSwap()}
+                  onInput={() => inputFormatSwapHandler()}
                 >
                   <option value="text">Text</option>
                   <option value="binary">Binary</option>
@@ -532,14 +544,21 @@ export default function Home() {
                 <span>Group by</span>
                 <select
                   ref={inputGroupByRef}
-                  onInput={() => handleInFormatSwap()}
+                  onInput={() => inputFormatSwapHandler()}
                 >
                   <option value="n">none</option>
                   {filteredFormatOptionsJSX(currentInputFormat)}
                 </select>
               </div>
             </div>
-          </div>
+          </div> */}
+          <FieldConfigBox
+            title="Input"
+            helpers={helpers}
+            fieldRef={inputFieldRef}
+            selectFormatRef={selectInFormatRef}
+            groupByRef={inputGroupByRef}
+          />
           <textarea
             id="input-area"
             cols="30"
@@ -584,14 +603,14 @@ export default function Home() {
         </div>
 
         <div className="output-field field">
-          <div className="formatting">
+          {/* <div className="formatting">
             <h3>Output</h3>
             <div className="formatting__inner">
               <div className="format-select">
                 <span>Format</span>
                 <select
                   ref={selectOutFormatRef}
-                  onInput={(e) => handleOutFormatSwap()}
+                  onInput={(e) => outputFormatSwapHandler()}
                 >
                   <option value="text">Text</option>
                   <option value="binary">Binary</option>
@@ -602,14 +621,21 @@ export default function Home() {
                 <span>Group by</span>
                 <select
                   ref={outputGroupByRef}
-                  onInput={(e) => handleOutFormatSwap()}
+                  onInput={(e) => outputFormatSwapHandler()}
                 >
                   <option value="n">none</option>
                   {filteredFormatOptionsJSX(currentOutputFormat)}
                 </select>
               </div>
             </div>
-          </div>
+          </div> */}
+          <FieldConfigBox
+            title="Output"
+            helpers={helpers}
+            fieldRef={outputFieldRef}
+            selectFormatRef={selectOutFormatRef}
+            groupByRef={outputGroupByRef}
+          />
           <textarea
             id="output-area"
             cols="30"

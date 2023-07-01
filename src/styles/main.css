@@ -75,7 +75,7 @@
   padding: 2rem;
   border-radius: 1rem;
   width: min(90vw, 500px);
-  max-height: 90vh;
+  max-height: 75vh;
   overflow: auto;
   position: relative;
   display: none;
@@ -96,7 +96,7 @@
   padding: 2rem;
   border-radius: 1rem;
   width: min(90%, 300px);
-  max-height: 90vh;
+  max-height: 75vh;
   overflow: auto;
   display: none;
   flex-direction: column;
@@ -143,7 +143,7 @@
   padding: 2rem;
   border-radius: 1rem;
   width: min(90%, 1000px);
-  max-height: 90vh;
+  max-height: 75vh;
   overflow: auto;
   display: none;
   flex-direction: column;
@@ -175,7 +175,7 @@
 }
 .info a,
 .guide a {
-  color: #1da1f2;
+  color: #1886ca;
 }
 .info a i,
 .guide a i {
@@ -282,6 +282,7 @@
 }
 .field textarea {
   width: 100%;
+  height: 240px;
 }
 .field .formatting {
   padding: 1rem;
@@ -436,50 +437,58 @@
   pointer-events: none;
   transition: all 0.15s ease;
 }
-.pipe .pipe-advanced {
+.pipe .pipe-advanced-wrapper {
   width: 100%;
-  transition: 0.3s ease;
-  height: 0;
-  padding: 0;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.pipe .pipe-advanced-wrapper .pipe-advanced {
+  width: 100%;
   overflow: hidden;
 }
-.pipe .pipe-advanced .pipe-advanced-inner {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
 }
-.pipe .pipe-advanced .pipe-advanced-inner .range {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner .div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  outline: 0px solid black;
+}
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner .range {
   display: flex;
   gap: 1rem;
 }
-.pipe .pipe-advanced .pipe-advanced-inner .range button {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner .range button {
   background: var(--nav-n-footer-bg);
   flex: 1;
   border: none;
 }
-.pipe .pipe-advanced .pipe-advanced-inner .range button i {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner .range button i {
   color: var(--nav-n-footer-clr);
 }
-.pipe .pipe-advanced .pipe-advanced-inner .range button:active {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner .range button:active {
   transform: scale(0.95);
 }
-.pipe .pipe-advanced .pipe-advanced-inner .range input {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-advanced-inner .range input {
   flex: 3;
   border-radius: 0;
   text-align: center;
 }
-.pipe .pipe-advanced .pipe-footer {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer {
   display: flex;
   justify-content: space-between;
   background: var(--nav-n-footer-bg);
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__left {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__left {
   position: relative;
   display: flex;
   gap: 0.5rem;
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__left::before {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__left::before {
   content: "";
   position: absolute;
   top: 0;
@@ -489,19 +498,19 @@
   width: 100%;
   background: var(--nav-n-footer-bg);
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__left button {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__left button {
   background: none;
   border: none;
   opacity: 0.5;
   transition: all 0.125s ease;
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__left button i {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__left button i {
   color: #fff;
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__left button:hover {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__left button:hover {
   opacity: 1;
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__right .disable-btn {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__right .disable-btn {
   transition: all 0.125s ease;
   background: none;
   border: none;
@@ -511,17 +520,17 @@
   cursor: pointer;
   opacity: 0.5;
 }
-.pipe .pipe-advanced .pipe-footer .pipe-footer__right .disable-btn:hover {
+.pipe .pipe-advanced-wrapper .pipe-advanced .pipe-footer .pipe-footer__right .disable-btn:hover {
   opacity: 1;
 }
 
 .opened .pipe-brief .pipe-brief__arrow {
   transform: rotateX(180deg);
 }
-.opened .pipe-advanced {
-  height: auto;
+.opened .pipe-advanced-wrapper {
+  grid-template-rows: 1fr;
 }
-.opened .pipe-advanced .pipe-footer {
+.opened .pipe-advanced-wrapper .pipe-footer {
   padding: 0.25rem;
 }
 
@@ -752,7 +761,6 @@ input:focus {
 }
 
 header {
-  position: -webkit-sticky;
   position: sticky;
   width: 100vw;
   top: 0;
@@ -848,7 +856,7 @@ footer .footer-inner ul .fab.github:hover {
     padding: 1rem;
   }
   .info,
-.guide {
+  .guide {
     gap: 1rem;
   }
   .container {

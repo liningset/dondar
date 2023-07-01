@@ -70,105 +70,121 @@
       transition: all 0.15s ease;
     }
   }
-  .pipe-advanced {
+
+  .pipe-advanced-wrapper{
     width: 100%;
-    transition: 0.3s ease;
-    height: 0;
-    padding: 0;
-    overflow: hidden;
+    display: grid;
+    grid-template-rows: 0fr;  
+    transition: grid-template-rows 0.3s ease;
 
-    .pipe-advanced-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      padding: 1rem;
-
-      .range {
-        display: flex;
-        gap: 1rem;
-        button {
-          background: var(--nav-n-footer-bg);
-          flex: 1;
-
-          border: none;
-          i {
-            color: var(--nav-n-footer-clr);
-          }
-
-          &:active {
-            transform: scale(0.95);
-          }
+      
+    .pipe-advanced {
+      width: 100%;
+      overflow: hidden;
+      
+  
+      .pipe-advanced-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        //gap: 1rem;
+        //padding: 1rem;
+  
+        .div {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          padding: 1rem;
+          outline: 0px solid black;
         }
-
-        input {
-          flex: 3;
-          border-radius: 0;
-          text-align: center;
+  
+        .range {
+          display: flex;
+          gap: 1rem;
+          button {
+            background: var(--nav-n-footer-bg);
+            flex: 1;
+  
+            border: none;
+            i {
+              color: var(--nav-n-footer-clr);
+            }
+  
+            &:active {
+              transform: scale(0.95);
+            }
+          }
+  
+          input {
+            flex: 3;
+            border-radius: 0;
+            text-align: center;
+          }
         }
       }
-    }
-
-    .pipe-footer {
-      display: flex;
-      justify-content: space-between;
-      background: var(--nav-n-footer-bg);
-      .pipe-footer__left {
-        position: relative;
+  
+      .pipe-footer {
         display: flex;
-        gap: 0.5rem;
-
-        &::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          opacity: 0.5;
-          height: 1px;
-          width: 100%;
-          background: var(--nav-n-footer-bg);
+        justify-content: space-between;
+        background: var(--nav-n-footer-bg);
+        .pipe-footer__left {
+          position: relative;
+          display: flex;
+          gap: 0.5rem;
+  
+          &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.5;
+            height: 1px;
+            width: 100%;
+            background: var(--nav-n-footer-bg);
+          }
+  
+          button {
+            background: none;
+            border: none;
+            opacity: 0.5;
+            transition: all 0.125s ease;
+  
+            i {
+              color: #fff;
+            }
+  
+            &:hover {
+              opacity: 1;
+            }
+          }
         }
-
-        button {
-          background: none;
-          border: none;
-          opacity: 0.5;
-          transition: all 0.125s ease;
-
-          i {
+  
+        .pipe-footer__right {
+          .disable-btn {
+            transition: all 0.125s ease;
+            background: none;
+            border: none;
+            border-radius: 5px;
             color: #fff;
-          }
-
-          &:hover {
-            opacity: 1;
-          }
-        }
-      }
-
-      .pipe-footer__right {
-        .disable-btn {
-          transition: all 0.125s ease;
-          background: none;
-          border: none;
-          border-radius: 5px;
-          color: #fff;
-          font-weight: 400;
-          cursor: pointer;
-          opacity: 0.5;
-          &:hover {
-            opacity: 1;
+            font-weight: 400;
+            cursor: pointer;
+            opacity: 0.5;
+            &:hover {
+              opacity: 1;
+            }
           }
         }
       }
     }
   }
+  
 }
 
 .opened {
   .pipe-brief .pipe-brief__arrow {
     transform: rotateX(180deg);
   }
-  .pipe-advanced {
-    height: auto;
+  .pipe-advanced-wrapper {
+    grid-template-rows: 1fr;
 
     .pipe-footer {
       padding: 0.25rem;
