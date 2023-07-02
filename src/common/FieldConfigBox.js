@@ -111,6 +111,10 @@ export default function FieldConfigBox({
 
   return (
     <div className="formatting">
+      <div
+        className="color-bar"
+        style={{ background: title === "Output" ? "red" : "green" }}
+      ></div>
       <h3>{title}</h3>
       {() => {
         if (title === "Output") return <button onClick={0}>h</button>;
