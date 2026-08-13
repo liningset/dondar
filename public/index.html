@@ -20,9 +20,38 @@
     />
 
     <title>Dondar - The Swiss army knife for textual conversions</title>
+
+    <style>
+      noscript {
+        background: #0c152f;
+        color: #f3f3f3;
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        display: grid;
+        place-items: center;
+        font-family: "Source Code Pro";
+      }
+      noscript > div {
+        width: min(25rem, 90%);
+        text-align: start;
+      }
+      noscript span {
+        font-size: 2rem;
+      }
+    </style>
   </head>
   <body data-theme="light">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript
+      ><div>
+        <span>:(</span>
+        <h2>Oops, Your JavaScript is disabled</h2>
+        <p>
+          This site makes heavy use of React.js which is a JavaScript library.
+          Please enable your JavaScript then refresh this page.
+        </p>
+      </div></noscript
+    >
     <div id="root"></div>
 
     <script>

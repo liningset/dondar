@@ -4,7 +4,7 @@ export default function NumeralSystem({
   isDisabled,
   opInfo,
   helpers,
-  setOutputBinary
+  setOutputBinary,
 }) {
   const selectFromRef = useRef(null);
   const selectToRef = useRef(null);
@@ -37,19 +37,21 @@ export default function NumeralSystem({
       if (validator.test(helpers.binToChar(input).join(""))) {
         return true;
       } else {
-        helpers.haltMessage(opInfo, `Invalid ${
-          /(?<=\().+(?=\))/.test(
-            document.querySelector(
-              `[value="${selectFromRef.current.value}"]`
-            ).innerText
-          )
-            ? document
-                .querySelector(`[value="${selectFromRef.current.value}"]`)
-                .innerText.match(/(?<=\().+(?=\))/)[0]
-            : document.querySelector(
-                `[value="${selectFromRef.current.value}"]`
-              ).innerText
-        }`);
+        helpers.haltMessage(
+          opInfo,
+          `Invalid ${
+            /(?<=\().+(?=\))/.test(
+              document.querySelector(`[value="${selectFromRef.current.value}"]`)
+                .innerText
+            )
+              ? document
+                  .querySelector(`[value="${selectFromRef.current.value}"]`)
+                  .innerText.match(/(?<=\().+(?=\))/)[0]
+              : document.querySelector(
+                  `[value="${selectFromRef.current.value}"]`
+                ).innerText
+          }`
+        );
         return false;
       }
     }
@@ -70,7 +72,9 @@ export default function NumeralSystem({
           numberInput
             .replace(/,/g, "")
             .split("")
-            .map(letter => sanskrit.indexOf(sanskrit.find(d => d === letter)))
+            .map((letter) =>
+              sanskrit.indexOf(sanskrit.find((d) => d === letter))
+            )
             .join("")
         );
       case "a":
@@ -78,17 +82,14 @@ export default function NumeralSystem({
           numberInput
             .replace(/,/g, "")
             .split("")
-            .map(letter => arabic.indexOf(arabic.find(d => d === letter)))
+            .map((letter) => arabic.indexOf(arabic.find((d) => d === letter)))
             .join("")
         );
 
       default:
         let arr = [];
         //a reversed array of input number's digits Uppercased
-        let digits = `${numberInput}`
-          .toUpperCase("")
-          .split("")
-          .reverse("");
+        let digits = `${numberInput}`.toUpperCase("").split("").reverse("");
         digits.forEach((digit, index) => {
           /*each digit is run through a test. 
         if the digit is alphabetic it's index in alphabete is added by 10 
@@ -122,7 +123,7 @@ export default function NumeralSystem({
       }
 
       if (baseToConvert > 10) {
-        remainderArr = remainderArr.map(remainder => {
+        remainderArr = remainderArr.map((remainder) => {
           return remainder < 10 ? remainder : alphabet[remainder - 10];
         });
       }
@@ -185,7 +186,7 @@ export default function NumeralSystem({
       IX: 9,
       V: 5,
       IV: 4,
-      I: 1
+      I: 1,
     };
 
     switch (type) {
@@ -245,7 +246,7 @@ export default function NumeralSystem({
         const seperatorReg = /M|CM|D|CD|C|XC|L|XL|X|IX|V|IV|I/gi;
         const numbers = input.match(seperatorReg);
         //gives an array of decimal numbers that correspond to each symbol of the numbers array
-        let convertedNumbers = numbers.map(number => {
+        let convertedNumbers = numbers.map((number) => {
           return romanDigits[number];
         });
 
@@ -264,13 +265,13 @@ export default function NumeralSystem({
         .binToChar(inputBinary)
         .join("")
         .split(/^.+$/gm)
-        .map(val =>
+        .map((val) =>
           convert(val, selectFromRef.current.value, selectToRef.current.value)
         )
         .join("\n");
 
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split(""))
+        outputBins: helpers.charToBin(result.split("")),
       });
     }
   }

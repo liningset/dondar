@@ -5,7 +5,7 @@ export default function Caesar({
   opInfo,
   helpers,
   setOutputBinary,
-  isDisabled
+  isDisabled,
 }) {
   let subtractionRef = useRef(null);
   let additionRef = useRef(null);
@@ -38,14 +38,17 @@ export default function Caesar({
 
   function validate(input) {
     let isNotEmpty = input.length !== 0;
-    let shiftNumIsValid = /^-?[0-9]{1,7}|0+$/.test(shiftInputRef.current.value);
+    let shiftNumIsValid = /^-?[0-9]{1,4}|0+$/.test(shiftInputRef.current.value);
     if (isNotEmpty) {
       if (shiftNumIsValid) {
         return true;
       } else {
-        helpers.haltMessage(opInfo, "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long");
+        helpers.haltMessage(
+          opInfo,
+          "Shift value cannot be empty or non-numeric (except minus) and more than 7 digits long"
+        );
       }
-    } 
+    }
     return false;
   }
 
@@ -112,7 +115,7 @@ export default function Caesar({
           break;
       }
       helpers.updateStorage({
-        outputBins: helpers.charToBin(result.split(""))
+        outputBins: helpers.charToBin(result.split("")),
       });
     }
   }
@@ -143,10 +146,14 @@ export default function Caesar({
           <input
             type="text"
             ref={shiftInputRef}
-            onInput={e => {
+            onInput={(e) => {
               overwriteRangeReg();
               if (/^-?[0-9]{1,7}|0+$/.test(e.target.value)) {
-                helpers.haltMessage(opInfo, "Shift value cannot be empty or non-numeric and more than 7 digits long");
+                helpers.haltMessage(
+                  opInfo,
+                  "Shift value cannot be empty or non-numeric and more than 7 digits long"
+                );
+                return;
               }
               setOutputBinary(helpers.getFromStorage("inputBins"));
             }}

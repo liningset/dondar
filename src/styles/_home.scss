@@ -160,21 +160,74 @@
     width: inherit;
   }
 
-  #add-pipe {
-    width: 4rem;
-    background: none;
-    border-radius: 2px;
-    opacity: 0.5;
-    padding: 0.25rem;
+  .buttons {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--inputs-bg);
-    border: none;
-    box-shadow: var(--shadow);
+    gap: 0.5rem;
 
-    i {
-      color: var(--clr);
+    button {
+      width: 4rem;
+      background: none;
+      border-radius: 2px;
+      opacity: 0.5;
+      padding: 0.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--inputs-bg);
+      border: none;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease, opacity 0.1s ease;
+
+      i {
+        color: var(--clr);
+      }
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+.field {
+  display: flex;
+
+  width: 100%;
+  gap: 0.5rem;
+  border-radius: 5px;
+
+  textarea {
+    width: 100%;
+    height: 240px;
+  }
+
+  .formatting {
+    padding: 1rem;
+    background: var(--inputs-bg);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow);
+    max-height: 15rem;
+    overflow: hidden;
+    border-top: 2px solid green;
+  }
+  .title-container {
+    display: flex;
+    justify-content: space-between;
+
+    .copy-btn {
+      font-size: 1.3rem;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      i {
+        opacity: 0.75;
+      }
+      &:hover i {
+        opacity: 1;
+        transition: all 0.1s ease;
+      }
     }
   }
 }
@@ -206,38 +259,22 @@
     opacity: 1 !important;
   }
 }
+.copy-notif {
+  background: var(--inputs-bg);
+  color: var(--clr);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  position: fixed;
+  right: 1rem;
+  top: -100%;
+  opacity: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
 
-.field {
-  display: flex;
-
-  width: 100%;
-  gap: 1rem;
-  border-radius: 5px;
-
-  textarea {
-    width: 100%;
-    height: 240px;
-  }
-
-  .formatting {
-    padding: 1rem;
-    background: var(--inputs-bg);
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: var(--shadow);
-    max-height: 15rem;
-    position: relative;
-
-    .color-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-    }
-  }
+.moved-notif {
+  top: 1rem;
+  opacity: 1;
 }
 
 #scroll-btn {
@@ -275,6 +312,10 @@
   .field {
     flex-direction: column;
 
+    textarea {
+      height: 480px;
+    }
+
     .formatting h3 {
       align-self: center;
     }
@@ -298,5 +339,14 @@
   }
   .modal3 .info .heading-wrapper {
     flex-direction: column;
+  }
+}
+
+@keyframes notification {
+  from {
+    top: -100%;
+  }
+  to {
+    top: 1rem;
   }
 }

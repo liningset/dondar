@@ -272,7 +272,7 @@ const Modules = [
     identifier: "Hash",
     category: "modern cryptography",
     title: "Hash function",
-    asymmetric: true,
+    asymmetric: false,
     encodeBytes: true,
     descryption: `<h3>What is a hash function?</h3><p>A hash function is any function that can be used to map data of arbitrary size to fixed-size hexadecimal output, though there are some hash functions that support variable length output. The output returned by a hash function is usually called a hash digest, or simply hash.</p><p> Hashes are one-way functions in the sense that the digest cannot be reversed or decrypted to retrive the original input, as such they are widely used in fields of computer science and cryptography. Some real world examples of their use cases are:</p><ul><li>User authentication proceedures by online services</li><li>Integrity checking of files sent over the internet</li><li>Secure storage of passwords on a database without serious threats in case of compromise (if user password is strong enough against dictionary attacks)</li></ul><a href="https://en.wikipedia.org/wiki/Hash_function" target="_blank">read more at Wikipedia <i class="fas fa-external-link-alt"></i></a>`,
     guide: "<h3>Guide:</h3><p>none</p>",

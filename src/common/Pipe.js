@@ -5,7 +5,7 @@ export default function Pipe({
   opInfo,
   helpers,
   modals,
-  outputFieldRef
+  outputFieldRef,
 }) {
   const opRef = useRef(null);
   const opAdvancedRef = useRef(null);
@@ -22,7 +22,7 @@ export default function Pipe({
     descryption,
     guide,
     id,
-    index
+    index,
   } = opInfo;
 
   function handlePipeDropdown(event) {
@@ -53,7 +53,7 @@ export default function Pipe({
       className={`pipe ${identifier.toLowerCase()}`}
       data-id={id}
       ref={opRef}
-      onClick={e => handlePipeDropdown(e)}
+      onClick={(e) => handlePipeDropdown(e)}
     >
       <div className="pipe-brief">
         <button
@@ -76,7 +76,7 @@ export default function Pipe({
                 <button
                   className="encode-btn active"
                   ref={encodeBtn}
-                  onClick={e => handleEncodeDecode(e)}
+                  onClick={(e) => handleEncodeDecode(e)}
                 >
                   ENCODE
                 </button>
@@ -84,7 +84,7 @@ export default function Pipe({
                 <button
                   className="decode-btn"
                   ref={decodeBtn}
-                  onClick={e => handleEncodeDecode(e)}
+                  onClick={(e) => handleEncodeDecode(e)}
                 >
                   DECODE
                 </button>
@@ -96,61 +96,62 @@ export default function Pipe({
       </div>
       <div className="pipe-advanced-wrapper">
         <div className="pipe-advanced" ref={opAdvancedRef}>
-        <div className="pipe-advanced-inner">
-          <Component
-            currentOp={opType}
-            isDisabled={isDisabled}
-            opInfo={opInfo}
-            setOutputBinary={setOutputBinary}
-            outputField={outputFieldRef.current}
-            helpers={helpers}
-          />
-        </div>
-        <div className="pipe-footer">
-          <div className="pipe-footer__left">
-            <button
-              className="pipe-descryption-btn"
-              title="Descryption"
-              onClick={() => {
-                document.querySelector(".info").innerHTML = descryption;
-                modals.main("open", 2);
-              }}
-            >
-              <i className="fas fa-info-circle"></i>
-            </button>
-            <button
-              className="pipe-guide-btn"
-              title="Guide"
-              onClick={() => {
-                document.querySelector(".guide").innerHTML = guide;
-                modals.main("open", 3);
-              }}
-            >
-              <i className="fas fa-question-circle"></i>
-            </button>
+          <div className="pipe-advanced-inner">
+            <Component
+              currentOp={opType}
+              isDisabled={isDisabled}
+              opInfo={opInfo}
+              setOutputBinary={setOutputBinary}
+              outputField={outputFieldRef.current}
+              helpers={helpers}
+            />
           </div>
-          <div className="pipe-footer__right">
-            <button
-              className="disable-btn"
-              title={`When Off, "${index +
-                1}. ${title}" will be skipped in the chain of operations.`}
-              onClick={e => {
-                if (isDisabled) {
-                  setIsDisabled(false);
-                  //e.target.style.color = "#47ce35";
-                  setOutputBinary(helpers.getFromStorage("inputBins"));
-                } else {
-                  setIsDisabled(true);
-                  //e.target.style.color = "#ce3535";
-                  setOutputBinary(helpers.getFromStorage("inputBins"));
-                }
-              }}
-            >
-              {isDisabled ? "Off" : "On"}
-            </button>
+          <div className="pipe-footer">
+            <div className="pipe-footer__left">
+              <button
+                className="pipe-descryption-btn"
+                title="Descryption"
+                onClick={() => {
+                  document.querySelector(".info").innerHTML = descryption;
+                  modals.main("open", 2);
+                }}
+              >
+                <i className="fas fa-info-circle"></i>
+              </button>
+              <button
+                className="pipe-guide-btn"
+                title="Guide"
+                onClick={() => {
+                  document.querySelector(".guide").innerHTML = guide;
+                  modals.main("open", 3);
+                }}
+              >
+                <i className="fas fa-question-circle"></i>
+              </button>
+            </div>
+            <div className="pipe-footer__right">
+              <button
+                className="disable-btn"
+                title={`When Off, "${
+                  index + 1
+                }. ${title}" will be skipped in the chain of operations.`}
+                onClick={(e) => {
+                  if (isDisabled) {
+                    setIsDisabled(false);
+                    //e.target.style.color = "#47ce35";
+                    setOutputBinary(helpers.getFromStorage("inputBins"));
+                  } else {
+                    setIsDisabled(true);
+                    //e.target.style.color = "#ce3535";
+                    setOutputBinary(helpers.getFromStorage("inputBins"));
+                  }
+                }}
+              >
+                {isDisabled ? "Inactive" : "Active"}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

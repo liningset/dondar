@@ -71,6 +71,10 @@ i {
 
 button {
   cursor: pointer;
+
+  i {
+    pointer-events: none;
+  }
 }
 
 body {
